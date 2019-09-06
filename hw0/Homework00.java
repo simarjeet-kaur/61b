@@ -16,5 +16,17 @@ public static int max(int[] a) {
 integers in a[] whose sum is zero */
 
 public static boolean threeSum(int[] a) {
-	for 
+	/** need to loop through each option, go through
+	 each index in the array three times */
+	int length = a.length
+	int total = 0
+	int x, y;
+	for (int j = i + 1; j < length, k += 1) {
+		for (int k = j + 1; k < length, k += 1) {
+			if (a[i] + a[j] + a[k] == 0) {
+				return true;
+			}
+		}
+	}
+	return false;
 }
