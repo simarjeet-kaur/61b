@@ -30,3 +30,24 @@ public static boolean threeSum(int[] a) {
 	}
 	return false;
 }
+
+/** 3sum-distinct - same as before but each number
+can only be used once */
+
+
+public static boolean threeSum(int[] a) {
+	/** need to loop through each option, go through
+	 each index in the array three times 
+	 need to make sure i, k, and j are not equal to each other*/
+	int length = a.length
+	int total = 0
+	int x, y;
+	for (int j = i + 1; j < length, k += 1) {
+		for (int k = j + 1; k < length, k += 1) {
+			if (a[i] + a[j] + a[k] == 0 && k != i && j != k && i != k) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
