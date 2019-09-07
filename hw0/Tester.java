@@ -25,13 +25,24 @@ public class Tester {
     public void maxTest() {
         // Change call to max to make this call yours.
         assertEquals(14, max(new int[] { 0, -5, 2, 14, 10 }));
+        assertEquals(10, max(new int[] { 10, 4, 5, 6, 9 }));
         // REPLACE THIS WITH MORE TESTS.
+    }
+
+    @Test
+    public void maxwhileTest() {
+        // checking the while loop max
+        assertEquals(14, maxwhile(new int[] { 0, -5, 2, 14, 10 }));
+        assertEquals(10, maxwhile(new int[] { 10, 4, 5, 6, 9 }));
     }
 
     @Test
     public void threeSumTest() {
         // Change call to threeSum to make this call yours.
         assertTrue(threeSum(new int[] { -6, 3, 10, 200 }));
+        assertTrue(threeSum(new int[] { -6, 2, 4}));
+        assertFalse(threeSum(new int[] { -6, 2, 5}));
+        assertTrue(threeSum(new int[] {5, 1, 0, 3, 6}));
         // REPLACE THIS WITH MORE TESTS.
     }
 
@@ -39,6 +50,9 @@ public class Tester {
     public void threeSumDistinctTest() {
         // Change call to threeSumDistinct to make this call yours.
         assertFalse(threeSumDistinct(new int[] { -6, 3, 10, 200 }));
+        assertTrue(threeSumDistinct(new int[] { -6, 2, 4}));
+        assertFalse(threeSum(new int[] { -6, 2, 5}));
+        assertFalse(threeSumDistinct(new int[] {-6, 3, 10, 200}));
         // REPLACE THIS WITH MORE TESTS.
     }
 

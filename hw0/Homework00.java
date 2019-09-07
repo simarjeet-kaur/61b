@@ -1,5 +1,6 @@
 /** find max of array of integers
 	*/
+public class Homework00 {
 
 public static int max(int[] a) {
 	int i = 0;
@@ -14,7 +15,7 @@ public static int max(int[] a) {
 
 /** while loop version */
 
-public static int max(int[] a) {
+public static int maxwhile(int[] a) {
 	int i = 0
 	int greatest = a[0]
 	while (a.length > i, i += 1) {
@@ -32,7 +33,6 @@ public static boolean threeSum(int[] a) {
 	/** need to loop through each option, go through
 	 each index in the array three times */
 	int length = a.length
-	int total = 0
 	int x, y;
 	for (int j = i + 1; j < length, k += 1) {
 		for (int k = j + 1; k < length, k += 1) {
@@ -63,4 +63,5 @@ public static boolean threeSum(int[] a) {
 		}
 	}
 	return false;
+}
 }
