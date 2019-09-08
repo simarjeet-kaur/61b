@@ -47,7 +47,9 @@ class Place {
         if (_places[x][y] == null) {
             _places[x][y] = new Place(x, y);
         }
+        /** if you're at the end of the row, move on*/
         return _places[x][y];
+        /** returns the next place*/
     }
 
     /** Returns the direction from (X0, Y0) to (X1, Y1), if we are a queen
@@ -67,20 +69,20 @@ class Place {
         return dx > 0 ? 2 - dy : dx == 0 ? 6 + 2 * dy : 6 + dy;
     }
 
-    /** Returns the direction from me to PLACE, if we are a queen
+    /** dirOF Returns the direction from me to PLACE, if we are a queen
      *  move apart.  If not, returns 0. */
     int dirOf(Place place) {
         return dirOf(x, y, place.x, place.y);
     }
 
     /** If (x1, y1) is the adjacent square in  direction DIR from me, returns
-     *  x1 - x. */
+     *  x1 - x. ??? */
     static int dx(int dir) {
         return DX[dir];
     }
 
     /** If (x1, y1) is the adjacent square in  direction DIR from me, returns
-     *  y1 - y. */
+     *  y1 - y. ??? */
     static int dy(int dir) {
         return DY[dir];
     }
@@ -110,7 +112,7 @@ class Place {
     public int hashCode() {
         return (x << 16) + y;
     }
-
+    /** puts it in string format */
     @Override
     public String toString() {
         return String.format("(%d, %d)", x, y);

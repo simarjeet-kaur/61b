@@ -64,15 +64,24 @@ class Model implements Iterable<Model.Sq> {
      *  changes to it have no effect on the Model.
      */
     Model(int[][] solution) {
+        /** int [][] takes in a matrix */
         if (solution.length == 0 || solution.length * solution[0].length < 2) {
             throw badArgs("must have at least 2 squares");
         }
         _width = solution.length; _height = solution[0].length;
+        /** setting width and length values */
         int last = _width * _height;
+        /** last is the last value int you should be getting
+         * which you get by multiplyng the width by the lenght*/
         BitSet allNums = new BitSet();
-
+        /** BitSet is a set that grows as needed, each
+         * element has a boolean value, indexed by nonnegative numbers
+         * by default are all False
+         * so allNums is a BitSet of all False boolean values*/
         _allSuccessors = Place.successorCells(_width, _height);
+        /** getting the sucessor cells*/
         _solution = new int[_width][_height];
+        /** solution is the new integer */
         deepCopy(solution, _solution);
 
         // DUMMY SETUP
@@ -135,6 +144,7 @@ class Model implements Iterable<Model.Sq> {
     }
 
     /** Returns the height (number of rows of cells) of the board. */
+    /** final means you can't modify the variable later=*/
     final int height() {
         return _height;
     }
@@ -252,6 +262,8 @@ class Model implements Iterable<Model.Sq> {
     private int arrowDirection(int x, int y) {
         int seq0 = _solution[x][y];
         // FIXME
+        /** need an if else statement here
+         * return direction using code from above*/
         return 0;
     }
 
@@ -506,6 +518,7 @@ class Model implements Iterable<Model.Sq> {
          *    of the same connected sequence.
          */
         boolean connectable(Sq s1) {
+            /** needs to return T/F based on whether or not it is connection to S1*/
             // FIXME
             return true;
         }
@@ -523,16 +536,23 @@ class Model implements Iterable<Model.Sq> {
 
             // FIXME: Connect me to my successor:
             //        + Set my _successor field and S1's _predecessor field.
+            //s1._successor = s1.predecessor()
             //        + If I have a number, number all my successors
             //          accordingly (if needed).
+            //what does this mean?
             //        + If S1 is numbered, number me and my predecessors
             //          accordingly (if needed).
+            //change their numbers?
             //        + Set the _head fields of my successors to my _head.
+            //s1.successors()._head = s1._head
             //        + If either of this or S1 used to be unnumbered and is
             //          now numbered, release its group of whichever was
             //          unnumbered, so that it can be reused.
+            //???
             //        + If both this and S1 are unnumbered, set the group of
             //          my head to the result of joining the two groups.
+            //if else statement
+            //returns true at the end
 
             return true;
         }
@@ -549,9 +569,13 @@ class Model implements Iterable<Model.Sq> {
                 // FIXME: If both this and next are now one-element groups,
                 //        release their former group and set both group
                 //        numbers to -1.
+                //disconnect them from their group (see above)
+                //group numbers become -1 - find what grabs the group number and set this
+                //equal to -1
                 //        Otherwise, if either is now a one-element group, set
                 //        its group number to -1 without releasing the group
                 //        number.
+                //
                 //        Otherwise, the group has been split into two multi-
                 //        element groups.  Create a new group for next.
             } else {
