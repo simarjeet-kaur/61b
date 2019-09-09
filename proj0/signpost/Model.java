@@ -101,8 +101,10 @@ class Model implements Iterable<Model.Sq> {
                 _allSquares.add(sq);
             }
         }
+        /** need to make a for loop in a for loop
+         * sq[][] takes in two arrays, but putting in one list here*/
         // END DUMMY SETUP
-
+        _board = new Sq[][]{_allSquares}
         // FIXME: Initialize _board so that _board[x][y] contains the Sq object
         //        representing the contents at cell (x, y), _allSquares
         //        contains the list of all Sq objects on the board, and
@@ -110,7 +112,15 @@ class Model implements Iterable<Model.Sq> {
         //        contains sequence number k.  Check that all numbers from
         //        1 - last appear; else throw IllegalArgumentException (see
         //        badArgs utility).
-
+    for (i = 0; i < _board[0].length; i ++) {
+        for (j = 0; j < _board[1].length, j ++) {
+            _board[i][j]._successors = /** should this be the same as the predecessors? */
+                    _board[i][j]._predecessors = /** list of all locations of cells that
+         it might connect to (something that is a queen move away in the direction of its arrow
+         and all the cells that might connect to it*/
+                    /** should this be predecessors or predecessor*/
+        }
+    }
         // FIXME: For each Sq object on the board, set its _successors and
         //        _predecessor lists to the lists of locations of all cells
         //        that it might connect to (i.e., all cells that are a queen
@@ -575,15 +585,18 @@ class Model implements Iterable<Model.Sq> {
                 //        Otherwise, if either is now a one-element group, set
                 //        its group number to -1 without releasing the group
                 //        number.
-                //
+                //if it is now a one-elem group, make its group number -1 without releasing
+                //the group number
                 //        Otherwise, the group has been split into two multi-
                 //        element groups.  Create a new group for next.
+                //else it now has two multi element groups - create a new group for the next
             } else {
                 // FIXME: If neither this nor any square in its group that
                 //        precedes it has a fixed sequence number, set all
                 //        their sequence numbers to 0 and create a new group
                 //        for them if this has a current predecessor (other
                 //        set group to -1).
+                //
                 // FIXME: If neither next nor any square in its group that
                 //        follows it has a fixed sequence number, set all
                 //        their sequence numbers to 0 and create a new
