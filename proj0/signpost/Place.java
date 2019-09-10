@@ -74,9 +74,11 @@ class Place {
     int dirOf(Place place) {
         return dirOf(x, y, place.x, place.y);
     }
+    //what does me mean
 
     /** If (x1, y1) is the adjacent square in  direction DIR from me, returns
-     *  x1 - x. ??? */
+     *  x1 - x.  */
+    //what is x1 y1
     static int dx(int dir) {
         return DX[dir];
     }

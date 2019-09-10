@@ -7,8 +7,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Arrays;
 
-import static signpost.Place.pl;
-import static signpost.Place.PlaceList;
+import static signpost.Place.*;
 import static signpost.Utils.*;
 
 /** The state of a Signpost puzzle.  Each cell has coordinates (x, y),
@@ -123,6 +122,17 @@ class Model implements Iterable<Model.Sq> {
         //        contains sequence number k.  Check that all numbers from
         //        1 - last appear; else throw IllegalArgumentException (see
         //        badArgs utility).
+
+        //Sq(int x0, int y0, int sequenceNum, boolean fixed, int dir, int group) {
+
+        for (int i = 0; i < _width; i ++) {
+            for (int j = 0; j < _height; j ++)
+                for (int k = 1; k < _width * _height; k ++)
+                    _board[i][j] = Sq(i, j, k, false, dirOf(i, j, ));
+        }
+
+        //_allSquares = a list of all the values in the board - use deepcopy maybe
+
             //what is last?
             //where is _solution?
             //right setup?
@@ -159,10 +169,25 @@ class Model implements Iterable<Model.Sq> {
         //        _predecessor, and _head fields (which can't necessarily be
         //        set until all the necessary Sq objects are first created.)
 
+        for (int i = 0; i < _width; i ++) {
+            for (int j = 0; j < _height; j ++) {
+                _board[i][j] = model;
+                        _allSquares = model;
+            }
+        }
 
 
         // FIXME: Fill in the _successor, _predecessor, and _head fields of the
         //        copied Sq objects.
+        for (int i = 0; i < _width; i ++) {
+            for (int j = 0; j < _height; j ++) {
+                _board[i][j]._successor = _board[i][j]._successors();
+                _board[i][j]._predecessor = _board[i][j]._predecessor();
+                _allSquares = model[i][j];
+            }
+        }
+
+
     }
 
     /** Returns the width (number of columns of cells) of the board. */
@@ -400,7 +425,7 @@ class Model implements Iterable<Model.Sq> {
             _hasFixedNum = fixed;
             _sequenceNum = sequenceNum;
             _dir = dir;
-            _head = this;
+            _head = this; //what does this mean
             _group = group;
         }
 
