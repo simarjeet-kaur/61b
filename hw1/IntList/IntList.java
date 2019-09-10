@@ -138,6 +138,9 @@ public class IntList {
      *  elements of B.  May modify items of A. Don't use 'new'. */
 
     static IntList dcatenate(IntList A, IntList B) {
+        for (i = 0; i < B.length) {
+
+        }
         return null; // REPLACE WITH YOUR CODE */
 
     }
