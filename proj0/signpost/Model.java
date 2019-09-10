@@ -68,7 +68,8 @@ class Model implements Iterable<Model.Sq> {
         if (solution.length == 0 || solution.length * solution[0].length < 2) {
             throw badArgs("must have at least 2 squares");
         }
-        _width = solution.length; _height = solution[0].length;
+        _width = solution.length;
+        _height = solution[0].length;
         /** setting width and length values */
         int last = _width * _height;
         /** last is the last value int you should be getting
@@ -86,37 +87,35 @@ class Model implements Iterable<Model.Sq> {
 
         // DUMMY SETUP
         // FIXME: Remove everything down "// END DUMMY SETUP".
-        //_board = new Sq[][] {
-          //  { new Sq(0, 0, 0, false, 2, -1), new Sq(0, 1, 0, false, 2, -1),
-            //  new Sq(0, 2, 0, false, 4, -1), new Sq(0, 3, 1, true, 2, 0) },
-           // { new Sq(1, 0, 0, false, 2, -1), new Sq(1, 1, 0, false, 2, -1),
-             // new Sq(1, 2, 0, false, 6, -1), new Sq(1, 3, 0, false, 2, -1) },
-            //{ new Sq(2, 0, 0, false, 6, -1), new Sq(2, 1, 0, false, 2, -1),
-             // new Sq(2, 2, 0, false, 6, -1), new Sq(2, 3, 0, false, 2, -1) },
-           // { new Sq(3, 0, 16, true, 0, 0), new Sq(3, 1, 0, false, 5, -1),
-             // new Sq(3, 2, 0, false, 6, -1), new Sq(3, 3, 0, false, 4, -1) }
-        // };
-        // for (Sq[] col: _board) {
-          //  for (Sq sq : col) {
-            //    _allSquares.add(sq);
-           // }
-        // }
+       // _board = new Sq[][]{
+//                {new Sq(0, 0, 0, false, 2, -1), new Sq(0, 1, 0, false, 2, -1),
+//                        new Sq(0, 2, 0, false, 4, -1), new Sq(0, 3, 1, true, 2, 0)},
+//                {new Sq(1, 0, 0, false, 2, -1), new Sq(1, 1, 0, false, 2, -1),
+//                        new Sq(1, 2, 0, false, 6, -1), new Sq(1, 3, 0, false, 2, -1)},
+//                {new Sq(2, 0, 0, false, 6, -1), new Sq(2, 1, 0, false, 2, -1),
+//                        new Sq(2, 2, 0, false, 6, -1), new Sq(2, 3, 0, false, 2, -1)},
+//                {new Sq(3, 0, 16, true, 0, 0), new Sq(3, 1, 0, false, 5, -1),
+//                        new Sq(3, 2, 0, false, 6, -1), new Sq(3, 3, 0, false, 4, -1)}
+//        };
+//        for (Sq[] col : _board) {
+//            for (Sq sq : col) {
+//                _allSquares.add(sq);
+//            }
+//        }
         /** need to make a for loop in a for loop
          * sq[][] takes in two arrays, but putting in one list here*/
         // END DUMMY SETUP
-        void init_board(int[] array_list) {
-                _board = new Sq[][]{}
-                //make for loop with general m and n and use those to
-            //make a general board
-        }
-        if (-----) {
-            throw badArgs("IllegalArgumentException");
-        }
 
-        void init(int width, int height) {
-            if (width <= 0 || width * height < 2) {
-                throw badArgs("must have at least 2 squares");
-            }
+
+        //make for loop with general m and n and use those to
+        //make a general board
+
+    //}
+
+        //void init(int width, int height) {
+            //if (not all numbers from 1-last appear) {
+            //    throw badArgs("must have at least 2 squares");
+           // }
         // FIXME: Initialize _board so that _board[x][y] contains the Sq object
         //        representing the contents at cell (x, y), _allSquares
         //        contains the list of all Sq objects on the board, and
@@ -124,22 +123,26 @@ class Model implements Iterable<Model.Sq> {
         //        contains sequence number k.  Check that all numbers from
         //        1 - last appear; else throw IllegalArgumentException (see
         //        badArgs utility).
-    for (i = 0; i < _board[0].length; i ++) {
-        for (j = 0; j < _board[1].length, j ++) {
-            _board[i][j]._successors = /** should this be the same as the predecessors? */
-                    _board[i][j]._predecessors = /** list of all locations of cells that
-         it might connect to (something that is a queen move away in the direction of its arrow
-         and all the cells that might connect to it*/
-                    /** should this be predecessors or predecessor*/
-        }
-    }
+            //what is last?
+            //where is _solution?
+            //right setup?
+
         // FIXME: For each Sq object on the board, set its _successors and
         //        _predecessor lists to the lists of locations of all cells
         //        that it might connect to (i.e., all cells that are a queen
         //        move away in the direction of its arrow, and of all cells
         //        that might connect to it.
-
-        _unconnected = last - 1;
+        for (int i = 0; i < _width; i ++) {
+            for (int j = 0; j < _height; j ++) {
+                _board[i][j]._successors = _board[i][j].successors();  /** should this be the same as the predecessors? */
+                _board[i][j]._predecessor = _board[i][j].predecessor(); /** list of all locations of cells that
+                 it might connect to (something that is a queen move away in the direction of its arrow
+                 and all the cells that might connect to it*/
+                //might error later, go back and check
+            }
+        }
+    //    _unconnected = last - 1;
+        //find out what unconnected is later - why is it here?
     }
 
     /** Initializes a copy of MODEL. */
@@ -155,6 +158,8 @@ class Model implements Iterable<Model.Sq> {
         //        the Sq objects in MODEL other than their _successor,
         //        _predecessor, and _head fields (which can't necessarily be
         //        set until all the necessary Sq objects are first created.)
+
+
 
         // FIXME: Fill in the _successor, _predecessor, and _head fields of the
         //        copied Sq objects.
