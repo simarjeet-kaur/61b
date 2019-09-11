@@ -187,14 +187,14 @@ public class IntList {
      *  that start and len are always >= 0.
      */
     static IntList sublist(IntList L, int start, int len) {
-        IntList N = subTail(L, start);
-        int i = 0;
-        while (i < len) {
-            M = N.tail;
-            i ++;
-        }
-        M = null;
-        return N; // REPLACE WITH YOUR SOLUTION
+      //  IntList N = subTail(L, start);
+      //  int i = 0;
+      //  while (i < len) {
+           // M = N.tail;
+         //   i ++;
+
+       // M = null;
+        return L; // REPLACE WITH YOUR SOLUTION
 
     }
 
