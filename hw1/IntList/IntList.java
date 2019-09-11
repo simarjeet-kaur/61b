@@ -189,11 +189,11 @@ public class IntList {
     static IntList sublist(IntList L, int start, int len) {
         IntList N = subTail(L, start);
         int i = 0;
-        IntList end = N.tail;
         while (i < len) {
-            end = N.tail;
+            M = N.tail;
+            i ++;
         }
-        end = null;
+        M = null;
         return N; // REPLACE WITH YOUR SOLUTION
 
     }
