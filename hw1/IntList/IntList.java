@@ -1,5 +1,7 @@
 import java.util.Formatter;
 
+
+
 /** Scheme-like pairs that can be used to form a list of integers.
  *  @author P. N. Hilfinger, with some modifications by Josh Hug
  */
@@ -138,11 +140,21 @@ public class IntList {
      *  elements of B.  May modify items of A. Don't use 'new'. */
 
     static IntList dcatenate(IntList A, IntList B) {
-        for (i = 0; i < B.length) {
-
+        if (A == null) //if A is none - keep changing A so that it is A.tail until you get none
+            return B; // you want to just return B
+        else {
+            A.tail = dcatenate(A.tail, B); //make A.tail equal to this - eventually A.tail will be
+            //none and you will make A.tail equal to B - B never changes because you want to add this
+            //to the end of the List
         }
-        return null; // REPLACE WITH YOUR CODE */
-
+//        {
+//            while (A != null);
+//             {
+//                 A = A.tail;
+//             }
+//        }
+//        A.tail = B;
+        return A; // REPLACE WITH YOUR CODE */
     }
 
     /* 2b. */
@@ -153,7 +165,13 @@ public class IntList {
       * This method should NOT modify the items in L. */
 
     static IntList subTail(IntList L, int start) {
-        return null; // REPLACE WITH YOUR CODE
+        int i = 0;
+        while (i < start)
+    {
+        L = L.tail;
+                i ++;
+    }
+        return L; // REPLACE WITH YOUR CODE
     }
 
 
@@ -169,7 +187,14 @@ public class IntList {
      *  that start and len are always >= 0.
      */
     static IntList sublist(IntList L, int start, int len) {
-        return null;  // REPLACE WITH YOUR SOLUTION
+        IntList N = subTail(L, start);
+        int i = 0;
+        IntList end = N.tail;
+        while (i < len) {
+            end = N.tail;
+        }
+        end = null;
+        return N; // REPLACE WITH YOUR SOLUTION
 
     }
 
