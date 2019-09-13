@@ -61,7 +61,7 @@ public class Controller {
                 return;
             case "TYPE":
                 setType(toInt(parts[1]), toInt(parts[2]),
-                        parts.length > 3 && parts[3].equals("FREE"));
+                        parts.length > 3 && parts[3].equals("free"));
                 return;
             case "SEED":
                 _puzzles.setSeed(toLong(parts[1]));
