@@ -46,7 +46,15 @@ public class IntDList {
      * @return The number of elements in this list.
      */
     public int size() {
-        return 0;   // Your code here
+        if (_front == null) {
+            return 0;
+        }
+        int s = 0;
+        while (_front._next != null) {
+            s ++;
+            _front = _front._next;
+        }
+        return s;   // Your code here
     }
 
     /**
@@ -60,13 +68,24 @@ public class IntDList {
      * @return The integer value at index i
      */
     public int get(int i) {
-        return 0;   // Your code here
+        int s = 0;
+        while (s < i) {
+            s ++;
+            _front = _front._next;
+        }
+        return _front._val;
+   // Your code here
     }
 
     /**
      * @param d value to be inserted in the front
      */
     public void insertFront(int d) {
+        if (_front == null && _back == null){
+            _front = new DNode (null, d, null);
+            _back = _front;
+        }
+        _front = new DNode(_back, d, _front._next);
         // Your code here
     }
 
@@ -74,6 +93,12 @@ public class IntDList {
      * @param d value to be inserted in the back
      */
     public void insertBack(int d) {
+        if (_front == null && _back == null){
+            _front = new DNode (null, d, null);
+            _back = _front;
+        }
+        _back = new DNode(_back, d, null);
+        _back._prev._next = _back;
         // Your code here
     }
 
@@ -83,8 +108,9 @@ public class IntDList {
      * @return the item that was deleted
      */
     public int deleteBack() {
-        return 0;   // Your code here
-
+        int last = _back._val;
+        _back = _back._prev;
+        return last;   // Your code here
     }
 
     /**

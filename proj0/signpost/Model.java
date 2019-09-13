@@ -123,13 +123,29 @@ class Model implements Iterable<Model.Sq> {
         //        1 - last appear; else throw IllegalArgumentException (see
         //        badArgs utility).
 
+        _solnNumToPlace = new Place[_width * _height + 1]; //start at 1 not at 0
+         for (int i = 0; i < _width; i ++) {
+            for (int j = 0; j < _height; j ++)
+                for (int k = 1; k < _width * _height; k ++)
+                    _solnNumToPlace[solution[i][j]] = pl(i, j);
+        }
+
+
         //Sq(int x0, int y0, int sequenceNum, boolean fixed, int dir, int group) {
 
         for (int i = 0; i < _width; i ++) {
             for (int j = 0; j < _height; j ++)
                 for (int k = 1; k < _width * _height; k ++)
-                    _board[i][j] = Sq(i, j, k, false, dirOf(i, j, ));
+                    if (solution[i][j] == _width * _height) {
+                        _board[i][j] = new Sq(i, j, solution[i][j], true, 0, 1);
+                    }
+
+                    else if (k == 1 || k == _width * _height)
+                        _board[i][j] = Sq(i, j, k, true, dirOf(i, j, ));
         }
+        //group is whether or not it's connected - for the first and last it will be 0 because
+        // they are solved, for the rest it'll be 1
+        //boolean is fixed true for first and last, for the rest it is false because they aren't fixed yet
 
         //_allSquares = a list of all the values in the board - use deepcopy maybe
 
@@ -144,25 +160,45 @@ class Model implements Iterable<Model.Sq> {
         //        that might connect to it.
         for (int i = 0; i < _width; i ++) {
             for (int j = 0; j < _height; j ++) {
-                _board[i][j]._successors = _board[i][j].successors();  /** should this be the same as the predecessors? */
+                _board[i][j]._successors = _allSuccessors[i][j][dirOf(i, j, )];  /** should this be the same as the predecessors? */
+                //you know all the sucessors for the sq are queen moves from the suare
+                //write something that given some location gives you all the queen moves from the
+                //square
                 _board[i][j]._predecessor = _board[i][j].predecessor(); /** list of all locations of cells that
                  it might connect to (something that is a queen move away in the direction of its arrow
                  and all the cells that might connect to it*/
                 //might error later, go back and check
             }
         }
-    //    _unconnected = last - 1;
+        _unconnected = last - 1;
         //find out what unconnected is later - why is it here?
     }
 
     /** Initializes a copy of MODEL. */
     Model(Model model) {
         _width = model.width(); _height = model.height();
+        //modifying instance variables
         _unconnected = model._unconnected;
         _solnNumToPlace = model._solnNumToPlace;
         _solution = model._solution;
         _usedGroups.addAll(model._usedGroups);
         _allSuccessors = model._allSuccessors;
+
+        //trying to get rid of a lot of the extra information in this model
+        //model.board is a pointer - can't make a copy of it, you want a copy, not a pointer
+        //do a foor loop through the previous board - for sq in model.board make a new square
+        //transfr previous variables to this new sq
+        //you want the board to consist of the sq - copy everything except the sq and selectively choose which
+        //variables to copy from one to another
+        //model.board/sq.x = previous.model.board.x
+        //go through every single sq (for loop) in the
+        //Model takes in a Model and model is old model
+        //what do you return? - save new model you create by
+        //setting attributes of your model to the model you're passing in
+        //assign instance variable to the new body you make
+        //use Sq(sq other) - it changes the square you have to make it how you want it without all the extra stuff
+        //to find predecessors look at all the other cells successors and if the cell is in the successors
+        //then it is a predecessor for that cell and add it to the list
 
         // FIXME: Initialize _board and _allSquares to contain copies of the
         //        the Sq objects in MODEL other than their _successor,
@@ -171,7 +207,7 @@ class Model implements Iterable<Model.Sq> {
 
         for (int i = 0; i < _width; i ++) {
             for (int j = 0; j < _height; j ++) {
-                _board[i][j] = model;
+                _board[i][j] = model[i][j];
                         _allSquares = model;
             }
         }
