@@ -23,5 +23,10 @@ public class BuggyIntDListSolutionTest {
         assertEquals("getBack after inserting 15 should be 15", 15, d.getBack());
         assertEquals("getFront after inserting 15 should be 5", 5, d.getFront());
 
+       // BuggyIntDListSolution d = new BuggyIntDListSolution(null);
+        //d.insertBack(5);
+        //assertEquals("getBack after inserting 5 should be 5", 5, d.getBack());
+        //assertEquals("getFront after inserting 5 should be 5", 5, d.getFront());
+
     }
 }

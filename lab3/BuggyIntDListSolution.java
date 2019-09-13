@@ -17,13 +17,17 @@ public class BuggyIntDListSolution extends IntDList {
      * @param d value to be inserted in the back
      */
     public void insertBack(int d) {
-        if (_front == null && _back == null){
-            _front = new DNode (null, d, null);
-            _back = _front;
+            if (_front == null && _back == null) {
+                _front = new DNode(null, d, null);
+                _back = _front;
+            } else {
+                DNode temporary = _back; //need to keep making new dnodes because you need to keep track of
+                //what is already there
+                _back = new DNode(temporary, d, null);
+                temporary._next = _back;
+                // Your code here
+            }
         }
-        _back = new DNode(_back, d, null);
-        _back._prev._next = _back;
-    }
 
     /**
      *

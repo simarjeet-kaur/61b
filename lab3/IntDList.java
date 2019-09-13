@@ -46,13 +46,11 @@ public class IntDList {
      * @return The number of elements in this list.
      */
     public int size() {
-        if (_front == null) {
-            return 0;
-        }
         int s = 0;
-        while (_front._next != null) {
+        DNode example = _front;
+        while (example != null) {
+            example = example._next;
             s ++;
-            _front = _front._next;
         }
         return s;   // Your code here
     }
@@ -68,24 +66,30 @@ public class IntDList {
      * @return The integer value at index i
      */
     public int get(int i) {
-        int s = 0;
-        while (s < i) {
-            s ++;
-            _front = _front._next;
+        DNode current;
+        if (i >= 0) {
+            current = _front;
+            while (i > 0) {
+                current = current._next;
+                i--;
+            }
+        } else {
+            current = _back;
+            while (i < -1) {
+                current = current._prev;
+                i++;
+            }
         }
-        return _front._val;
-   // Your code here
+        return current._val;   // Your code here
     }
 
     /**
      * @param d value to be inserted in the front
      */
     public void insertFront(int d) {
-        if (_front == null && _back == null){
-            _front = new DNode (null, d, null);
-            _back = _front;
-        }
-        _front = new DNode(_back, d, _front._next);
+        DNode example = _front;
+        _front = new DNode(null, d, example);
+        example._prev = _front;
         // Your code here
     }
 
@@ -93,26 +97,33 @@ public class IntDList {
      * @param d value to be inserted in the back
      */
     public void insertBack(int d) {
-        if (_front == null && _back == null){
-            _front = new DNode (null, d, null);
+        if (_front == null && _back == null) {
+            _front = new DNode(null, d, null);
             _back = _front;
+        } else {
+            DNode temporary = _back; //need to keep making new dnodes because you need to keep track of
+            //what is already there
+            _back = new DNode(temporary, d, null);
+            temporary._next = _back;
+            // Your code here
         }
-        _back = new DNode(_back, d, null);
-        _back._prev._next = _back;
-        // Your code here
     }
-
     /**
      * Removes the last item in the IntDList and returns it.
      *
      * @return the item that was deleted
      */
     public int deleteBack() {
-        int last = _back._val;
-        _back = _back._prev;
-        return last;   // Your code here
+        DNode temporary = _back;
+        if (_front == _back) {
+            _front = _back = null;
+        } else {
+            _back = temporary._prev; //use temporary, not the actual back because this messes it up
+            //you need to keep the back
+           // Your code here
+        }
+        return temporary._val;
     }
-
     /**
      * @return a string representation of the IntDList in the form
      * [] (empty list) or [1, 2], etc.
@@ -122,7 +133,17 @@ public class IntDList {
      * System.out.println(a); //prints ab
      */
     public String toString() {
-        return null;   // Your code here
+        String result = "["; //start with this, declare it as a string, keep adding to it later
+        DNode temporary = _front; //initialize tmemporary to be _front, then edit temporary
+        while (temporary != null) {
+            if (temporary._next == null) {
+                result += temporary._val; //add the value of temporary's front now, 
+            } else {
+                result = result + temporary._val + ", ";
+            }
+            temporary = temporary._next;
+        }
+        return result + "]";   // Your code here
     }
 
     /**
