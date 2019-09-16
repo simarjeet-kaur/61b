@@ -19,7 +19,7 @@ public class IntListList {
     /** Remaining elements of list. */
     public IntListList tail;
 
-    /** Return a new IntListList containing the ints in ARGS. */
+    /** Return a new IntListList containing the lists in ARGS. */
     public static IntListList list(IntList ... args) {
         IntListList sentinel = new IntListList(null, null);
 
