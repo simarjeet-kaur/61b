@@ -126,36 +126,37 @@ class Model implements Iterable<Model.Sq> {
         _solnNumToPlace = new Place[_width * _height + 1]; //start at 1 not at 0
          for (int i = 0; i < _width; i ++) {
             for (int j = 0; j < _height; j ++)
-                for (int k = 1; k < _width * _height; k ++)
+                //for (int k = 1; k < _width * _height; k ++)
                     _solnNumToPlace[solution[i][j]] = pl(i, j);
         }
 
 
         //Sq(int x0, int y0, int sequenceNum, boolean fixed, int dir, int group) {
-
+    _board = new Sq[_width][_height]; //make an initial board that is a square with width and height
         for (int i = 0; i < _width; i ++) {
             for (int j = 0; j < _height; j ++)
-                for (int k = 1; k < _width * _height; k ++)
+              //  for (int k = 1; k < _width * _height; k ++) - don't need this because this will be
+                //the solnnumtoplace list
                     if (solution[i][j] == _width * _height) {
                         _board[i][j] = new Sq(i, j, solution[i][j], true, 0, 0);
                     }
-                    else if (k == 1) {
-                        _board[i][j] = Sq(i, j, solution[i][j], true, Place.dirOf(i, j, i + 1, j + 1), 0);
-                        //why is this erroring
+                    else if (solution[i][j] == 1) {
+                        _board[i][j] = new Sq(i, j, solution[i][j], true, pl(i, j).dirOf(_solnNumToPlace[solution[i][j] + 1]), 0);
                         //something wrong with dirOf
                         //what is x0 and x1
+                        //solnNumToPlace = 1
                     }
                     else {
-                        _board[i][j] = Sq(i, j, solution[i][j], false, dirOf(i, j, i+1, j+1), 1);
+                        _board[i][j] = new Sq(i, j, solution[i][j], false, pl(i, j).dirOf(_solnNumToPlace[solution[i][j] + 1]), -1);
                     }
 
         }
 
-        _allSquares = new IntList _board;
+        //_allSquares = new IntList _board;
         //how to do allSquares
 
         //group is whether or not it's connected - for the first and last it will be 0 because
-        // they are solved, for the rest it'll be 1
+        // they are solved, for the rest it'll be -1
         //boolean is fixed true for first and last, for the rest it is false because they aren't fixed yet
 
         //_allSquares = a list of all the values in the board - use deepcopy maybe
@@ -167,20 +168,41 @@ class Model implements Iterable<Model.Sq> {
         //        that might connect to it.
         for (int i = 0; i < _width; i ++) {
             for (int j = 0; j < _height; j ++) {
-                _board[i][j]._successors = _allSuccessors[i][j][dirOf(i, j, i+1 j+1)];  /** should this be the same as the predecessors? */
-                //you know all the sucessors for the sq are queen moves from the suare
+                _board[i][j]._successors = _allSuccessors[i][j][arrowDirection(i, j)];
+                //update arrowdirection
+                //dirOf is the direction from one place to another
+                for (int i1 = 0; i1 < _width; i1 ++) {
+                    for (int j1 = 0; j1 < _height; j1 ++) {
+                        _board[i1][j1]._predecessors = new PlaceList();
+                        if (_board[i][j]._successors.contains(pl(i1, j1))) {
+                            _board[i1][j1]._predecessors.add(pl(i, j));
+                        }
+                    }
+                }
+                //
+
+                /** should this be the same as the predecessors? */
+                //you know all the successors for the sq are queen moves from the suare
                 //write something that given some location gives you all the queen moves from the
                 //square
                 //what gos in the x1 and y1 prts of dirof
-                _board[i][j]._predecessor = _board[i][j].predecessor(); /** list of all locations of cells that
+                //if pl(i, j)
+                //_board[i][j]._predecessor = _board[i][j].predecessor();
+                /** list of all locations of cells that
                  it might connect to (something that is a queen move away in the direction of its arrow
                  and all the cells that might connect to it*/
                 //might error later, go back and check
+
             }
         }
         _unconnected = last - 1;
-        //find out what unconnected is later - why is it here?
+        //tells you how many are unconnected - once it equal
+        //don't use this now, but use it later
+        //every time something is unconnected, you subtract one
     }
+
+    //for this, grab a place and look through all the i, j successors and see if this place is in any successor squares
+    //if it is, add this i, j to the predecessor list for place
 
     /** Initializes a copy of MODEL. */
     Model(Model model) {
@@ -215,23 +237,39 @@ class Model implements Iterable<Model.Sq> {
 
         for (int i = 0; i < _width; i ++) {
             for (int j = 0; j < _height; j ++) {
-                _board[i][j] = model[i][j];
-                        _allSquares = model;
+                _board[i][j] = new Sq(model._board[i][j]);
             }
         }
+
+       // for (int i = 0; i < _width; i ++) {
+       //     for (int j = 0; j < _height; j ++) {
+         //       _board[i][j] = model[i][j];
+        //                _allSquares = model;
+       //     }
+      //  }
 
 
         // FIXME: Fill in the _successor, _predecessor, and _head fields of the
         //        copied Sq objects.
+
+        //is this only for the solution
+
         for (int i = 0; i < _width; i ++) {
             for (int j = 0; j < _height; j ++) {
-                _board[i][j]._successor = _board[i][j]._successors();
-                _board[i][j]._predecessor = _board[i][j]._predecessor();
-                _allSquares = model[i][j];
+                if (_board[i][j]._predecessor)
+                _board[i][j]._predecessor = model._board[i][j]._predecessor;
             }
         }
 
-
+//        for (int i = 0; i < _width; i ++) {
+//     //       for (int j = 0; j < _height; j ++) {
+//                _board[i][j]._successor = _board[i][j]._successors();
+//                _board[i][j]._predecessor = _board[i][j]._predecessor();
+//                _allSquares = model[i][j];
+//            }
+//        }
+//
+//
     }
 
     /** Returns the width (number of columns of cells) of the board. */

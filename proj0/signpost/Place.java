@@ -57,7 +57,7 @@ class Place {
      *  will be an integer 1 <= dir <= 8 corresponding to the definitions
      *  in Model.java */
     static int dirOf(int x0, int y0, int x1, int y1) {
-        int dx = x1 < x0 ? -1 : x0 == x1 ? 0 : 1;\
+        int dx = x1 < x0 ? -1 : x0 == x1 ? 0 : 1;
         int dy = y1 < y0 ? -1 : y0 == y1 ? 0 : 1;
         if (dx == 0 && dy == 0) {
             return 0;
@@ -109,7 +109,7 @@ class Place {
                     //is a successor or not in this specific direction
                     //we are making a list of all the successors for each i, j in each direction
                     int a = i + dx(dir); //dx takes in a direction and returns the sq in that direction
-                    int b = j + dy(dir; //same thing but in y
+                    int b = j + dy(dir); //same thing but in y
                     //need to account for if this is still in the board or not, so we can add it depending on
                     //how it relates to the width and height of the board
                     //starting a and b at the immediate sq coming after, use a while loop to keep going until
