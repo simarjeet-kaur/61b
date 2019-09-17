@@ -137,7 +137,7 @@ class Model implements Iterable<Model.Sq> {
             for (int j = 0; j < _height; j ++)
                 for (int k = 1; k < _width * _height; k ++)
                     if (solution[i][j] == _width * _height) {
-                        _board[i][j] = new Sq(i, j, solution[i][j], true, 0, 1);
+                        _board[i][j] = new Sq(i, j, solution[i][j], true, dirOf(), 1);
                     }
 
                     else if (k == 1 || k == _width * _height)

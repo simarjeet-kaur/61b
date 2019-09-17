@@ -137,13 +137,15 @@ public class IntDList {
         DNode temporary = _front; //initialize tmemporary to be _front, then edit temporary
         while (temporary != null) {
             if (temporary._next == null) {
-                result += temporary._val; //add the value of temporary's front now, 
+                result += temporary._val; //add the value of temporary's front now,
             } else {
-                result = result + temporary._val + ", ";
+                result = result + temporary._val + ", "; //add a comma and the next value, continue the
+                //while loops
             }
             temporary = temporary._next;
+            //change temporary - move it down the list
         }
-        return result + "]";   // Your code here
+        return result + "]";   // finish result with a close bracket
     }
 
     /**
