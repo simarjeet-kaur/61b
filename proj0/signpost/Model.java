@@ -158,7 +158,12 @@ class Model implements Iterable<Model.Sq> {
         //group is whether or not it's connected - for the first and last it will be 0 because
         // they are solved, for the rest it'll be -1
         //boolean is fixed true for first and last, for the rest it is false because they aren't fixed yet
-
+        _allSquares = new ArrayList();
+        for (int i = 0; i < _width; i ++) {
+            for (int j = 0; j < _height; j ++) {
+                _allSquares.add(_board[i][j]);
+            }
+        }
         //_allSquares = a list of all the values in the board - use deepcopy maybe
 
         // FIXME: For each Sq object on the board, set its _successors and
@@ -248,18 +253,39 @@ class Model implements Iterable<Model.Sq> {
        //     }
       //  }
 
+        _solnNumToPlace = new Place[_width * _height + 1]; //start at 1 not at 0
+        for (int i = 0; i < _width; i ++) {
+            for (int j = 0; j < _height; j ++)
+                _solnNumToPlace[_solution[i][j]] = pl(i, j);
+        }
+
+
 
         // FIXME: Fill in the _successor, _predecessor, and _head fields of the
         //        copied Sq objects.
+        //_successor is only one - it'll be whatever is already set
+        //this is what is happening in the middle of the board
+        //if there is no successor, it's null
+        //otherwise you're looking at what was already
 
         //is this only for the solution
 
         for (int i = 0; i < _width; i ++) {
-            for (int j = 0; j < _height; j ++) {
-                if (_board[i][j]._predecessor)
-                _board[i][j]._predecessor = model._board[i][j]._predecessor;
-            }
-        }
+            for (int j = 0; j < _height; j++) {
+//                if (_board[i][j]._predecessor == null) {
+//                    model._board[i][j]._predecessor = null;
+//                    if (_board[i][j]._successor == null) {
+//                        model._board[i][j]._successor = null;
+//
+//                    }
+                            _board[i][j]._predecessor = model._board[i][j].predecessor();
+                            _board[i][j]._successor = model._board[i][j].successor();
+                            _board[i][j]._head = model._board[i][j].head();
+                    }
+                }
+        
+        //a square had reference to a successor
+
 
 //        for (int i = 0; i < _width; i ++) {
 //     //       for (int j = 0; j < _height; j ++) {
@@ -326,7 +352,7 @@ class Model implements Iterable<Model.Sq> {
 
         // FIXME: Initialize _allSuccSquares so that _allSuccSquares[x][y][dir]
         //        is a list of all the Places on the board that are a queen
-        //        move in direction DIR from (x, y) and _allSuccSquares[x][y][0]
+        //        move in direction DIR from (x, y) and _allSuccessors[x][y][0]
         //        is a list of all Places that are one queen move from in
         //        direction from (x, y).
     }
@@ -653,11 +679,13 @@ class Model implements Iterable<Model.Sq> {
          */
         boolean connectable(Sq s1) {
             /** needs to return T/F based on whether or not it is connection to S1*/
+
             // FIXME
             return true;
         }
 
-        /** Connect me to S1, if we are connectable; otherwise do nothing.
+        /** Connect me to S1, if we are connectable; (chang the pred and succ)
+         *  otherwise do nothing.
          *  Returns true iff we were connectable.  Assumes S1 is in the proper
          *  arrow direction from me. */
         boolean connect(Sq s1) {
@@ -670,10 +698,10 @@ class Model implements Iterable<Model.Sq> {
 
             // FIXME: Connect me to my successor:
             //        + Set my _successor field and S1's _predecessor field.
-            //s1._successor = s1.predecessor()
+            //change successor and pred fields for what you want to check
+            //s1._successor = s1.predecessor() to change it
             //        + If I have a number, number all my successors
             //          accordingly (if needed).
-            //what does this mean?
             //        + If S1 is numbered, number me and my predecessors
             //          accordingly (if needed).
             //change their numbers?
