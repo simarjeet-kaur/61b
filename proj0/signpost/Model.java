@@ -137,21 +137,28 @@ class Model implements Iterable<Model.Sq> {
             for (int j = 0; j < _height; j ++)
                 for (int k = 1; k < _width * _height; k ++)
                     if (solution[i][j] == _width * _height) {
-                        _board[i][j] = new Sq(i, j, solution[i][j], true, dirOf(), 1);
+                        _board[i][j] = new Sq(i, j, solution[i][j], true, 0, 0);
+                    }
+                    else if (k == 1) {
+                        _board[i][j] = Sq(i, j, solution[i][j], true, Place.dirOf(i, j, i + 1, j + 1), 0);
+                        //why is this erroring
+                        //something wrong with dirOf
+                        //what is x0 and x1
+                    }
+                    else {
+                        _board[i][j] = Sq(i, j, solution[i][j], false, dirOf(i, j, i+1, j+1), 1);
                     }
 
-                    else if (k == 1 || k == _width * _height)
-                        _board[i][j] = Sq(i, j, k, true, dirOf(i, j, ));
         }
+
+        _allSquares = new IntList _board;
+        //how to do allSquares
+
         //group is whether or not it's connected - for the first and last it will be 0 because
         // they are solved, for the rest it'll be 1
         //boolean is fixed true for first and last, for the rest it is false because they aren't fixed yet
 
         //_allSquares = a list of all the values in the board - use deepcopy maybe
-
-            //what is last?
-            //where is _solution?
-            //right setup?
 
         // FIXME: For each Sq object on the board, set its _successors and
         //        _predecessor lists to the lists of locations of all cells
@@ -160,10 +167,11 @@ class Model implements Iterable<Model.Sq> {
         //        that might connect to it.
         for (int i = 0; i < _width; i ++) {
             for (int j = 0; j < _height; j ++) {
-                _board[i][j]._successors = _allSuccessors[i][j][dirOf(i, j, )];  /** should this be the same as the predecessors? */
+                _board[i][j]._successors = _allSuccessors[i][j][dirOf(i, j, i+1 j+1)];  /** should this be the same as the predecessors? */
                 //you know all the sucessors for the sq are queen moves from the suare
                 //write something that given some location gives you all the queen moves from the
                 //square
+                //what gos in the x1 and y1 prts of dirof
                 _board[i][j]._predecessor = _board[i][j].predecessor(); /** list of all locations of cells that
                  it might connect to (something that is a queen move away in the direction of its arrow
                  and all the cells that might connect to it*/
@@ -719,7 +727,7 @@ class Model implements Iterable<Model.Sq> {
         private int _group;
         /** True iff assigned a fixed sequence number. */
         private boolean _hasFixedNum;
-        /** The current imputed or fixed sequence number,
+        /** The current imputed or fixed sequenxce number,
          *  numbering from 1, or 0 if there currently is none. */
         private int _sequenceNum;
         /** The arrow direction. The possible values are 0 (for unset),

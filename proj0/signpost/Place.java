@@ -57,7 +57,7 @@ class Place {
      *  will be an integer 1 <= dir <= 8 corresponding to the definitions
      *  in Model.java */
     static int dirOf(int x0, int y0, int x1, int y1) {
-        int dx = x1 < x0 ? -1 : x0 == x1 ? 0 : 1;
+        int dx = x1 < x0 ? -1 : x0 == x1 ? 0 : 1;\
         int dy = y1 < y0 ? -1 : y0 == y1 ? 0 : 1;
         if (dx == 0 && dy == 0) {
             return 0;
@@ -78,13 +78,12 @@ class Place {
 
     /** If (x1, y1) is the adjacent square in  direction DIR from me, returns
      *  x1 - x.  */
-    //what is x1 y1
     static int dx(int dir) {
         return DX[dir];
     }
 
     /** If (x1, y1) is the adjacent square in  direction DIR from me, returns
-     *  y1 - y. ??? */
+     *  y1 - y.  */
     static int dy(int dir) {
         return DY[dir];
     }
@@ -98,6 +97,36 @@ class Place {
         PlaceList[][][] M = new PlaceList[width][height][9];
         int lim = Math.max(width, height);
         // FIXME
+        //always start with a double for loop because you'll be going through the whole board
+        for (int i = 0; i < width; i ++){
+            for (int j = 0; j < height; j ++) {
+                M[i][j][0] = new PlaceList(); //make a new placelist with dir 0 where it is  alist of all places
+                //in any direction, that is why dirOf is 0 here in the third []
+                for (int dir = 1; dir <= 8; dir ++) {
+                    //keep adding one to dir - check all the directions for that one place i, j
+                    M[i][j][dir] = new PlaceList();
+                    //now M[i][j][in this dir] is a new placelist that we can add to depending on if the new place
+                    //is a successor or not in this specific direction
+                    //we are making a list of all the successors for each i, j in each direction
+                    int a = i + dx(dir); //dx takes in a direction and returns the sq in that direction
+                    int b = j + dy(dir; //same thing but in y
+                    //need to account for if this is still in the board or not, so we can add it depending on
+                    //how it relates to the width and height of the board
+                    //starting a and b at the immediate sq coming after, use a while loop to keep going until
+                    //you reach a point outside of the board
+                    while (a < width && b < height && a > 0 && b > 0) {
+                        M[i][j][dir].add(pl(a, b));
+                        M[i][j][0].add(pl(a, b)); // should have all values anyway
+                        //need to increment b and a somehow - do this by changing them to be the next successor cell
+                        //essentially now you are finding the successor in that specific direction for the
+                        //successor cell
+                        a += dx(dir);
+                        b += dy(dir);
+                    }
+
+                }
+            }
+        }
         return M;
     }
 
