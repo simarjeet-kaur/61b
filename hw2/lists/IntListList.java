@@ -68,7 +68,7 @@ public class IntListList {
             for (i = 0, p = this; i < A.length && p != null;
                  i += 1, p = p.tail) {
                 if ((p.head == null && A[i].length != 0)
-                    || !p.head.equals(A[i])) {
+                    || (p.head != null && !p.head.equals(A[i]))) {
                     return false;
                 }
             }
