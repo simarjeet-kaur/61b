@@ -149,6 +149,11 @@ class Place {
         return String.format("(%d, %d)", x, y);
     }
 
+    public static void main(String[] args) {
+        PlaceList[][][] solution = Place.successorCells(3, 3);
+        System.out.println();
+    }
+
     /** X displacement of adjacent squares, indexed by direction. */
     static final int[] DX = { 0, 1, 1, 1, 0, -1, -1, -1, 0 };
 

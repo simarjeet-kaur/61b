@@ -239,10 +239,12 @@ class Model implements Iterable<Model.Sq> {
         //        the Sq objects in MODEL other than their _successor,
         //        _predecessor, and _head fields (which can't necessarily be
         //        set until all the necessary Sq objects are first created.)
-
+        _allSquares = ; //do we need to reinitialize allSquares
+        _board = new Sq[_width][_height];
         for (int i = 0; i < _width; i ++) {
             for (int j = 0; j < _height; j ++) {
                 _board[i][j] = new Sq(model._board[i][j]);
+                _allSquares.add(_board[i][j]); //new Sq(model._board[i][j])
             }
         }
 
@@ -285,6 +287,7 @@ class Model implements Iterable<Model.Sq> {
                 }
 
         //a square had reference to a successor
+        //is this right? too simple?
 
 
 //        for (int i = 0; i < _width; i ++) {
@@ -349,12 +352,21 @@ class Model implements Iterable<Model.Sq> {
         _usedGroups.clear();
         // FIXME: Initialize _board to contain nulls and clear all objects from
         //        _allSquares.
+        _board = new Sq[_width][_height];
+        for (int i = 0; i < _width; i ++) {
+            for (int j = 0; j < _height; j ++) {
+                _board[i][j] = null;
+            }
+        }
+        _allSquares.clear();
+
 
         // FIXME: Initialize _allSuccSquares so that _allSuccSquares[x][y][dir]
         //        is a list of all the Places on the board that are a queen
         //        move in direction DIR from (x, y) and _allSuccessors[x][y][0]
         //        is a list of all Places that are one queen move from in
         //        direction from (x, y).
+        
     }
 
     /** Remove all connections and non-fixed sequence numbers. */

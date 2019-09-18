@@ -23,11 +23,24 @@ class Lists {
         IntList edit = temp.head; //this will be a normal list instead because L is a regular list
         //you don't want to edit temp directly, so you need to pick it out again and get the pointer
         IntListList end = temp;
-        while(edit.tail != null) //check here now iterating through the L that was passed in, seeing if it's empty
+        while(edit.tail != null) { //check here now iterating through the L that was passed in, seeing if it's empty
             //while it's not empty, add something to the temporary list (after L)
             //you need to do these steps because you NEED an intlistlist, can't make an empty intListList
-            if (edit.head >=)
+            if (edit.head >= edit.tail.head) {
+                //checking if the beginning of the list is greater than or equal to the next
+                //if it is, you want to start a new list
+                end.tail = new IntListList(edit.tail, null); //new IntListList because there could be sub lists
+                //now update end to be the rest of temp
+                //edit becomes the rest of the head of end, which is the rest of L
+                edit = end.tail.head;
+                //end looks at the rest of the temp in order to look at the first element of the
+                end = temp.tail;
+            } else {
+                edit = edit.tail;
+                //just keep looking through it
+            }
 
-        return null;
+        }
+        return temp;
     }
 }
