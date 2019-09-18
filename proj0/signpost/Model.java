@@ -283,7 +283,7 @@ class Model implements Iterable<Model.Sq> {
                             _board[i][j]._head = model._board[i][j].head();
                     }
                 }
-        
+
         //a square had reference to a successor
 
 

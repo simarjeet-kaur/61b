@@ -17,7 +17,17 @@ class Lists {
      *  Destructive: creates no new IntList items, and may modify the
      *  original list pointed to by L. */
     static IntListList naturalRuns(IntList L) {
-        /* *Replace this body with the solution. */
+        IntListList temp = new IntListList(L, null); //makes a new intlistlist that starts with one element, that is L
+        //because you can only edit the original list pointed to by L, use what we made above and edit that L
+        //grab L by using .head
+        IntList edit = temp.head; //this will be a normal list instead because L is a regular list
+        //you don't want to edit temp directly, so you need to pick it out again and get the pointer
+        IntListList end = temp;
+        while(edit.tail != null) //check here now iterating through the L that was passed in, seeing if it's empty
+            //while it's not empty, add something to the temporary list (after L)
+            //you need to do these steps because you NEED an intlistlist, can't make an empty intListList
+            if (edit.head >=)
+
         return null;
     }
 }
