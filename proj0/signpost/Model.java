@@ -125,10 +125,18 @@ class Model implements Iterable<Model.Sq> {
 
         _solnNumToPlace = new Place[_width * _height + 1]; //start at 1 not at 0
          for (int i = 0; i < _width; i ++) {
-            for (int j = 0; j < _height; j ++)
-                //for (int k = 1; k < _width * _height; k ++)
-                    _solnNumToPlace[solution[i][j]] = pl(i, j);
-        }
+             for (int j = 0; j < _height; j++) {
+                     _solnNumToPlace[solution[i][j]] = pl(i, j);
+                 }
+          }
+//
+//        _solnNumToPlace = new Place[last + 1]; //want to start at 1, not 0
+//        for (int i = 0; i < _width; i ++) {
+//            for (int j = 0; j < _height; j ++) {
+//                //for (int k = 0; k < last + 1; k ++) {
+//                _solnNumToPlace[solution[i][j]] = _board[i][j].pl;
+//            }
+//        }
 
 
         //Sq(int x0, int y0, int sequenceNum, boolean fixed, int dir, int group) {
@@ -137,17 +145,17 @@ class Model implements Iterable<Model.Sq> {
             for (int j = 0; j < _height; j ++)
               //  for (int k = 1; k < _width * _height; k ++) - don't need this because this will be
                 //the solnnumtoplace list
-                    if (solution[i][j] == _width * _height) {
-                        _board[i][j] = new Sq(i, j, solution[i][j], true, 0, 0);
+                    if (solution[i][j] == last) {
+                        _board[i][j] = new Sq(i, j, last, true, 0, 0);
                     }
                     else if (solution[i][j] == 1) {
-                        _board[i][j] = new Sq(i, j, solution[i][j], true, pl(i, j).dirOf(_solnNumToPlace[solution[i][j] + 1]), 0);
+                        _board[i][j] = new Sq(i, j, 1, true, pl(i, j).dirOf(_solnNumToPlace[solution[i][j] + 1]), 0);
                         //something wrong with dirOf
                         //what is x0 and x1
                         //solnNumToPlace = 1
                     }
                     else {
-                        _board[i][j] = new Sq(i, j, solution[i][j], false, pl(i, j).dirOf(_solnNumToPlace[solution[i][j] + 1]), -1);
+                        _board[i][j] = new Sq(i, j, 0, false, pl(i, j).dirOf(_solnNumToPlace[solution[i][j] + 1]), -1);
                     }
 
         }
@@ -164,6 +172,8 @@ class Model implements Iterable<Model.Sq> {
                 _allSquares.add(_board[i][j]);
             }
         }
+
+
         //_allSquares = a list of all the values in the board - use deepcopy maybe
 
         // FIXME: For each Sq object on the board, set its _successors and
@@ -239,8 +249,8 @@ class Model implements Iterable<Model.Sq> {
         //        the Sq objects in MODEL other than their _successor,
         //        _predecessor, and _head fields (which can't necessarily be
         //        set until all the necessary Sq objects are first created.)
-        _allSquares = ; //do we need to reinitialize allSquares
-        _board = new Sq[_width][_height];
+        _allSquares = new ArrayList(); //do we need to reinitialize allSquares
+        _board = new Sq[_width][_height]; //2D array of width and height with Sq inside
         for (int i = 0; i < _width; i ++) {
             for (int j = 0; j < _height; j ++) {
                 _board[i][j] = new Sq(model._board[i][j]);
@@ -261,8 +271,6 @@ class Model implements Iterable<Model.Sq> {
                 _solnNumToPlace[_solution[i][j]] = pl(i, j);
         }
 
-
-
         // FIXME: Fill in the _successor, _predecessor, and _head fields of the
         //        copied Sq objects.
         //_successor is only one - it'll be whatever is already set
@@ -274,20 +282,31 @@ class Model implements Iterable<Model.Sq> {
 
         for (int i = 0; i < _width; i ++) {
             for (int j = 0; j < _height; j++) {
-//                if (_board[i][j]._predecessor == null) {
-//                    model._board[i][j]._predecessor = null;
-//                    if (_board[i][j]._successor == null) {
-//                        model._board[i][j]._successor = null;
-//
-//                    }
-                            _board[i][j]._predecessor = model._board[i][j].predecessor();
-                            _board[i][j]._successor = model._board[i][j].successor();
-                            _board[i][j]._head = model._board[i][j].head();
-                    }
+
+                if (model._board[i][j]._predecessor != null) {
+                    _board[i][j]._predecessor = get((model._board[i][j].predecessor().pl.x), (model._board[i][j].predecessor().pl.y));
+                    //_board[i][j]._successor = get((model._board[i][j].successor().pl.x), (model._board[i][j].successor().pl.y));
+                } else {
+                    _board[i][j]._predecessor = null;
+                   // _board[i][j]._successor = get((model._board[i][j].successor().pl.x), (model._board[i][j].successor().pl.y));
+                   // _board[i][j]._head = get((model._board[i][j].head().pl.x), (model._board[i][j].head().pl.y));
+                }
+                if (model._board[i][j]._successor != null) {
+                   // _board[i][j]._predecessor = get((model._board[i][j].predecessor().pl.x), (model._board[i][j].predecessor().pl.y));
+                    _board[i][j]._successor = get((model._board[i][j].successor().pl.x), (model._board[i][j].successor().pl.y));
+                   // _board[i][j]._head = get((model._board[i][j].head().pl.x), (model._board[i][j].head().pl.y));
                 }
 
-        //a square had reference to a successor
-        //is this right? too simple?
+                else {
+                    //_board[i][j]._predecessor = get((model._board[i][j].predecessor().pl.x), (model._board[i][j].predecessor().pl.y));
+                    _board[i][j]._successor = null;
+                }
+                _board[i][j]._head = get((model._board[i][j].head().pl.x), (model._board[i][j].head().pl.y));
+                //get is working on this.board so you don't need to work on anything else
+                //it gives you the square of the coords you're looking for
+
+            }
+        }
 
 
 //        for (int i = 0; i < _width; i ++) {
@@ -353,20 +372,23 @@ class Model implements Iterable<Model.Sq> {
         // FIXME: Initialize _board to contain nulls and clear all objects from
         //        _allSquares.
         _board = new Sq[_width][_height];
-        for (int i = 0; i < _width; i ++) {
-            for (int j = 0; j < _height; j ++) {
-                _board[i][j] = null;
-            }
-        }
+//        for (int i = 0; i < _width; i ++) {
+//            for (int j = 0; j < _height; j ++) {
+//                _board[i][j] = null;
+//            }
+//        }
         _allSquares.clear();
 
-
-        // FIXME: Initialize _allSuccSquares so that _allSuccSquares[x][y][dir]
+        // FIXME: Initialize _allSuccessors so that _allSuccessors[x][y][dir]
         //        is a list of all the Places on the board that are a queen
         //        move in direction DIR from (x, y) and _allSuccessors[x][y][0]
         //        is a list of all Places that are one queen move from in
         //        direction from (x, y).
-        
+
+        //use this with
+
+        _allSuccessors = Place.successorCells(_width, _height);
+
     }
 
     /** Remove all connections and non-fixed sequence numbers. */
@@ -425,7 +447,26 @@ class Model implements Iterable<Model.Sq> {
     /** Sets the numbers in my squares to the solution from which I was
      *  last initialized by the constructor. */
     void solve() {
-        // FIXME
+        //Sq(int x0, int y0, int sequenceNum, boolean fixed, int dir, int group) {
+//        int last = _width * _height;
+//        for (int i = 0; i < _width; i ++) {
+//            for (int j = 0; j < _height; j ++)
+//                //  for (int k = 1; k < _width * _height; k ++) - don't need this because this will be
+//                //the solnnumtoplace list
+//                if (i * j == last) {
+//                    _board[i][j] = new Sq(i, j, last, true, 0, 0);
+//                }
+//                else if (solution[i][j] == 1) {
+//                    _board[i][j] = new Sq(i, j, 1, true,
+//                            pl(i, j).dirOf(_solnNumToPlace[solution[i][j] + 1]), 0);
+//                }
+//                else {
+//                    _board[i][j] = new Sq(i, j, 0, false, pl(i, j).dirOf(_solnNumToPlace[solution[i][j] + 1]), -1);
+//                }
+
+
+        //initialize the board with all the solution numbers
+
         _unconnected = 0;
     }
 

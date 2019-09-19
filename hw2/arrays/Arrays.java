@@ -14,7 +14,16 @@ class Arrays {
      *  the elements of B. */
     static int[] catenate(int[] A, int[] B) {
         /* *Replace this body with the solution. */
-        return null;
+        int[] C = new int[A.length + B.length];
+        for (int i = 0; i < A.length; i++) {
+            C[i] = A[i];
+        }
+        for (int j = A.length; j < A.length + B.length; j++) {
+            for (int j1 = 0; j1 < B.length; j1++) {
+                C[j] = B[j1];
+            }
+        }
+        return C;
     }
 
     /** Returns the array formed by removing LEN items from A,
