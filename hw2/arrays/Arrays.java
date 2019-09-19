@@ -19,10 +19,8 @@ class Arrays {
             C[i] = A[i];
         }
         for (int j = A.length; j < A.length + B.length; j++) {
-            for (int j1 = 0; j1 < B.length; j1++) {
-                C[j] = B[j1];
+                C[j] = B[j - A.length];
             }
-        }
         return C;
     }
 
