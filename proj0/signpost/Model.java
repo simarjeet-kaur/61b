@@ -447,24 +447,13 @@ class Model implements Iterable<Model.Sq> {
     /** Sets the numbers in my squares to the solution from which I was
      *  last initialized by the constructor. */
     void solve() {
-        //Sq(int x0, int y0, int sequenceNum, boolean fixed, int dir, int group) {
-//        int last = _width * _height;
-//        for (int i = 0; i < _width; i ++) {
-//            for (int j = 0; j < _height; j ++)
-//                //  for (int k = 1; k < _width * _height; k ++) - don't need this because this will be
-//                //the solnnumtoplace list
-//                if (i * j == last) {
-//                    _board[i][j] = new Sq(i, j, last, true, 0, 0);
-//                }
-//                else if (solution[i][j] == 1) {
-//                    _board[i][j] = new Sq(i, j, 1, true,
-//                            pl(i, j).dirOf(_solnNumToPlace[solution[i][j] + 1]), 0);
-//                }
-//                else {
-//                    _board[i][j] = new Sq(i, j, 0, false, pl(i, j).dirOf(_solnNumToPlace[solution[i][j] + 1]), -1);
-//                }
-
-
+       //set each sequence num to the solution
+        //solving the board
+        for (int i = 0; i < _width; i ++) {
+            for (int j = 0; j < _height; j ++) {
+                _board[i][j]._sequenceNum = _solution[i][j];
+            }
+        }
         //initialize the board with all the solution numbers
 
         _unconnected = 0;
@@ -473,10 +462,14 @@ class Model implements Iterable<Model.Sq> {
     /** Return the direction from cell (X, Y) in the solution to its
      *  successor, or 0 if it has none. */
     private int arrowDirection(int x, int y) {
-        int seq0 = _solution[x][y];
+        int seq0 = _solution[x][y]; //seq0 is the number this is in the sequence
+        //if you add one to this, you will get it's successor
         // FIXME
         /** need an if else statement here
          * return direction using code from above*/
+        if (_board[x][y]._successor != null) {
+            return dirOf(x, y, _board[x][y]._successor.x, _board[x][y]._successor.y);
+        }
         return 0;
     }
 
@@ -722,20 +715,35 @@ class Model implements Iterable<Model.Sq> {
         }
 
         /** Returns true iff I may be connected to cell S1, that is:
-         *  + S1 is in the correct direction from me.
+         *  + S1 is in the correct direction from me. √
          *  + S1 does not have a current predecessor, and I do not have a
-         *    current successor.
+         *    current successor. √
          *  + If S1 and I both have sequence numbers, then mine is
-         *    sequenceNum() == S1.sequenceNum() - 1.
+         *    sequenceNum() == S1.sequenceNum() - 1. √
          *  + If neither S1 nor I have sequence numbers, then we are not part
          *    of the same connected sequence.
          */
+        //is using this the right idea?
+        //
         boolean connectable(Sq s1) {
             /** needs to return T/F based on whether or not it is connection to S1*/
+            if (this._successors.contains(s1) && //check this direction thing
+                    s1._predecessor == null &&
+                    this._successor == null &&) {
+                if (this.sequenceNum() > 0 &&
+                        s1.sequenceNum() > 0) {
+                    if (this.sequenceNum() == s1.sequenceNum() - 1) {
+                        return true;
+                }
+                    if (this.sequenceNum() == 0 && s1.sequenceNum() == 0) {
+                        return true;
+                    }
+            }
 
-            // FIXME
-            return true;
-        }
+            } else {
+                return false;
+            }
+    }
 
         /** Connect me to S1, if we are connectable; (chang the pred and succ)
          *  otherwise do nothing.
@@ -746,28 +754,46 @@ class Model implements Iterable<Model.Sq> {
                 return false;
             }
             int sgroup = s1.group();
-
             _unconnected -= 1;
+            this._group = sgroup;
+            this._successor = s1;
+            s1._predecessor = this;
+            //Sq sqs1 = s1;
+            Sq sqthis = this;
+            if (this._sequenceNum != 0) {
+                while (sqthis != null) {
+                    sqthis._sequenceNum = this._sequenceNum + 1;
+                    sqthis = sqthis._successor;
+                }
+            } else {
 
+            }
+            if (s1._sequenceNum != 0) {
+                while (sqthis != null) {
+                    sqthis._sequenceNum = this._sequenceNum - 1;
+                    sqthis = sqthis._predecessor;
+                }
+
+                if (this._sequenceNum == 0 && s1._sequenceNum == 0) {
+                    this._head._group = joinGroups(this._group, s1._group);
+                }
+            }
+            while (sqthis != null) {
+                sqthis._head = this._head;
+                sqthis = sqthis._successor;
+            }
             // FIXME: Connect me to my successor:
-            //        + Set my _successor field and S1's _predecessor field.
-            //change successor and pred fields for what you want to check
-            //s1._successor = s1.predecessor() to change it
+            //        + Set my _successor field and S1's _predecessor field. √
             //        + If I have a number, number all my successors
-            //          accordingly (if needed).
+            //          accordingly (if needed). -- this is the first if statement --
             //        + If S1 is numbered, number me and my predecessors
-            //          accordingly (if needed).
-            //change their numbers?
-            //        + Set the _head fields of my successors to my _head.
-            //s1.successors()._head = s1._head
+            //          accordingly (if needed). -- second if statement --
+            //        + Set the _head fields of my successors to my _head. -- outside while --
             //        + If either of this or S1 used to be unnumbered and is
             //          now numbered, release its group of whichever was
-            //          unnumbered, so that it can be reused.
-            //???
+            //          unnumbered, so that it can be reused. -- confused --
             //        + If both this and S1 are unnumbered, set the group of
-            //          my head to the result of joining the two groups.
-            //if else statement
-            //returns true at the end
+            //          my head to the result of joining the two groups. -- 2nd else --
 
             return true;
         }
@@ -781,12 +807,17 @@ class Model implements Iterable<Model.Sq> {
             _unconnected += 1;
             next._predecessor = _successor = null;
             if (_sequenceNum == 0) {
+                if (both this and next are now one elem groups) {
+                    this._group = -1;
+                    next._group = -1;
+                } if (this is a one elem group) {
+                    this._group = -1;
+                } if (next is a one elem group) {
+
+                }
                 // FIXME: If both this and next are now one-element groups,
                 //        release their former group and set both group
                 //        numbers to -1.
-                //disconnect them from their group (see above)
-                //group numbers become -1 - find what grabs the group number and set this
-                //equal to -1
                 //        Otherwise, if either is now a one-element group, set
                 //        its group number to -1 without releasing the group
                 //        number.
