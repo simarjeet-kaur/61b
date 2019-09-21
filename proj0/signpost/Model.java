@@ -729,7 +729,7 @@ class Model implements Iterable<Model.Sq> {
             /** needs to return T/F based on whether or not it is connection to S1*/
             if (this._successors.contains(s1) && //check this direction thing
                     s1._predecessor == null &&
-                    this._successor == null &&) {
+                    this._successor == null) { //finish this
                 if (this.sequenceNum() > 0 &&
                         s1.sequenceNum() > 0) {
                     if (this.sequenceNum() == s1.sequenceNum() - 1) {
@@ -756,44 +756,69 @@ class Model implements Iterable<Model.Sq> {
             int sgroup = s1.group();
             _unconnected -= 1;
             this._group = sgroup;
+
+            //        + Set my _successor field and S1's _predecessor field.
+
             this._successor = s1;
             s1._predecessor = this;
             //Sq sqs1 = s1;
             Sq sqthis = this;
+
+            //        + If I have a number, number all my successors
+            //          accordingly (if needed).
+
             if (this._sequenceNum != 0) {
                 while (sqthis != null) {
-                    sqthis._sequenceNum = this._sequenceNum + 1;
+                    sqthis._successor._sequenceNum = this._sequenceNum + 1;
                     sqthis = sqthis._successor;
                 }
-            } else {
-
             }
+
+            //        + If S1 is numbered, number me and my predecessors
+            //          accordingly (if needed).
+
             if (s1._sequenceNum != 0) {
-                while (sqthis != null) {
-                    sqthis._sequenceNum = this._sequenceNum - 1;
+                while (sqthis != null) { // FIXME look into this - Jackson
+                    sqthis._predecessor._sequenceNum = sqthis._sequenceNum - 1;
                     sqthis = sqthis._predecessor;
                 }
-
-                if (this._sequenceNum == 0 && s1._sequenceNum == 0) {
-                    this._head._group = joinGroups(this._group, s1._group);
-                }
             }
+
+            // + Set the _head fields of my successors to my _head.
+
             while (sqthis != null) {
-                sqthis._head = this._head;
+                sqthis._successor._head = this._head;
                 sqthis = sqthis._successor;
             }
+
+            //        + If either of this or S1 used to be unnumbered and is
+            //          now numbered, release its group of whichever was
+            //          unnumbered, so that it can be reused.
+
+            if (s1.sequenceNum() != 0) {
+                releaseGroup(s1._group);
+                releaseGroup(this._group);
+            }
+
+            //        + If both this and S1 are unnumbered, set the group of
+            //          my head to the result of joining the two groups.
+
+            if (this._sequenceNum == 0 && s1._sequenceNum == 0) {
+                this._head._group = joinGroups(this._group, s1._group);
+            }
+
             // FIXME: Connect me to my successor:
             //        + Set my _successor field and S1's _predecessor field. √
             //        + If I have a number, number all my successors
-            //          accordingly (if needed). -- this is the first if statement --
+            //          accordingly (if needed). √
             //        + If S1 is numbered, number me and my predecessors
-            //          accordingly (if needed). -- second if statement --
-            //        + Set the _head fields of my successors to my _head. -- outside while --
+            //          accordingly (if needed). √
+            //        + Set the _head fields of my successors to my _head. √
             //        + If either of this or S1 used to be unnumbered and is
             //          now numbered, release its group of whichever was
-            //          unnumbered, so that it can be reused. -- confused --
+            //          unnumbered, so that it can be reused. √
             //        + If both this and S1 are unnumbered, set the group of
-            //          my head to the result of joining the two groups. -- 2nd else --
+            //          my head to the result of joining the two groups. √
 
             return true;
         }
@@ -801,44 +826,58 @@ class Model implements Iterable<Model.Sq> {
         /** Disconnect me from my current successor, if any. */
         void disconnect() {
             Sq next = _successor;
+            Sq sqthis = this;
             if (next == null) {
                 return;
             }
             _unconnected += 1;
             next._predecessor = _successor = null;
-            if (_sequenceNum == 0) {
-                if (both this and next are now one elem groups) {
-                    this._group = -1;
-                    next._group = -1;
-                } if (this is a one elem group) {
-                    this._group = -1;
-                } if (next is a one elem group) {
-
-                }
+            if (this.predecessor() == null && this.successor() == null && next.predecessor() == null && next.successor() == null) {
+                releaseGroup(this._group);
+                releaseGroup(next._group);
+                this._group = -1;
+                next._group = -1;
+            }
+            if (this.predecessor() == null && this.successor() == null &&  next.predecessor() != null && next.successor() != null)
+            {
+                this._group = -1;
+            }
+            if (next.predecessor() == null && next.successor() == null &&  this.predecessor() != null && this.successor() != null) {
+                next._group = -1;
+            }
                 // FIXME: If both this and next are now one-element groups,
                 //        release their former group and set both group
-                //        numbers to -1.
+                //        numbers to -1. √
                 //        Otherwise, if either is now a one-element group, set
                 //        its group number to -1 without releasing the group
-                //        number.
-                //if it is now a one-elem group, make its group number -1 without releasing
-                //the group number
+                //        number. √
                 //        Otherwise, the group has been split into two multi-
-                //        element groups.  Create a new group for next.
-                //else it now has two multi element groups - create a new group for the next
-            } else {
+                //        element groups.  Create a new group for next. √
+             else { //should this just be else? or another if?
+                next._group = newGroup();
+            }
                 // FIXME: If neither this nor any square in its group that
                 //        precedes it has a fixed sequence number, set all
                 //        their sequence numbers to 0 and create a new group
                 //        for them if this has a current predecessor (other
                 //        set group to -1).
-                //
+            int counter = 0;
+            while (!sqthis.hasFixedNum()) {
+                sqthis = sqthis._predecessor; //how to check
+                counter ++;
+                }
+
+            if (counter == # of preds) {
+                for (int i = 0; i < counter; i++) {
+                    sqthis._sequenceNum = 0;
+                }
+            }
+
                 // FIXME: If neither next nor any square in its group that
                 //        follows it has a fixed sequence number, set all
                 //        their sequence numbers to 0 and create a new
                 //        group for them if next has a current successor
                 //        (otherwise set next's group to -1.)
-            }
             // FIXME: Set the _head of next and all squares in its group to
             //        next.
         }

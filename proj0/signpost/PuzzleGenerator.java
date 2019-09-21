@@ -169,6 +169,8 @@ class PuzzleGenerator implements PuzzleSource {
                 //        numbered and one of these connectable predecessors
                 //        is numbered, then set nFound to 1 and found
                 //        to that numbered predecessor.
+                //should we use a while loop here again and test connectable on it
+                //
                 if (nFound == 0) {
                     return 0;
                 } else if (nFound == 1) {
