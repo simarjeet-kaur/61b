@@ -792,8 +792,9 @@ class Model implements Iterable<Model.Sq> {
                     } else {
                         _head._group = -1;
                     }
+                    //FIXME: should this be in the while loop
                 }
-             else {
+                    else {
                 new_pointer._group = -1;
                 }
 
@@ -803,28 +804,34 @@ class Model implements Iterable<Model.Sq> {
                 //        group for them if next has a current successor
                 //        (otherwise set next's group to -1.)
             Sq pointer_s = this;
-            while (pointer_s._successor != null && !pointer_s.hasFixedNum()) {
+            while (pointer_s != null && !pointer_s.hasFixedNum()) {
                 pointer_s = pointer_s._successor;
             }
             //you stop when you're null
             //you're looping until im null or there is a fixed number
             //
             //int new_group_number = newGroup();
-            if (pointer_s._predecessor == null) {
                 Sq new_pointer_s = this;
+            if (pointer_s._predecessor == null) {
                 while (new_pointer_s != null) {
                     new_pointer_s._sequenceNum = 0;
-                    new_pointer_s._group = newGroup();
+                    //new_pointer_s._group = newGroup();
                     new_pointer_s = new_pointer_s._successor;
                 }
-               // new_pointer_s._group = -1;
+                if (this._successor != null) {
+                    _head._group = newGroup();
+                } else {
+                    _head._group = -1;
+                }
+                //FIXME: should this be in the while loop, which this? them?
+                // new_pointer_s._group = -1;
             }
             }
 
             // FIXME: Set the _head of next and all squares in its group to
             //        next.
             Sq head_pointer = next;
-            while (head_pointer._successor != null) {
+            while (head_pointer != null) {
                 head_pointer._head = next;
                 head_pointer = head_pointer._successor;
             }
