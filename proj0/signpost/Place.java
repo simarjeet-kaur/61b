@@ -108,20 +108,20 @@ class Place {
                     //now M[i][j][in this dir] is a new placelist that we can add to depending on if the new place
                     //is a successor or not in this specific direction
                     //we are making a list of all the successors for each i, j in each direction
-                    int a = i + dx(dir); //dx takes in a direction and returns the sq in that direction
-                    int b = j + dy(dir); //same thing but in y
+                    int x = i + dx(dir); //dx takes in a direction and returns the sq in that direction
+                    int y = j + dy(dir); //same thing but in y
                     //need to account for if this is still in the board or not, so we can add it depending on
                     //how it relates to the width and height of the board
                     //starting a and b at the immediate sq coming after, use a while loop to keep going until
                     //you reach a point outside of the board
-                    while (a < width && b < height && a > 0 && b > 0) {
-                        M[i][j][dir].add(pl(a, b));
-                        M[i][j][0].add(pl(a, b)); // should have all values anyway
+                    while (x < width && y < height && x >= 0 && y >= 0) {
+                        M[i][j][dir].add(pl(x, y));
+                        M[i][j][0].add(pl(x, y)); // should have all values anyway
                         //need to increment b and a somehow - do this by changing them to be the next successor cell
                         //essentially now you are finding the successor in that specific direction for the
                         //successor cell
-                        a += dx(dir);
-                        b += dy(dir);
+                        x += dx(dir);
+                        y += dy(dir);
                     }
 
                 }

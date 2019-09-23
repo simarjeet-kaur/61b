@@ -138,6 +138,75 @@ class PuzzleGenerator implements PuzzleSource {
                 //        squares.  If sq is numbered and can be connected to
                 //        a numbered square, then set nFound to 1 and found
                 //        to that numbered square.
+
+                PlaceList successors = sq.successors();
+
+                for (int i = 0; i < successors.size(); i ++) {
+                    Place successor = successors.get(i);
+                    if (sq.connectable(model.get(successor.x, successor.y))) {
+                        nFound += 1;
+                    }
+                    found = model.get(successor.x, successor.y);
+                }
+
+
+                if (sq.sequenceNum() != 0) {
+                    for (Place place : successors) {
+                        if (model.get(place.x, place.y).sequenceNum() != 0) {
+                            if (sq.connectable(model.get(place.x, place.y))) {
+                                nFound = 1;
+                                found = model.get(place.x, place.y);
+                            }
+                        }
+                    }
+                }
+
+                //if you have a square and want to make forward connections, you need to look
+                //at successors - you can't make connections to what it doesn't have a possibility to connect to
+                //get those by doing ._successors - this is specific to a cell, so you need to use this, not allsuccessors
+                //to make forward connections,
+                //if we know what square and the directin, we set nfound to the number of squares that it can be connected to in
+                //the right direction
+                //how do we make sure nfound is only being set to the number of things in the right way? use connectable
+                //nfound should be the number of squares in the direction sq.direction
+                //we are either counting it or not counting based on if it is connectable or not
+                //if you are allowed to connect, add it - you get your total from that
+                //also check sequence number -
+                //highest it can be is _successors - nfound can only increment every time we have a successor, but that's
+                //not what we do because sometimes it's not connectable
+                //if we only have one we can conect
+                //go through successors, if you can connect, increase nfound
+                //doesn't matter which it's connected to, can just be whichever it's connectable to (that's all the statement is saying)
+                //now that we know the number of squares it can be connected to, you just connect it to one, doesn't matter whcih one
+                //setting found to any one of these squares
+                //FIXME: If sq is numbered and can be connected to
+                // a numbered square, then set nFound to 1 and found
+                // to that numbered square.
+
+
+               // if (sq.sequenceNum() != 0 && sq.successor() == null); {
+                 //   nFound = 1;
+                   // found =
+               // }
+
+                //next sentence
+                //say you have some sort of board -
+                //only connectable if the sequence num is sequential
+                //check if they are connectable and the sequence num, if sequence num is +1, then don't
+                //keep looking
+                //nfound should be 1 because there is one best option
+                //before you have three options, now you only have one
+                //if they both have sequence numbers, then
+                //fixed means its for sure set (1, 16) are definitely set
+                //sequence num might come from picking the number after 1 to a block, that is now set to 2
+                //as soon as you connect something, it gets a sequence num, but you can always change it, it is
+                //unfixed
+                //when does it become fixed? -
+                //think about autoconnect and disconnect methods too, but don't need to use it
+                //just need to change nfound and found and just check the sequencenums and if it's connectable
+                //get throughout successors to see if it's connectable
+                //pick last unless there is one
+
                 if (nFound == 0) {
                     return 0;
                 } else if (nFound == 1) {
@@ -171,6 +240,28 @@ class PuzzleGenerator implements PuzzleSource {
                 //        to that numbered predecessor.
                 //should we use a while loop here again and test connectable on it
                 //
+                PlaceList predecessors = sq.predecessors();
+
+                for (int i = 0; i < predecessors.size(); i ++) {
+                    Place predecessor = predecessors.get(i);
+                    if (sq.connectable(model.get(predecessor.x, predecessor.y))) {
+                        nFound += 1;
+                    }
+                    found = model.get(predecessor.x, predecessor.y);
+                }
+
+                if (sq.sequenceNum() != 0) {
+                    for (Place place : predecessors) {
+                        if (model.get(place.x, place.y).sequenceNum() != 0) {
+                            if (sq.connectable(model.get(place.x, place.y))) {
+                                nFound = 1;
+                                found = model.get(place.x, place.y);
+                            }
+                        }
+                    }
+                }
+
+
                 if (nFound == 0) {
                     return 0;
                 } else if (nFound == 1) {
