@@ -561,18 +561,7 @@ class Model implements Iterable<Model.Sq> {
                     && this.successor() == null) {
                 if (this.sequenceNum() > 0
                         && s1.sequenceNum() > 0) {
-                    if (this.sequenceNum() == s1.sequenceNum() - 1) {
-                        return true;
-                    } else if (s1.sequenceNum() == 0
-                            && this.sequenceNum() == 0) {
-                        if (s1._head == this._head) {
-                            return false;
-                        } else {
-                            return true;
-                        }
-                    } else {
-                        return true;
-                    }
+                    return true;
                 }
             }
             return false;
@@ -616,6 +605,21 @@ class Model implements Iterable<Model.Sq> {
             return true;
         }
 
+        /**
+         * @param pointer extraFunction takes this in
+         * */
+        private void extraFunction(Sq pointer) {
+            while (pointer != null) {
+                pointer._sequenceNum = 0;
+                pointer = pointer._predecessor;
+            }
+            if (this._predecessor != null) {
+                _head._group = newGroup();
+            } else {
+                _head._group = -1;
+            }
+        }
+
         /** Disconnect me from my current successor, if any. */
         void disconnect() {
             Sq next = _successor;
@@ -626,9 +630,9 @@ class Model implements Iterable<Model.Sq> {
                 _unconnected += 1;
                 next._predecessor = _successor = null;
                 if (this.predecessor() == null
-                        && this.successors() == null
-                        && next.predecessor() == null
-                        && next.successor() == null) {
+                    && this.successors() == null
+                    && next.predecessor() == null
+                    && next.successor() == null) {
                     releaseGroup(this._group);
                     releaseGroup(next._group);
                     this._group = -1;
@@ -655,15 +659,7 @@ class Model implements Iterable<Model.Sq> {
                 }
                 Sq newPointer = this;
                 if (pointer == null) {
-                    while (newPointer != null) {
-                        newPointer._sequenceNum = 0;
-                        newPointer = newPointer._predecessor;
-                    }
-                    if (this._predecessor != null) {
-                        _head._group = newGroup();
-                    } else {
-                        _head._group = -1;
-                    }
+                    extraFunction(newPointer);
                 } else {
                     newPointer._group = -1;
                 }
