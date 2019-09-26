@@ -22,7 +22,15 @@ public class EveryOtherWord {
       */
 
     public static Iterable<String> everyOtherWord(List<String> L) {
-        return null; // FIXME: REPLACE THIS LINE WITH YOUR CODE
+        List<String> s;
+        s = new ArrayList<String>();
+        int i = 0;
+        for (String word : L) {
+            if (i++ % 2 == 0) {
+                s.add(word);
+            }
+        }
+        return s;
     }
 
     /** Tests whether or not your everyOtherWord method works correctly. */
