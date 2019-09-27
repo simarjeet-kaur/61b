@@ -57,7 +57,7 @@ class Permutation {
     }
 
     /** Return the result of applying the inverse of this permutation to C. */
-    int invert(char c) {
+    char invert(char c) {
         return 0;  // FIXME
     }
 
