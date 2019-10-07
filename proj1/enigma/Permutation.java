@@ -21,6 +21,17 @@ class Permutation {
     /** Add the cycle c0->c1->...->cm->c0 to the permutation, where CYCLE is
      *  c0c1...cm. */
     private void addCycle(String cycle) {
+        //adding to the instance of the permutation
+        //what data structure are you using to represent cycles - multiple ways to do this
+        //want to represent how these cycles enter the java program - you could do array lists
+        //could use a list of strings (a lazy approach)
+        //cycle itself is the letters you're using
+        //"ABCD", "EF"
+        //how would you check if Z maps to anything?
+            //check every single letter with a double for loop (discussion)
+        //could store these as lists
+            //ABCD in a list
+
         // FIXME
     }
 
@@ -34,6 +45,9 @@ class Permutation {
     }
 
     /** Returns the size of the alphabet I permute. */
+    //you already have your private alphabet
+    //alphabet already has a size method that returns the size of it
+    //use that probably?
     int size() {
         return 0; // FIXME
     }

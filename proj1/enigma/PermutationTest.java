@@ -43,6 +43,16 @@ public class PermutationTest {
         }
     }
 
+    /* testing the Permutation::invert method */
+    @Test
+    public void testInvertChar() {
+        Permutation p = new Permutation("(PNH) (ABDFIKLZYXW) (JC)", new CharacterRange('A', 'Z'));
+        //b will map to A because of the () given
+        assertEquals(p.invert('B'), 'A');
+        //g is not mapped to anything so it will return itself
+        assertEquals(p.invert('G'), 'G');
+    }
+
     /* ***** TESTS ***** */
 
     @Test
