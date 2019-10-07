@@ -6,7 +6,7 @@ import java.util.Set;
 
 /** An alphabet of encodable characters.  Provides a mapping from characters
  *  to and from indices into the alphabet.
- *  @author
+ *  @author Simarjeet Kaur
  */
 class Alphabet {
 
