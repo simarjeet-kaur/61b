@@ -87,13 +87,13 @@ class Alphabet {
     /** Returns character number INDEX in the alphabet, where
      *  0 <= INDEX < size(). */
     char toChar(int index) {
-        return (char) ('A' + index); // FIXME
+        return _alphabet.charAt(index); // fixme
     }
 
     /** Returns the index of character preprocess(CH), which must be in
      *  the alphabet. This is the inverse of toChar(). */
     int toInt(char ch) {
-        return ch - 'A'; // FIXME
+        return _alphabet.indexOf(ch); // FIXME
     }
 
 }
