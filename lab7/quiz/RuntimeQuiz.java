@@ -14,14 +14,14 @@ public class RuntimeQuiz {
     }
 
     /**
-     * Fill out the missing Asymptotic and Runtime values according to the
+     * Fill out the missing Runtime values according to the
      * asymptotic behavior of each method. Give the corresponding tightest
      * big omega, big O, and big theta runtimes in terms on N where N is 
      * the length of the input array.
      */
-    public static Runtime f1_omega_runtime = Runtime.LINEAR;
-    public static Runtime f1_o_runtime = Runtime.LINEAR;
-    public static Runtime f1_theta_runtime = Runtime.LINEAR;
+    public static Runtime f1_omega_runtime;
+    public static Runtime f1_o_runtime;
+    public static Runtime f1_theta_runtime;
     public void f1(int[] array) {
         for (int i = 0; i < array.length; i++) {
             for (int j = 0; j < Integer.MAX_VALUE; j++) {
