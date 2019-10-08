@@ -2,7 +2,6 @@ package enigma;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /** An alphabet of encodable characters.  Provides a mapping from characters
  *  to and from indices into the alphabet.
@@ -36,8 +35,8 @@ class Alphabet {
             //this index
     //ex: alphabet is ABCDE - how do you check for duplicates
         //
-    String _alphabet;
-    int _length;
+    String _letters;
+    //int _length;
 
 
     /** A new alphabet containing CHARS.  Character number #k has index
@@ -60,7 +59,7 @@ class Alphabet {
             if (map.get(c) > 1) {
                 throw new EnigmaException("Duplicates Found");
             } else {
-                _alphabet = chars;
+                _letters = chars;
             }
         }
         }
@@ -75,25 +74,25 @@ class Alphabet {
 
     /** Returns the size of the alphabet. */
     int size() {
-        return _alphabet.length(); // fixme
+        return _letters.length(); // fixme
     }
 
     /** Returns true if preprocess(CH) is in this alphabet. */
     boolean contains(char ch) {
-        return _alphabet.indexOf(ch) > 0;
+        return _letters.indexOf(ch) > 0;
                 //'A' <= ch && ch <= 'Z'; // fixme
     }
 
     /** Returns character number INDEX in the alphabet, where
      *  0 <= INDEX < size(). */
     char toChar(int index) {
-        return _alphabet.charAt(index); // fixme
+        return _letters.charAt(index); // fixme
     }
 
     /** Returns the index of character preprocess(CH), which must be in
      *  the alphabet. This is the inverse of toChar(). */
     int toInt(char ch) {
-        return _alphabet.indexOf(ch); // FIXME
+        return _letters.indexOf(ch); // FIXME
     }
 
 }

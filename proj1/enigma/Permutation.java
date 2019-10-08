@@ -1,5 +1,7 @@
 package enigma;
 
+import java.util.ArrayList;
+
 import static enigma.EnigmaException.*;
 
 /** Represents a permutation of a range of integers starting at 0 corresponding
@@ -13,8 +15,20 @@ class Permutation {
      *  is interpreted as a permutation in cycle notation.  Characters in the
      *  alphabet that are not included in any cycle map to themselves.
      *  Whitespace is ignored. */
+
+    String _cycles;
+
     Permutation(String cycles, Alphabet alphabet) {
         _alphabet = alphabet;
+        //splitting cycles when there is a ) - how to do this properly?
+        //trying to make each permutation in the format ccc, without ()
+        String [] _cycles = cycles.split(")");
+        ArrayList<String> _listOfCycles = new ArrayList<>();
+
+        for (String cycle : _cycles) {
+            _listOfCycles.addCycle(cycle);
+        }
+
         // FIXME
     }
 
@@ -31,7 +45,9 @@ class Permutation {
             //check every single letter with a double for loop (discussion)
         //could store these as lists
             //ABCD in a list
+        for (String cycle : _cycles) {
 
+        }
         // FIXME
     }
 
@@ -49,12 +65,15 @@ class Permutation {
     //alphabet already has a size method that returns the size of it
     //use that probably?
     int size() {
-        return 0; // FIXME
+        return _alphabet.size(); // fixme
+        //is this right?
     }
 
     /** Return the result of applying this permutation to P modulo the
      *  alphabet size. */
     int permute(int p) {
+        int pMod = wrap(p);
+
         return 0;  // FIXME
     }
 
