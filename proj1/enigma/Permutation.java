@@ -1,6 +1,7 @@
 package enigma;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static enigma.EnigmaException.*;
 
@@ -17,24 +18,22 @@ class Permutation {
      *  Whitespace is ignored. */
 
     String _cycles;
+    ArrayList<String> _listOfCycles;
+    HashMap<String, Integer> _permutedAlphabet;
 
     Permutation(String cycles, Alphabet alphabet) {
-        _alphabet = alphabet;
-        //splitting cycles when there is a ) - how to do this properly?
-        //trying to make each permutation in the format ccc, without ()
-//        String [] _cycles = cycles.split(")");
-//        ArrayList<String> _listOfCycles = new ArrayList<>();
-//
-//        for (String cycle : _cycles) {
-//            _listOfCycles.addCycle(cycle);
-//        }
-
+        _cycles = cycles;
+        _listOfCycles = new ArrayList<>();
+        _permutedAlphabet = new HashMap<>();
         // FIXME
     }
 
     /** Add the cycle c0->c1->...->cm->c0 to the permutation, where CYCLE is
      *  c0c1...cm. */
     private void addCycle(String cycle) {
+
+
+
         //adding to the instance of the permutation
         //what data structure are you using to represent cycles - multiple ways to do this
         //want to represent how these cycles enter the java program - you could do array lists
@@ -62,19 +61,20 @@ class Permutation {
     }
 
     /** Returns the size of the alphabet I permute. */
-    //you already have your private alphabet
-    //alphabet already has a size method that returns the size of it
-    //use that probably?
     int size() {
         return _alphabet.size(); // fixme
-        //is this right?
     }
 
     /** Return the result of applying this permutation to P modulo the
      *  alphabet size. */
     int permute(int p) {
+        //use cycle.length() mod the permutation length to find out which index to
+        String[] _splitCycles = new String[];
+        _splitCycles = splitCycles(_cycles);
         int pMod = wrap(p);
-
+        for (int i = 0; i < _alphabet.size(); i ++) {
+            _permutedAlphabet.put(_alphabet.toChar(i), i);
+        }
         return 0;  // FIXME
     }
 
@@ -103,11 +103,20 @@ class Permutation {
     /** Return true iff this permutation is a derangement (i.e., a
      *  permutation for which no value maps to itself). */
     boolean derangement() {
+        //check _permutedAlphabet if any index matches up
+        for (key : _permutedAlphabet)
         return true;  // FIXME
     }
 
     /** Alphabet of this permutation. */
     private Alphabet _alphabet;
+
+    /**split cycles here */
+    String[] splitCycles(String cycles) {
+        return cycles.split(")");
+
+        //fixme
+    }
 
     // FIXME: ADDITIONAL FIELDS HERE, AS NEEDED
 }

@@ -36,12 +36,9 @@ class Alphabet {
     //ex: alphabet is ABCDE - how do you check for duplicates
         //
     String _letters;
-    //int _length;
-
 
     /** A new alphabet containing CHARS.  Character number #k has index
      *  K (numbering from 0). No character may be duplicated. */
-
 
     Alphabet(String chars) {
         char[] newChars = chars.toCharArray();
@@ -79,7 +76,7 @@ class Alphabet {
 
     /** Returns true if preprocess(CH) is in this alphabet. */
     boolean contains(char ch) {
-        return _letters.indexOf(ch) > 0;
+        return _letters.indexOf(ch) >= 0;
                 //'A' <= ch && ch <= 'Z'; // fixme
     }
 
@@ -92,7 +89,7 @@ class Alphabet {
     /** Returns the index of character preprocess(CH), which must be in
      *  the alphabet. This is the inverse of toChar(). */
     int toInt(char ch) {
-        return _letters.indexOf(ch); // FIXME
+        return _letters.indexOf(ch); // fixme
     }
 
 }
