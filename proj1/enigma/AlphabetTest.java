@@ -1,0 +1,27 @@
+package enigma;
+
+import static org.junit.Assert.assertEquals;
+
+public class AlphabetTest {
+
+    //FIXME need help with this
+
+        Alphabet test = new Alphabet("ABCD");
+
+        public void testSize() {
+            assertEquals(test.size(), 4);
+        }
+        public void testContains() {
+            assertEquals(test.contains('A'), true);
+            assertEquals(test.contains('Z'), false);
+        }
+        public void testToChar() {
+            assertEquals(test.toChar(0), 'A');
+            assertEquals(test.toChar(2), 'C');
+        }
+        public void testToInt() {
+            assertEquals(test.toInt('A'), 0);
+            assertEquals(test.toInt('C'), 2);
+        }
+
+    }

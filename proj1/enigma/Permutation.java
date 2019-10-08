@@ -22,12 +22,12 @@ class Permutation {
         _alphabet = alphabet;
         //splitting cycles when there is a ) - how to do this properly?
         //trying to make each permutation in the format ccc, without ()
-        String [] _cycles = cycles.split(")");
-        ArrayList<String> _listOfCycles = new ArrayList<>();
-
-        for (String cycle : _cycles) {
-            _listOfCycles.addCycle(cycle);
-        }
+//        String [] _cycles = cycles.split(")");
+//        ArrayList<String> _listOfCycles = new ArrayList<>();
+//
+//        for (String cycle : _cycles) {
+//            _listOfCycles.addCycle(cycle);
+//        }
 
         // FIXME
     }
@@ -45,9 +45,10 @@ class Permutation {
             //check every single letter with a double for loop (discussion)
         //could store these as lists
             //ABCD in a list
-        for (String cycle : _cycles) {
 
-        }
+//        for (String cycle : _cycles) {
+//
+//        }
         // FIXME
     }
 
