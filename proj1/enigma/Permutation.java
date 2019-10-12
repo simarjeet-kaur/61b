@@ -31,9 +31,7 @@ class Permutation {
     /** Add the cycle c0->c1->...->cm->c0 to the permutation, where CYCLE is
      *  c0c1...cm. */
     private void addCycle(String cycle) {
-
-
-
+        _listOfCycles.add(splitCycles(cycle)[0]);
         //adding to the instance of the permutation
         //what data structure are you using to represent cycles - multiple ways to do this
         //want to represent how these cycles enter the java program - you could do array lists
@@ -48,7 +46,7 @@ class Permutation {
 //        for (String cycle : _cycles) {
 //
 //        }
-        // FIXME
+        // fixme
     }
 
     /** Return the value of P modulo the size of this permutation. */
@@ -69,11 +67,11 @@ class Permutation {
      *  alphabet size. */
     int permute(int p) {
         //use cycle.length() mod the permutation length to find out which index to
-        String[] _splitCycles = new String[];
-        _splitCycles = splitCycles(_cycles);
+        //want to make a hashmap of the key: old index and value: new letter
         int pMod = wrap(p);
         for (int i = 0; i < _alphabet.size(); i ++) {
-            _permutedAlphabet.put(_alphabet.toChar(i), i);
+            _permutedAlphabet.put(findPermute(_alphabet.toChar(i)), i);
+            //see wy this is acting weird
         }
         return 0;  // FIXME
     }
@@ -104,7 +102,7 @@ class Permutation {
      *  permutation for which no value maps to itself). */
     boolean derangement() {
         //check _permutedAlphabet if any index matches up
-        for (key : _permutedAlphabet)
+       // for (key : _permutedAlphabet)
         return true;  // FIXME
     }
 
@@ -113,9 +111,37 @@ class Permutation {
 
     /**split cycles here */
     String[] splitCycles(String cycles) {
-        return cycles.split(")");
-
+        cycles.replace(")(", " ");
+        cycles.replace(") (", " ");
+        cycles.replace("(", "");
+        cycles.replace(")", "");
+        return cycles.split(" ");
         //fixme
+    }
+
+    /** finding the cycle that char c is in, returns itself as a string if it's not in any cycle */
+    String findCycle(char c) {
+        for (int i = 0; i < splitCycles(_cycles).length; i ++) {
+            if (splitCycles(_cycles)[i].indexOf(c) > -1) {
+                return splitCycles(_cycles)[i];
+            }
+        }
+        return String.valueOf(c);
+    }
+
+    /** finding the right mapped letter from the permutation */
+    String findPermute(char c) {
+        if (findCycle(c).length() == 1) {
+            return findCycle(c);
+        }
+        
+        for (int i = 0; i < findCycle(c).length(); i ++) {
+
+//
+//
+        }
+//        //use mod
+        return 'ab';
     }
 
     // FIXME: ADDITIONAL FIELDS HERE, AS NEEDED

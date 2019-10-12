@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
 import static enigma.TestUtils.*;
 
 /** The suite of all JUnit tests for the Permutation class.
- *  @author
+ *  @author Simarjeet Kaur
  */
 public class PermutationTest {
 
@@ -52,6 +52,26 @@ public class PermutationTest {
         //assertEquals(p.invert('B'), 'A');
             //g is not mapped to anything so it will return itself
         //assertEquals(p.invert('G'), 'G');
+    }
+
+    @Test
+    public void testSplitCycles() {
+        String testCycles1 = "(ABCD) (EFG) (HIJK) (LMNOP)";
+        String testCycles2 = "(QRS)(TUV) (WXY)";
+        assertEquals(perm.splitCycles(testCycles1)[0], "ABCD");
+        assertEquals(perm.splitCycles(testCycles2)[0], "QRS");
+    }
+
+    @Test
+    public void testFindCycle() {
+        String testCycles1 = "(ABCD) (EFG) (HIJK) (LMNOP)";
+        String [] testCycles1Array = new String[4];
+        testCycles1Array[0] = "ABCD";
+        testCycles1Array[1] = "EFG";
+        testCycles1Array[2] = "HIJK";
+        testCycles1Array[3] = "LMNOP";
+        assertEquals(perm.findCycle('A'), "ABCD");
+        assertEquals(perm.findCycle('P'), "LMNOP");
     }
 
     /* ***** TESTS ***** */
