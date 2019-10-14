@@ -134,7 +134,7 @@ class Permutation {
         if (findCycle(c).length() == 1) {
             return findCycle(c);
         }
-        
+
         for (int i = 0; i < findCycle(c).length(); i ++) {
 
 //
