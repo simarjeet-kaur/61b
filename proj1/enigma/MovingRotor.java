@@ -13,16 +13,20 @@ class MovingRotor extends Rotor {
      *  alphabet).
      */
     String _notches;
+    Alphabet _rotorAlphabet;
+
+    //what is the point of notches? if it is at a notch does this change the setting?
 
     MovingRotor(String name, Permutation perm, String notches) {
         super(name, perm);
         _notches = notches;
+        _rotorAlphabet = new Alphabet();
     }
 
     @Override
     boolean atNotch() {
         for (int i = 0; i < _notches.length(); i++) {
-            if (_setting == _notches.charAt(i)) {
+            if (_rotorAlphabet.toChar(_setting) == _notches.charAt(i)) {
                 return true;
             }
         }
