@@ -12,7 +12,6 @@ class FixedRotor extends Rotor {
     FixedRotor(String name, Permutation perm) {
         super(name, perm);
     }
-
-    // FIXME ?
+    //fixme
     //might not need anything
 }

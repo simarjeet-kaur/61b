@@ -135,13 +135,13 @@ class Permutation {
             return findCycle(c);
         }
 
-        for (int i = 0; i < findCycle(c).length(); i ++) {
+     //   for (int i = 0; i < findCycle(c).length(); i ++) {
 
 //
 //
-        }
+       // }
 //        //use mod
-        return 'ab';
+        return null;
     }
 
     // FIXME: ADDITIONAL FIELDS HERE, AS NEEDED
