@@ -12,6 +12,7 @@ class Rotor {
     Rotor(String name, Permutation perm) {
         _name = name;
         _permutation = perm;
+        _setting = 0; //is this right? can we assume it starts at 0?
         // FIXME: add more fields as needed
     }
 
@@ -47,7 +48,6 @@ class Rotor {
 
     /** Return my current setting. */
     int setting() {
-        _setting = findSetting();
         return _setting; // fixme
     }
 
@@ -59,7 +59,7 @@ class Rotor {
 
     /** Set setting() to character CPOSN. */
     void set(char cposn) {
-        _setting = cposn;
+        _setting = alphabet().toInt(cposn);
         // fixme
     }
 
@@ -96,12 +96,6 @@ class Rotor {
     /** The permutation implemented by this rotor in its 0 position. */
     private Permutation _permutation;
 
-    // FIXME: add a method that figures out the setting here
-
-    public int findSetting() {
-        //do something with the rotor here
-        //what does setting mean?
-        return 0;
-    }
+    // FIXME: ??? maybe not
 
 }
