@@ -12,20 +12,30 @@ class MovingRotor extends Rotor {
      *  The Rotor is initally in its 0 setting (first character of its
      *  alphabet).
      */
+    String _notches;
+
     MovingRotor(String name, Permutation perm, String notches) {
         super(name, perm);
-        String _notches = notches;
+        _notches = notches;
     }
 
-    // FIXME?
+    @Override
+    boolean atNotch() {
+        for (int i = 0; i < _notches.length(); i++) {
+            if (_setting == _notches.charAt(i)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     @Override
     void advance() {
-        if (atNotch()) { //check something about notches too
+        if (atNotch()) { 
             _setting++;
         }
     }
 
-    // FIXME: ADDITIONAL FIELDS HERE, AS NEEDED
+    // fixme: addl fields as needed?
 
 }
