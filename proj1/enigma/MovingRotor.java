@@ -5,6 +5,9 @@ import static enigma.EnigmaException.*;
 /** Class that represents a rotating rotor in the enigma machine.
  *  @author Simarjeet Kaur
  */
+
+//finished??
+
 class MovingRotor extends Rotor {
 
     /** A rotor named NAME whose permutation in its default setting is
@@ -35,9 +38,7 @@ class MovingRotor extends Rotor {
 
     @Override
     void advance() {
-        if (atNotch()) {
             _setting++;
-        }
     }
 
     // fixme: addl fields as needed?

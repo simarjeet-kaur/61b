@@ -19,6 +19,7 @@ public class PermutationTest {
     /* ***** TESTING UTILITIES ***** */
 
     private Permutation perm;
+    private Permutation perm2;
     private String alpha = UPPER_STRING;
 
     /** Check that perm has an alphabet whose size is that of
@@ -46,32 +47,71 @@ public class PermutationTest {
     /* testing the Permutation::invert method */
     @Test
     public void testInvertChar() {
-        //FIXME get rid of // below
-        //Permutation p = new Permutation("(PNH) (ABDFIKLZYXW) (JC)", new CharacterRange('A', 'Z'));
-            //b will map to A because of the () given
-        //assertEquals(p.invert('B'), 'A');
-            //g is not mapped to anything so it will return itself
-        //assertEquals(p.invert('G'), 'G');
+       // Permutation p = new Permutation("(PNH) (ABDFIKLZYXW) (JC)", new CharacterRange('A', 'Z'));
+      //  assertEquals(p.invert('B'), 'A');
+      //  assertEquals(p.invert('G'), 'G');
     }
 
     @Test
     public void testSplitCycles() {
         String testCycles1 = "(ABCD) (EFG) (HIJK) (LMNOP)";
         String testCycles2 = "(QRS)(TUV) (WXY)";
-        assertEquals(perm.splitCycles(testCycles1)[0], "ABCD");
-        assertEquals(perm.splitCycles(testCycles2)[0], "QRS");
+        Alphabet alphabet1 = new Alphabet("ABCDEFGHIJKLMNOP");
+        Alphabet alphabet2 = new Alphabet("QRSTUVWXY");
+        perm = new Permutation(testCycles1, alphabet1);
+        perm2 = new Permutation(testCycles2, alphabet2);
+        assertEquals("ABCD", perm.splitCycles(testCycles1)[0]);
+        assertEquals("HIJK", perm.splitCycles(testCycles1)[2]);
+        assertEquals("QRS", perm2.splitCycles(testCycles2)[0]);
+        assertEquals("TUV", perm2.splitCycles(testCycles2)[1]);
+        assertEquals("WXY", perm2.splitCycles(testCycles2)[2]);
     }
 
     @Test
     public void testFindCycle() {
         String testCycles1 = "(ABCD) (EFG) (HIJK) (LMNOP)";
-        String [] testCycles1Array = new String[4];
-        testCycles1Array[0] = "ABCD";
-        testCycles1Array[1] = "EFG";
-        testCycles1Array[2] = "HIJK";
-        testCycles1Array[3] = "LMNOP";
-        assertEquals(perm.findCycle('A'), "ABCD");
-        assertEquals(perm.findCycle('P'), "LMNOP");
+        String testCycles2 = "(QRS)(TUV) (WXY)";
+        Alphabet alphabet1 = new Alphabet("ABCDEFGHIJKLMNOP");
+        Alphabet alphabet2 = new Alphabet("QRSTUVWXY");
+        perm = new Permutation(testCycles1, alphabet1);
+        perm2 = new Permutation(testCycles2, alphabet2);
+        assertEquals("ABCD", perm.findCycle('A'));
+        assertEquals("LMNOP", perm.findCycle('P'));
+        assertEquals("QRS", perm2.findCycle('S'));
+        assertEquals("QRS", perm2.findCycle('R'));
+        assertEquals("TUV", perm2.findCycle('V'));
+    }
+
+    @Test
+    public void testFindPermute() {
+        String testCycles1 = "(ABCD) (EFG) (HIJK) (LMNOP)";
+        String testCycles2 = "(QRS)(TUV) (Y)";
+        Alphabet alphabet1 = new Alphabet("ABCDEFGHIJKLMNOP");
+        Alphabet alphabet2 = new Alphabet("QRSTUVWXY");
+        perm = new Permutation(testCycles1, alphabet1);
+        perm2 = new Permutation(testCycles2, alphabet2);
+        assertEquals('B', perm.findPermute('A'));
+        assertEquals('A', perm.findPermute('D'));
+        assertEquals('Z', perm.findPermute('Z'));
+        assertEquals('S', perm2.findPermute('R'));
+        assertEquals('Y', perm2.findPermute('Y'));
+        assertEquals('A', perm2.findPermute('A'));
+    }
+
+    @Test
+    public void testFindInvert() {
+        String testCycles1 = "(ABCD) (EFG) (HIJK) (LMNOP)";
+        String testCycles2 = "(QRS)(TUV) (Y)";
+        Alphabet alphabet1 = new Alphabet("ABCDEFGHIJKLMNOPZ");
+        Alphabet alphabet2 = new Alphabet("QRSTUVWXYA");
+        perm = new Permutation(testCycles1, alphabet1);
+        perm2 = new Permutation(testCycles2, alphabet2);
+        assertEquals('D', perm.findInvert('A'));
+        assertEquals('C', perm.findInvert('D'));
+        assertEquals('Z', perm.findInvert('Z'));
+        //assertEquals('Q', perm2.findInvert('R'));
+        assertEquals('Y', perm2.findInvert('Y'));
+        assertEquals('A', perm2.findInvert('A'));
     }
 
     /* ***** TESTS ***** */
