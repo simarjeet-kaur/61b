@@ -18,8 +18,6 @@ class MovingRotor extends Rotor {
     String _notches;
     Alphabet _rotorAlphabet;
 
-    //what is the point of notches? if it is at a notch does this change the setting?
-
     MovingRotor(String name, Permutation perm, String notches) {
         super(name, perm);
         _notches = notches;
@@ -38,7 +36,10 @@ class MovingRotor extends Rotor {
 
     @Override
     void advance() {
+        if (atNotch()) {
             _setting++;
+        }
+        //doesn't this need to be the rotor to its right not this rotor
     }
 
     // fixme: addl fields as needed?

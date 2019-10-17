@@ -19,25 +19,24 @@ class Machine {
     int _numRotors;
     int _pawls;
     Permutation _plugboard;
-    Collection<Rotor> _allRotors;
+    Rotor[] _allRotors;
 
     Machine(Alphabet alpha, int numRotors, int pawls,
             Collection<Rotor> allRotors) {
         _alphabet = alpha;
         _numRotors = numRotors;
         _pawls = pawls;
-        Collection<Rotor> _allRotors = allRotors;
-        // FIXME
+        _allRotors = (Rotor[]) allRotors.toArray();
     }
 
     /** Return the number of rotor slots I have. */
     int numRotors() {
-        return _numRotors; // FIXME
+        return _numRotors;
     }
 
     /** Return the number pawls (and thus rotating rotors) I have. */
     int numPawls() {
-        return _pawls; // FIXME
+        return _pawls;
     }
 
     /** Set my rotor slots to the rotors named ROTORS from my set of
@@ -46,22 +45,36 @@ class Machine {
     void insertRotors(String[] rotors) {
         //what is a rotor slot
         //this gives a stringof the correct order of rotors, and you need to reorder the collection properly
-        Collections.sort(_allRotors);
-        // FIXME
+        //make a new variable to store them in any other data strucutre, get all of them and check if the string is valid
+        //make sure it's a string that exists
+       // Collections(_allRotors);
+        //create a new array of the sorted ones that is emprt
+        //iterate through the list to find which one matches up first , add it to the new list, then move on
+        Rotor [] _sortedRotors = new Rotor [_allRotors.length];
+        for (int i = 0; i < rotors.length; i++) {
+            for (Rotor rotor : _allRotors) {
+                if (rotor.name() == rotors[i]) {
+                    _sortedRotors[i] = rotor;
+                }
+            }
+        }
+        _allRotors = _sortedRotors; //is this right? doesn't return anything but should resort them
     }
 
     /** Set my rotors according to SETTING, which must be a string of
      *  numRotors()-1 characters in my alphabet. The first letter refers
      *  to the leftmost rotor setting (not counting the reflector).  */
     void setRotors(String setting) {
-        //does this mean change the setting of each rotor to what is given?
-        //use set in rotor class
+        //check the length of settings to make sure it is numrotors-1 and also check
+        //to make sure the first rotor is in fact a reflector
+        //dont change the setting of the relfector
         int i = 0;
-        for (Rotor rotor : _allRotors) {
+        Rotor [] _allRotorsNoReflector = new Rotor[_allRotors.length - 1];
+        System.arraycopy(_allRotors, 1, _allRotorsNoReflector, _allRotors.length, _allRotors.length - 1);
+        for (Rotor rotor : _allRotorsNoReflector) {
             rotor.set(setting.charAt(i));
             i++;
         }
-        // FIXME
     }
 
     /** Set the plugboard to PLUGBOARD. */
@@ -78,6 +91,8 @@ class Machine {
         //jumping from rotor to rotor using convert
         //next rotor next cycle that it's in
         //advancing machine = next rotor
+        //make all rotors an iterator so you can iterate through it properly
+
         return 0; // FIXME
     }
 

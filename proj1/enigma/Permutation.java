@@ -21,6 +21,7 @@ class Permutation {
     ArrayList<String> _listOfCycles;
     HashMap<Integer, Character> _permutedAlphabet;
     HashMap<Integer, Character> _invertedAlphabet;
+    String[] _splitCycles;
 
     Permutation(String cycles, Alphabet alphabet) {
         _cycles = cycles;
@@ -28,6 +29,7 @@ class Permutation {
         _listOfCycles = new ArrayList<>();
         _permutedAlphabet = new HashMap<>();
         _invertedAlphabet = new HashMap<>();
+        _splitCycles = splitCycles(_cycles);
         for (int i = 0; i < _alphabet.size(); i++) {
             _permutedAlphabet.put(i, findPermute(_alphabet.toChar(i)));
             _invertedAlphabet.put(i, findInvert(_alphabet.toChar(i)));
@@ -108,7 +110,8 @@ class Permutation {
         String cycles2 = cycles1.replace(") (", " ");
         String cycles3 = cycles2.replace("(", "");
         String cycles4 = cycles3.replace(")", "");
-        return cycles4.split(" ");
+        _splitCycles = cycles4.split(" ");
+        return _splitCycles;
     }
 
     /** finding the cycle that char c is in, returns itself as a string if it's not in any cycle */
@@ -142,7 +145,7 @@ class Permutation {
         } else {
             String correctCycle = findCycle(c);
             int index = correctCycle.indexOf(c) - 1;
-            if (index > 0) {
+            if (index >= 0) {
                 return correctCycle.charAt(index);
             } else {
                 return correctCycle.charAt(correctCycle.length() - 1);

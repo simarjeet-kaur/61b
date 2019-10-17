@@ -47,9 +47,9 @@ public class PermutationTest {
     /* testing the Permutation::invert method */
     @Test
     public void testInvertChar() {
-       // Permutation p = new Permutation("(PNH) (ABDFIKLZYXW) (JC)", new CharacterRange('A', 'Z'));
-      //  assertEquals(p.invert('B'), 'A');
-      //  assertEquals(p.invert('G'), 'G');
+       //Permutation p = new Permutation("(PNH) (ABDFIKLZYXW) (JC)", new CharacterRange('A', 'Z'));
+       //assertEquals(p.invert('B'), 'A');
+       //assertEquals(p.invert('G'), 'G');
     }
 
     @Test
@@ -101,16 +101,16 @@ public class PermutationTest {
     @Test
     public void testFindInvert() {
         String testCycles1 = "(ABCD) (EFG) (HIJK) (LMNOP)";
-        String testCycles2 = "(QRS)(TUV) (Y)";
+        String testCycles2 = "(QRS)(TUV) (YZ)";
         Alphabet alphabet1 = new Alphabet("ABCDEFGHIJKLMNOPZ");
-        Alphabet alphabet2 = new Alphabet("QRSTUVWXYA");
+        Alphabet alphabet2 = new Alphabet("QRSTUVWXYZA");
         perm = new Permutation(testCycles1, alphabet1);
         perm2 = new Permutation(testCycles2, alphabet2);
         assertEquals('D', perm.findInvert('A'));
         assertEquals('C', perm.findInvert('D'));
         assertEquals('Z', perm.findInvert('Z'));
-        //assertEquals('Q', perm2.findInvert('R'));
-        assertEquals('Y', perm2.findInvert('Y'));
+        assertEquals('Q', perm2.findInvert('R'));
+        assertEquals('Z', perm2.findInvert('Y'));
         assertEquals('A', perm2.findInvert('A'));
     }
 
