@@ -26,7 +26,7 @@ public class PermutationTest {
      *  FROMALPHA and TOALPHA and that maps each character of
      *  FROMALPHA to the corresponding character of FROMALPHA, and
      *  vice-versa. TESTID is used in error messages. */
-    private void checkPerm(String testId,
+    public void checkPerm(String testId,
                            String fromAlpha, String toAlpha) {
         int N = fromAlpha.length();
         assertEquals(testId + " (wrong length)", N, perm.size());
@@ -47,9 +47,21 @@ public class PermutationTest {
     /* testing the Permutation::invert method */
     @Test
     public void testInvertChar() {
-       //Permutation p = new Permutation("(PNH) (ABDFIKLZYXW) (JC)", new CharacterRange('A', 'Z'));
-       //assertEquals(p.invert('B'), 'A');
-       //assertEquals(p.invert('G'), 'G');
+        Alphabet alphabet = new Alphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+        Permutation p = new Permutation("(PNH) (ABDFIKLZYXW) (JC)", alphabet);
+        assertEquals(p.invert('B'), 'A');
+        assertEquals(p.invert('G'), 'G');
+    }
+
+    @Test
+    public void testDerangement() {
+        String testCycles1 = "(ABCD) (EFG) (HIJK) (LMNOP)";
+        Alphabet alphabet1 = new Alphabet("ABCDEFGHIJKLMNOP");
+        perm = new Permutation(testCycles1, alphabet1);
+        assertEquals(true, perm.derangement());
+        Alphabet alphabet2 = new Alphabet("ABCDEFGHIJKLMNOPQ");
+        perm2 = new Permutation(testCycles1, alphabet2);
+        assertEquals(false, perm2.derangement());
     }
 
     @Test

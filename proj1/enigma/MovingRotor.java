@@ -6,8 +6,6 @@ import static enigma.EnigmaException.*;
  *  @author Simarjeet Kaur
  */
 
-//finished??
-
 class MovingRotor extends Rotor {
 
     /** A rotor named NAME whose permutation in its default setting is
@@ -17,11 +15,13 @@ class MovingRotor extends Rotor {
      */
     String _notches;
     Alphabet _rotorAlphabet;
+    Permutation _permutation;
 
     MovingRotor(String name, Permutation perm, String notches) {
         super(name, perm);
         _notches = notches;
-        _rotorAlphabet = new Alphabet();
+        _permutation = perm;
+        _rotorAlphabet = perm.alphabet();
     }
 
     @Override
@@ -36,10 +36,7 @@ class MovingRotor extends Rotor {
 
     @Override
     void advance() {
-        if (atNotch()) {
-            _setting++;
-        }
-        //doesn't this need to be the rotor to its right not this rotor
+        this.set(permutation().wrap(this.setting() + 1));
     }
 
     // fixme: addl fields as needed?

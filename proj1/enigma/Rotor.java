@@ -58,7 +58,7 @@ class Rotor {
 
     /** Set setting() to character CPOSN. */
     void set(char cposn) {
-        _setting = alphabet().toInt(cposn);
+        _setting = _permutation.alphabet().toInt(cposn);
     }
 
     /** Return the conversion of P (an integer in the range 0..size()-1)
@@ -66,8 +66,8 @@ class Rotor {
     int convertForward(int p) {
         int a = _permutation.wrap(p + _setting);
         int b = _permutation.permute(a);
-        int c =  _permutation.permute(_permutation.wrap(b - _setting));
-        advance();
+        int c =  _permutation.wrap(b - _setting);
+       // advance();
         return c;
     }
 
@@ -76,8 +76,8 @@ class Rotor {
     int convertBackward(int e) {
         int a = _permutation.wrap(e + _setting);
         int b = _permutation.invert(a);
-        int c =  _permutation.invert(_permutation.wrap(b - _setting));
-        advance();
+        int c =  _permutation.wrap(b - _setting);
+      //  advance();
         return c;
     }
 

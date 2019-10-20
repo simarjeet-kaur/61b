@@ -4,6 +4,7 @@ import javax.management.AttributeList;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Collection;
+import java.util.ListIterator;
 
 import static enigma.EnigmaException.*;
 
@@ -20,13 +21,18 @@ class Machine {
     int _pawls;
     Permutation _plugboard;
     Rotor[] _allRotors;
-
     Machine(Alphabet alpha, int numRotors, int pawls,
             Collection<Rotor> allRotors) {
         _alphabet = alpha;
         _numRotors = numRotors;
         _pawls = pawls;
         _allRotors = (Rotor[]) allRotors.toArray();
+        if (pawls < 0 || pawls > numRotors) {
+            throw new EnigmaException("Incompatible number of pawls");
+        }
+        if (numRotors < 1) {
+            throw new EnigmaException("Incompatible number of rotors");
+        }
     }
 
     /** Return the number of rotor slots I have. */
@@ -58,7 +64,9 @@ class Machine {
                 }
             }
         }
-        _allRotors = _sortedRotors; //is this right? doesn't return anything but should resort them
+        if (_sortedRotors.length != _allRotors.length) {
+            throw new EnigmaException("Rotors are not named correctly");
+        }
     }
 
     /** Set my rotors according to SETTING, which must be a string of
@@ -68,6 +76,9 @@ class Machine {
         //check the length of settings to make sure it is numrotors-1 and also check
         //to make sure the first rotor is in fact a reflector
         //dont change the setting of the relfector
+        if (setting.length() != numRotors()-1) {
+            throw new EnigmaException("Setting is incorrect length");
+        }
         int i = 0;
         Rotor [] _allRotorsNoReflector = new Rotor[_allRotors.length - 1];
         System.arraycopy(_allRotors, 1, _allRotorsNoReflector, _allRotors.length, _allRotors.length - 1);
@@ -92,18 +103,33 @@ class Machine {
         //next rotor next cycle that it's in
         //advancing machine = next rotor
         //make all rotors an iterator so you can iterate through it properly
-
-        return 0; // FIXME
+        ///check if there is a plugboard - if there is a plug board, then it translates immediately
+        int converted = c;
+        if (_plugboard == null) {
+            for (int i = 0; i < _allRotors.length; i++) {
+                converted = _allRotors[i].permutation().permute(converted);
+            }
+        } else {
+            converted = _plugboard.permute(c);
+            for (int i = 0; i < _allRotors.length; i++) {
+                converted = _allRotors[i].permutation().permute(converted);
+            }
+        }
+        return converted;
     }
 
     /** Returns the encoding/decoding of MSG, updating the state of
      *  the rotors accordingly. */
     String convert(String msg) {
-        return ""; // FIXME
+        String result = "";
+        for (int i = 0; i < msg.length(); i++) {
+            int a = convert(_alphabet.toInt(msg.charAt(i)));
+            result = result + _alphabet.toChar(a);
+        }
+        return result;
     }
 
     /** Common alphabet of my rotors. */
     private final Alphabet _alphabet;
 
-    // FIXME: ADDITIONAL FIELDS HERE, IF NEEDED.
 }

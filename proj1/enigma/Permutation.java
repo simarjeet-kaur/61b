@@ -2,12 +2,14 @@ package enigma;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static enigma.EnigmaException.*;
 
 /** Represents a permutation of a range of integers starting at 0 corresponding
  *  to the characters of an alphabet.
- *  @author
+ *  @author Simarjeet Kaur
  */
 class Permutation {
 
@@ -63,26 +65,25 @@ class Permutation {
      *  alphabet size. */
     int permute(int p) {
         int pMod = wrap(p);
-        return _permutedAlphabet.get(pMod);
+        return _alphabet.toInt(_permutedAlphabet.get(pMod));
     }
 
     /** Return the result of applying the inverse of this permutation
      *  to  C modulo the alphabet size. */
     int invert(int c) {
         int cMod = wrap(c);
-        return _invertedAlphabet.get(cMod);
+        return _alphabet.toInt(_invertedAlphabet.get(cMod));
     }
 
     /** Return the result of applying this permutation to the index of P
      *  in ALPHABET, and converting the result to a character of ALPHABET. */
     char permute(char p) {
-        int index = _alphabet.toInt(p);
-        return _permutedAlphabet.get(index);
+        return _permutedAlphabet.get(_alphabet.toInt(p));
     }
 
     /** Return the result of applying the inverse of this permutation to C. */
     char invert(char c) {
-        return _invertedAlphabet.get(c);
+        return _invertedAlphabet.get(_alphabet.toInt(c));
     }
 
     /** Return the alphabet used to initialize this Permutation. */
@@ -98,7 +99,7 @@ class Permutation {
                 return false;
             }
         }
-        return true;  // fixme maybe with get and stuff
+        return true;
     }
 
     /** Alphabet of this permutation. */
@@ -108,9 +109,22 @@ class Permutation {
     String[] splitCycles(String cycles) {
         String cycles1 = cycles.replace(")(", " ");
         String cycles2 = cycles1.replace(") (", " ");
+
+        //add an enigma exception here for when there are floating ( ) without partners but are not on the ends
+        //or if there are )) or (( pairs those can't happen either
+        //iterate through each cycle that is made and if there are still a ( or ) throw an error except for the last
+        //and first one
+
         String cycles3 = cycles2.replace("(", "");
         String cycles4 = cycles3.replace(")", "");
         _splitCycles = cycles4.split(" ");
+        for (int i = 0; i < _splitCycles.length; i++) {
+            Pattern special = Pattern.compile("[!@#$%&*()_+=|<>?{}\\[\\]~-]");
+            Matcher m = special.matcher(_splitCycles[i]);
+            if (m.find()) {
+                throw new EnigmaException("Incorrect permutation format");
+            }
+        }
         return _splitCycles;
     }
 
