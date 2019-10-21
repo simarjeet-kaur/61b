@@ -14,7 +14,7 @@ import java.util.Arrays;
 import static enigma.EnigmaException.*;
 
 /** Enigma simulator.
- *  @author
+ *  @author Simarjeet Kaur
  */
 public final class Main {
 
@@ -146,13 +146,32 @@ public final class Main {
     /** Set M according to the specification given on SETTINGS,
      *  which must have the format specified in the assignment. */
     private void setUp(Machine M, String settings) {
-        // FIXME
+        //* B Beta III IV I AXLE (YF) (ZH)
+        int numRotors = M.numRotors();
+        String [] _settings = settings.split(" ");
+        if (_settings[0].charAt(0) != '*') {
+            throw new EnigmaException("Not proper setting");
+        }
+        //needs a * at the beginning
+        String [] rotors = new String[numRotors];
+        System.arraycopy(_settings, 1, rotors, 0, numRotors);
+        //B to I is the name of the rotors now in rotors array
+        String setting = _settings[numRotors + 2];
+        //AXLE are the names of the settings, would come after the * and after the rotors' names, so
+        M.setRotors(setting);
+        //YF and ZH are the steckered things reflectors, these become the plugboard
+        String [] steckered = new String[_settings.length - 2 - numRotors];
+        System.arraycopy(_settings, 2 + numRotors, rotors, 0, _settings.length - 2 - numRotors);
+        Permutation _plugboard;
+        String _steckered = Arrays.toString(steckered);
+        M.setPlugboard(new Permutation(_steckered, _alphabet));
     }
 
     /** Print MSG in groups of five (except that the last group may
      *  have fewer letters). */
     private void printMessageLine(String msg) {
-
+        String[] msgArray = msg.split(" ");
+        for (int i = 0; i < msgArray.length / 5; i += 5);
     }
 
     public String findNotches(String NameType) {
@@ -165,7 +184,7 @@ public final class Main {
     }
 
     /** Alphabet used in this machine. */
-    private Alphabet _alphabet;
+    Alphabet _alphabet;
 
     /** Source of input messages. */
     private Scanner _input;
