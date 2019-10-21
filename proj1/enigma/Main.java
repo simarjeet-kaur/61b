@@ -84,6 +84,14 @@ public final class Main {
      *  file _config and apply it to the messages in _input, sending the
      *  results to _output. */
     private void process() {
+        //create the machine
+        Machine machine = readConfig();
+        //set up the machine using setup
+        String setting = _input.nextLine();
+        if (!setting.contains("*")) {
+            throw new EnigmaException("Incorrect setting format");
+        }
+        setUp(machine, setting);
 
         // FIXME
     }
@@ -162,7 +170,6 @@ public final class Main {
         //YF and ZH are the steckered things reflectors, these become the plugboard
         String [] steckered = new String[_settings.length - 2 - numRotors];
         System.arraycopy(_settings, 2 + numRotors, rotors, 0, _settings.length - 2 - numRotors);
-        Permutation _plugboard;
         String _steckered = Arrays.toString(steckered);
         M.setPlugboard(new Permutation(_steckered, _alphabet));
     }
@@ -171,7 +178,11 @@ public final class Main {
      *  have fewer letters). */
     private void printMessageLine(String msg) {
         String[] msgArray = msg.split(" ");
-        for (int i = 0; i < msgArray.length / 5; i += 5);
+        for (int i = 0; i < msgArray.length / 5; i += 5) {
+            for (int j = 0; j < i; j++) {
+                System.out.print(msgArray[j]);
+            } //FIXME
+        }
     }
 
     public String findNotches(String NameType) {
