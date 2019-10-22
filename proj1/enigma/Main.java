@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
@@ -59,9 +60,6 @@ public final class Main {
         }
     }
 
-    //now we hae config, output, and input that we use for the rest of this
-    //config is the big file in the default.config file
-
     /** Return a Scanner reading from the file named NAME. */
     private Scanner getInput(String name) {
         try {
@@ -84,14 +82,21 @@ public final class Main {
      *  file _config and apply it to the messages in _input, sending the
      *  results to _output. */
     private void process() {
-        //create the machine
+//        //create the machine
+//        Machine machine = readConfig();
+//        //set up the machine using setup
+//        String setting = _input.nextLine();
+//        setUp(machine, setting);
+//        String encodedMessage = _input.nextLine();
+//        String decodedMessage = machine.convert(encodedMessage);
+//        printMessageLine(decodedMessage);
+
         Machine machine = readConfig();
-        //set up the machine using setup
         String setting = _input.nextLine();
-        if (!setting.contains("*")) {
-            throw new EnigmaException("Incorrect setting format");
-        }
         setUp(machine, setting);
+        while (_input.hasNextLine()) {
+            printMessageLine(machine.convert(_input.nextLine()));
+        }
 
         // FIXME
     }
@@ -101,14 +106,28 @@ public final class Main {
     private Machine readConfig() {
         try {
             String alphabet = _config.nextLine();
+            if (alphabet.contains("(") || alphabet.contains("*") || alphabet.contains(")")) {
+                throw new EnigmaException("Incorrect Alphabet format");
+            }
+            _alphabet = new Alphabet(alphabet);
+            if (!_config.hasNextInt()) {
+                throw new EnigmaException("No number of rotors/pawls"); //does it need this
+            }
             int numRotors = _config.nextInt();
+            if (!_config.hasNextInt()) {
+                throw new EnigmaException("No number of pawls");
+            }
             int numPawls = _config.nextInt();
             ArrayList<Rotor> allRotors = new ArrayList<Rotor>();
-            while (_config.nextLine() != null) {
-                allRotors.add(readRotor(_config.nextLine()));
+            while (_config.next() != "") {
+                String rotorDescription = _config.nextLine();
+                while (_config.nextLine().charAt(0) == '(') {
+                    rotorDescription = rotorDescription + _config.nextLine();
+                }
+                allRotors.add(readRotor(rotorDescription));
             }
-            _alphabet = new Alphabet();
-            return new Machine(_alphabet, numRotors, numPawls, allRotors);
+            Rotor[] _allRotors = allRotors.toArray(new Rotor[allRotors.size()]);
+            return new Machine(_alphabet, numRotors, numPawls, _allRotors);
         } catch (NoSuchElementException excp) {
             throw error("configuration file truncated");
         }
@@ -117,40 +136,45 @@ public final class Main {
     /** Return a rotor, reading its description from _config. */
     private Rotor readRotor(String description) {
         try {
-            //EXAMPLE: I MQ      (AELTPHQXRU) (BKNW) (CMOY) (DFG) (IV) (JZ) (S)
-            //I is the name, so do that
-            String desc = description;
-            String[] splitDescription = desc.split(" ");
-            String[] nameAndType = new String[2];
-            String[] permutations = new String[splitDescription.length - 2];
-            System.arraycopy(splitDescription, 0, nameAndType, 0, 2);
-            //now nameAndType should look like {"I", "MQ"}
-            String name = nameAndType[0];
-            String typeAndNotches = nameAndType[1];
-            char type = typeAndNotches.charAt(0);
-            String notches = findNotches(typeAndNotches);
-            System.arraycopy(splitDescription, 2, permutations, 0, splitDescription.length - 2);
+            String name;
+            String typeAndNotches;
+            char type;
+            String notches;
 
-            String _permutations = Arrays.toString(permutations);
+            String [] descriptionArray = description.split(" ");
+            name = descriptionArray[0];
+            typeAndNotches = descriptionArray[1];
+            type = typeAndNotches.charAt(0);
+
+            if (typeAndNotches.length() == 1) {
+                notches = "";
+            } else {
+                notches = typeAndNotches.substring(1, typeAndNotches.length());
+            }
+
+            String [] permutations;
+            permutations = new String [descriptionArray.length - 2];
+            System.arraycopy(descriptionArray, 2, permutations, 0, descriptionArray.length - 2);
+            String _permutations = permutations.toString();
             Permutation _perm;
             _perm = new Permutation(_permutations, _alphabet);
 
-            //examine the type to determine which rotor you need to return
             if (type == 'M') {
                 return new MovingRotor(name, _perm, notches);
             }
-            if (typeAndNotches.length() == 'N') { //it has no notches, so must be fixed
+            else if (type == 'N') { //it has no notches, so must be fixed
                 return new FixedRotor(name, _perm);
             }
-            if (typeAndNotches.length() == 'R') {
+            else if (type == 'R') {
                 return new Reflector(name, _perm);
+            }
+            else {
+                throw new EnigmaException("No type");
             }
         } catch (NoSuchElementException excp) {
             throw error("bad rotor description");
         }
-        return null;
-    } //why is this bugging out
-
+    }
     /** Set M according to the specification given on SETTINGS,
      *  which must have the format specified in the assignment. */
     private void setUp(Machine M, String settings) {
@@ -177,12 +201,19 @@ public final class Main {
     /** Print MSG in groups of five (except that the last group may
      *  have fewer letters). */
     private void printMessageLine(String msg) {
-        String[] msgArray = msg.split(" ");
-        for (int i = 0; i < msgArray.length / 5; i += 5) {
-            for (int j = 0; j < i; j++) {
-                System.out.print(msgArray[j]);
-            } //FIXME
+        String end;
+        if (msg.length() >= 5) {
+            end = msg.substring(0, 5) + " ";
+            for (int i = 1; i < (msg.length()/5); i++) {
+                end = end + msg.substring(i*5, i*5+5) + " ";
+            }
+        } else {
+            end = msg;
         }
+        if (msg.length() % 5 != 0 && msg.length() > 5) {
+            end += msg.substring(msg.length() - (msg.length() % 5));
+        }
+        _output.println(end);
     }
 
     public String findNotches(String NameType) {

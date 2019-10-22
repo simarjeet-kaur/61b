@@ -118,13 +118,11 @@ class Permutation {
         String cycles3 = cycles2.replace("(", "");
         String cycles4 = cycles3.replace(")", "");
         _splitCycles = cycles4.split(" ");
-        for (int i = 0; i < _splitCycles.length; i++) {
-            Pattern special = Pattern.compile("[!@#$%&*()_+=|<>?{}\\[\\]~-]");
-            Matcher m = special.matcher(_splitCycles[i]);
-            if (m.find()) {
-                throw new EnigmaException("Incorrect permutation format");
-            }
-        }
+//        for (int i = 0; i < _splitCycles.length; i++) {
+//            Pattern special = Pattern.compile("[!@#$%&*()_+=|<>?{}\\[\\]~-]");
+//            Matcher m = special.matcher(_splitCycles[i]);
+//            if (m.find()) {
+//                throw new EnigmaException("Incorrect permutation format");
         return _splitCycles;
     }
 

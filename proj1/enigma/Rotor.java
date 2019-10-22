@@ -67,7 +67,6 @@ class Rotor {
         int a = _permutation.wrap(p + _setting);
         int b = _permutation.permute(a);
         int c =  _permutation.wrap(b - _setting);
-       // advance();
         return c;
     }
 
@@ -77,7 +76,6 @@ class Rotor {
         int a = _permutation.wrap(e + _setting);
         int b = _permutation.invert(a);
         int c =  _permutation.wrap(b - _setting);
-      //  advance();
         return c;
     }
 
