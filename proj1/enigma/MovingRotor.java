@@ -26,7 +26,7 @@ class MovingRotor extends Rotor {
 
     @Override
     boolean atNotch() {
-            if (_notches.indexOf(_rotorAlphabet.toChar(permutation().wrap(_setting))) != -1) {
+            if (_notches.indexOf(_rotorAlphabet.toChar(permutation().wrap(this.setting()))) != -1) {
                 return true;
         }
         return false;

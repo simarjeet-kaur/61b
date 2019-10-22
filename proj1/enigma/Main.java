@@ -168,6 +168,7 @@ public final class Main {
      *  which must have the format specified in the assignment. */
     private void setUp(Machine M, String settings) {
         //* B Beta III IV I AXLE (YF) (ZH)
+        //Scanner _settings = settings;
         int numRotors = M.numRotors();
         String [] _settings = settings.split(" +");
         //System.out.print(Arrays.toString(_settings));
@@ -186,9 +187,12 @@ public final class Main {
         } else {
 
             String[] steckered = new String[_settings.length - 2 - numRotors];
-            System.arraycopy(_settings, 2 + numRotors, rotors, 0, _settings.length - 2 - numRotors);
-            String _steckered = Arrays.toString(steckered);
-            M.setPlugboard(new Permutation(_steckered, _alphabet));
+            System.arraycopy(_settings, 2 + numRotors, steckered, 0, _settings.length - 2 - numRotors);
+            String result = "";
+            for (int i = 0; i < steckered.length; i ++) {
+                result += steckered[i];
+            }
+            M.setPlugboard(new Permutation(result, _alphabet));
         }
     }
 
