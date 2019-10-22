@@ -1,12 +1,10 @@
 package enigma;
 
-import antlr.StringUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 
-import java.time.ZonedDateTime;
+//import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
@@ -186,6 +184,7 @@ public final class Main {
         //YF and ZH are the steckered things reflectors, these become the plugboard
         if (_settings.length - 2 - numRotors == 0) {
         } else {
+
             String[] steckered = new String[_settings.length - 2 - numRotors];
             System.arraycopy(_settings, 2 + numRotors, rotors, 0, _settings.length - 2 - numRotors);
             String _steckered = Arrays.toString(steckered);
