@@ -172,14 +172,14 @@ public final class Main {
         //* B Beta III IV I AXLE (YF) (ZH)
         int numRotors = M.numRotors();
         String [] _settings = settings.split(" +");
-        System.out.print(Arrays.toString(_settings));
+        //System.out.print(Arrays.toString(_settings));
         //needs a * at the beginning
         String [] rotors = new String[numRotors];
         System.arraycopy(_settings, 1, rotors, 0, numRotors);
-        System.out.print(Arrays.toString(rotors));
+        //System.out.print(Arrays.toString(rotors));
         //B to I is the name of the rotors now in rotors array
         String setting = _settings[numRotors + 1];
-        System.out.print(setting);
+        //System.out.print(setting);
         //AXLE are the names of the settings, would come after the * and after the rotors' names, so
         M.insertRotors(rotors);
         M.setRotors(setting);

@@ -22,6 +22,7 @@ class Machine {
     Permutation _plugboard;
     Rotor[] _allRotors;
     Rotor [] _sortedRotors;
+    Boolean [] _booleanArray;
     //Alphabet _alphabet;
 
     Machine(Alphabet alpha, int numRotors, int pawls,
@@ -32,6 +33,7 @@ class Machine {
         _allRotors = allRotors;
         _plugboard = new Permutation("", _alphabet);
         _sortedRotors = new Rotor [numRotors()];
+        _booleanArray = new Boolean[numRotors];
 
         if (pawls < 0 || pawls > numRotors) {
             throw new EnigmaException("Incompatible number of pawls");
@@ -68,7 +70,8 @@ class Machine {
 
         for (int i = 0; i < rotors.length; i++) {
             for (Rotor rotor : _allRotors) {
-                if (rotor.name() == rotors[i]) {
+                //String name = "Rotor " + rotors[i];
+                if (rotor.name().equals(rotors[i])) {
                     _sortedRotors[i] = rotor;
                 }
             }
@@ -88,8 +91,9 @@ class Machine {
         for (int i = 1; i < numRotors(); i++) {
             if (!_alphabet.contains(setting.charAt(i-1))) {
                 throw new EnigmaException("Initial positions string not in alphabet");
+            } else {
+                _sortedRotors[i].set(setting.charAt(i-1));
             }
-            _sortedRotors[i].set(setting.charAt(i-1));
         }
     }
 
@@ -111,41 +115,43 @@ class Machine {
         ///check if there is a plugboard - if there is a plug board, then it translates immediately
         int converted = c;
         advanceAllRotors();
-//        if (_plugboard != null) {
-//            converted = _plugboard.permute(c);
-//        }
+        if (_plugboard != null) {
+            converted = _plugboard.permute(c);
+        }
         for (int i = _sortedRotors.length - 1; i >= 0; i--) {
             converted = _sortedRotors[i].convertForward(converted);
         }
         for (int k = 1; k < _sortedRotors.length; k++) {
             converted = _sortedRotors[k].convertBackward(converted);
         }
-//        if (_plugboard != null) {
-//            converted = _plugboard.permute(converted);
-//        }
+        if (_plugboard != null) {
+            converted = _plugboard.permute(converted);
+        }
         return converted;
     }
 
     void advanceAllRotors() {
-        for (int i = 1; i < _sortedRotors.length - 1; i++) {
-            if (_sortedRotors[i].rotates()
-                    && (_sortedRotors[i+1].atNotch()
-                    || ((i + 1) == (_sortedRotors.length - 1))
-                    && (_sortedRotors[i].atNotch()
-                    && _sortedRotors[i - 1].rotates()))) {
-                boolean a = true;
-                for (int j = i + 1; j < _sortedRotors.length - 1; j++) {
-                    if (!_sortedRotors[i].atNotch()) {
-                        a = false;
-                    }
+
+        for (int i = 0; i < _booleanArray.length; i++) {
+            _booleanArray[i] = false;
+        }
+        for (int i = 1; i < _sortedRotors.length; i++) {
+            if ((_sortedRotors[i].rotates()
+                    && _sortedRotors[i + 1].atNotch())) {
+                _booleanArray[i] = true;
+                _booleanArray[i+1] = true;
+            } else if (i == _booleanArray.length - 1) {
+                _booleanArray[i] = true;
+            }
                 }
-                if (a) {
+        for (int i = 0; i <_sortedRotors.length; i++) {
+                if (_booleanArray[i]) {
                     _sortedRotors[i].advance();
+//                }
+//            }
                 }
             }
         }
-        _sortedRotors[_sortedRotors.length - 1].advance();
-    }
 
     /** Returns the encoding/decoding of MSG, updating the state of
      *  the rotors accordingly. */
@@ -154,8 +160,8 @@ class Machine {
         for (int i = 0; i < msg.length(); i++) {
             char current = msg.charAt(i);
             if (current != ' ') {
-                int a = convert(_plugboard.permute(_alphabet.toInt(current)));
-                result = result + _alphabet.toChar(_plugboard.permute(a));
+                int a = convert(_alphabet.toInt(current));
+                result = result + _alphabet.toChar(a);
             }
         }
         return result;
