@@ -82,23 +82,17 @@ public final class Main {
      *  file _config and apply it to the messages in _input, sending the
      *  results to _output. */
     private void process() {
-//        //create the machine
-//        Machine machine = readConfig();
-//        //set up the machine using setup
-//        String setting = _input.nextLine();
-//        setUp(machine, setting);
-//        String encodedMessage = _input.nextLine();
-//        String decodedMessage = machine.convert(encodedMessage);
-//        printMessageLine(decodedMessage);
-
         Machine machine = readConfig();
         String setting = _input.nextLine();
         setUp(machine, setting);
         while (_input.hasNextLine()) {
-            printMessageLine(machine.convert(_input.nextLine()));
+            String next = _input.nextLine();
+            if (!next.equals("") && next.charAt(0) == '*') {
+                setUp(machine, next);
+            } else {
+                printMessageLine(machine.convert(next));
+            }
         }
-
-        // FIXME
     }
 
     /** Return an Enigma machine configured from the contents of configuration
@@ -119,12 +113,8 @@ public final class Main {
             }
             int numPawls = _config.nextInt();
             ArrayList<Rotor> allRotors = new ArrayList<Rotor>();
-            while (_config.next() != "") {
-                String rotorDescription = _config.nextLine();
-                while (_config.nextLine().charAt(0) == '(') {
-                    rotorDescription = rotorDescription + _config.nextLine();
-                }
-                allRotors.add(readRotor(rotorDescription));
+            while (_config.hasNext()) {
+                allRotors.add(readRotor());
             }
             Rotor[] _allRotors = allRotors.toArray(new Rotor[allRotors.size()]);
             return new Machine(_alphabet, numRotors, numPawls, _allRotors);
@@ -134,42 +124,43 @@ public final class Main {
     }
 
     /** Return a rotor, reading its description from _config. */
-    private Rotor readRotor(String description) {
+    private Rotor readRotor() {
         try {
             String name;
             String typeAndNotches;
             char type;
             String notches;
+            String permutations;
+            Permutation _perm;
 
-            String [] descriptionArray = description.split(" ");
-            name = descriptionArray[0];
-            typeAndNotches = descriptionArray[1];
+            name = _config.next();
+            typeAndNotches = _config.next();
             type = typeAndNotches.charAt(0);
+            permutations = "";
+
+            while (_config.hasNext("\\([^\\*]+\\)")) {
+                permutations += _config.next();
+            }
 
             if (typeAndNotches.length() == 1) {
                 notches = "";
             } else {
-                notches = typeAndNotches.substring(1, typeAndNotches.length());
+                notches = typeAndNotches.substring(1);
             }
 
-            String [] permutations;
-            permutations = new String [descriptionArray.length - 2];
-            System.arraycopy(descriptionArray, 2, permutations, 0, descriptionArray.length - 2);
-            String _permutations = permutations.toString();
-            Permutation _perm;
-            _perm = new Permutation(_permutations, _alphabet);
+            _perm = new Permutation(permutations, _alphabet);
 
             if (type == 'M') {
                 return new MovingRotor(name, _perm, notches);
             }
-            else if (type == 'N') { //it has no notches, so must be fixed
+            else if (type == 'N') {
                 return new FixedRotor(name, _perm);
             }
             else if (type == 'R') {
                 return new Reflector(name, _perm);
             }
             else {
-                throw new EnigmaException("No type");
+                throw new EnigmaException("Wrong type");
             }
         } catch (NoSuchElementException excp) {
             throw error("bad rotor description");
@@ -180,40 +171,38 @@ public final class Main {
     private void setUp(Machine M, String settings) {
         //* B Beta III IV I AXLE (YF) (ZH)
         int numRotors = M.numRotors();
-        String [] _settings = settings.split(" ");
-        if (_settings[0].charAt(0) != '*') {
-            throw new EnigmaException("Not proper setting");
-        }
+        String [] _settings = settings.split(" +");
+        System.out.print(Arrays.toString(_settings));
         //needs a * at the beginning
         String [] rotors = new String[numRotors];
         System.arraycopy(_settings, 1, rotors, 0, numRotors);
+        System.out.print(Arrays.toString(rotors));
         //B to I is the name of the rotors now in rotors array
-        String setting = _settings[numRotors + 2];
+        String setting = _settings[numRotors + 1];
+        System.out.print(setting);
         //AXLE are the names of the settings, would come after the * and after the rotors' names, so
+        M.insertRotors(rotors);
         M.setRotors(setting);
         //YF and ZH are the steckered things reflectors, these become the plugboard
-        String [] steckered = new String[_settings.length - 2 - numRotors];
-        System.arraycopy(_settings, 2 + numRotors, rotors, 0, _settings.length - 2 - numRotors);
-        String _steckered = Arrays.toString(steckered);
-        M.setPlugboard(new Permutation(_steckered, _alphabet));
+        if (_settings.length - 2 - numRotors == 0) {
+        } else {
+            String[] steckered = new String[_settings.length - 2 - numRotors];
+            System.arraycopy(_settings, 2 + numRotors, rotors, 0, _settings.length - 2 - numRotors);
+            String _steckered = Arrays.toString(steckered);
+            M.setPlugboard(new Permutation(_steckered, _alphabet));
+        }
     }
 
     /** Print MSG in groups of five (except that the last group may
      *  have fewer letters). */
     private void printMessageLine(String msg) {
-        String end;
-        if (msg.length() >= 5) {
-            end = msg.substring(0, 5) + " ";
-            for (int i = 1; i < (msg.length()/5); i++) {
-                end = end + msg.substring(i*5, i*5+5) + " ";
+        for (int i = 0; i < msg.length(); i++) {
+            if (i % 5 == 0 && i > 0) {
+                _output.print(" ");
             }
-        } else {
-            end = msg;
+            _output.print(msg.charAt(i));
         }
-        if (msg.length() % 5 != 0 && msg.length() > 5) {
-            end += msg.substring(msg.length() - (msg.length() % 5));
-        }
-        _output.println(end);
+        _output.println();
     }
 
     public String findNotches(String NameType) {

@@ -21,6 +21,7 @@ class Machine {
     int _pawls;
     Permutation _plugboard;
     Rotor[] _allRotors;
+    Rotor [] _sortedRotors;
     //Alphabet _alphabet;
 
     Machine(Alphabet alpha, int numRotors, int pawls,
@@ -29,6 +30,9 @@ class Machine {
         _numRotors = numRotors;
         _pawls = pawls;
         _allRotors = allRotors;
+        _plugboard = new Permutation("", _alphabet);
+        _sortedRotors = new Rotor [numRotors()];
+
         if (pawls < 0 || pawls > numRotors) {
             throw new EnigmaException("Incompatible number of pawls");
         }
@@ -58,19 +62,16 @@ class Machine {
        // Collections(_allRotors);
         //create a new array of the sorted ones that is emprt
         //iterate through the list to find which one matches up first , add it to the new list, then move on
-        Rotor [] _sortedRotors = new Rotor [_allRotors.length];
+        if (_sortedRotors.length != numRotors()) {
+            throw new EnigmaException("Rotors are not named correctly");
+        }
+
         for (int i = 0; i < rotors.length; i++) {
             for (Rotor rotor : _allRotors) {
                 if (rotor.name() == rotors[i]) {
                     _sortedRotors[i] = rotor;
                 }
             }
-        }
-        for (int i = 0; i < rotors.length; i++) {
-            _allRotors[i] = _sortedRotors[i];
-        }
-        if (_sortedRotors.length != _allRotors.length) {
-            throw new EnigmaException("Rotors are not named correctly");
         }
     }
 
@@ -88,7 +89,7 @@ class Machine {
             if (!_alphabet.contains(setting.charAt(i-1))) {
                 throw new EnigmaException("Initial positions string not in alphabet");
             }
-            _allRotors[i].set(setting.charAt(i-1));
+            _sortedRotors[i].set(setting.charAt(i-1));
         }
     }
 
@@ -110,40 +111,40 @@ class Machine {
         ///check if there is a plugboard - if there is a plug board, then it translates immediately
         int converted = c;
         advanceAllRotors();
-        if (_plugboard != null) {
-            converted = _plugboard.permute(c);
+//        if (_plugboard != null) {
+//            converted = _plugboard.permute(c);
+//        }
+        for (int i = _sortedRotors.length - 1; i >= 0; i--) {
+            converted = _sortedRotors[i].convertForward(converted);
         }
-        for (int i = _allRotors.length - 1; i >= 0; i--) {
-            converted = _allRotors[i].convertForward(converted);
+        for (int k = 1; k < _sortedRotors.length; k++) {
+            converted = _sortedRotors[k].convertBackward(converted);
         }
-        for (int k = 1; k < _allRotors.length; k++) {
-            converted = _allRotors[k].convertBackward(converted);
-        }
-        if (_plugboard != null) {
-            converted = _plugboard.permute(converted);
-        }
+//        if (_plugboard != null) {
+//            converted = _plugboard.permute(converted);
+//        }
         return converted;
     }
 
     void advanceAllRotors() {
-        for (int i = 1; i < _allRotors.length - 1; i++) {
-            if (_allRotors[i].rotates()
-                    && (_allRotors[i+1].atNotch()
-                    || ((i + 1) == (_allRotors.length - 1))
-                    && (_allRotors[i].atNotch()
-                    && _allRotors[i - 1].rotates()))) {
+        for (int i = 1; i < _sortedRotors.length - 1; i++) {
+            if (_sortedRotors[i].rotates()
+                    && (_sortedRotors[i+1].atNotch()
+                    || ((i + 1) == (_sortedRotors.length - 1))
+                    && (_sortedRotors[i].atNotch()
+                    && _sortedRotors[i - 1].rotates()))) {
                 boolean a = true;
-                for (int j = i + 1; j < _allRotors.length - 1; j++) {
-                    if (!_allRotors[i].atNotch()) {
+                for (int j = i + 1; j < _sortedRotors.length - 1; j++) {
+                    if (!_sortedRotors[i].atNotch()) {
                         a = false;
                     }
                 }
                 if (a) {
-                    _allRotors[i].advance();
+                    _sortedRotors[i].advance();
                 }
             }
         }
-        _allRotors[_allRotors.length - 1].advance();
+        _sortedRotors[_sortedRotors.length - 1].advance();
     }
 
     /** Returns the encoding/decoding of MSG, updating the state of
@@ -151,8 +152,11 @@ class Machine {
     String convert(String msg) {
         String result = "";
         for (int i = 0; i < msg.length(); i++) {
-            int a = convert(_alphabet.toInt(msg.charAt(i)));
-            result = result + _alphabet.toChar(a);
+            char current = msg.charAt(i);
+            if (current != ' ') {
+                int a = convert(_plugboard.permute(_alphabet.toInt(current)));
+                result = result + _alphabet.toChar(_plugboard.permute(a));
+            }
         }
         return result;
     }
