@@ -7,16 +7,16 @@ public class ArrayHeapTest {
     @Test
     public void simpleTest() {
         ArrayHeap<String> pq = new ArrayHeap<>();
-        pq.insert("Qir", 2);
-        pq.insert("Kat", 1);
+        pq.insert("Tab", 2);
+        pq.insert("Lut", 1);
         assertEquals(2, pq.size());
 
         String first = pq.removeMin();
-        assertEquals("Kat", first);
+        assertEquals("Tab", first);
         assertEquals(1, pq.size());
 
         String second = pq.removeMin();
-        assertEquals("Qir", second);
+        assertEquals("Lut", second);
         assertEquals(0, pq.size());
     }
 
