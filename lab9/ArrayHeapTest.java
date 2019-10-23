@@ -12,11 +12,11 @@ public class ArrayHeapTest {
         assertEquals(2, pq.size());
 
         String first = pq.removeMin();
-        assertEquals("Tab", first);
+        assertEquals("Lut", first);
         assertEquals(1, pq.size());
 
         String second = pq.removeMin();
-        assertEquals("Lut", second);
+        assertEquals("Tab", second);
         assertEquals(0, pq.size());
     }
 
