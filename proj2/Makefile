@@ -46,10 +46,3 @@ clean:
 	$(RM) bin/$(PACKAGE).jar
 	"$(MAKE)" -C $(PACKAGE) clean
 	"$(MAKE)" -C testing clean
-
-jar:
-	"$(MAKE)" -C $(PACKAGE) jar
-
-unit-jar:
-	"$(MAKE)" -C $(PACKAGE) compile
-	$(RM) $(UNIT_JAR); jar cf $(UNIT_JAR) $(PACKAGE)/*Tests*.class 

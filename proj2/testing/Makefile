@@ -50,45 +50,6 @@ check:
 	@echo "Testing application $(MAIN)..."
 	@CLASSPATH=$(CPATH) "$(PYTHON)" tester.py $(TESTER_FLAGS) $(TESTS)
 
-# Regenerate .std files.
-%-1.std: %-1.in
-	@echo -n $<
-	@first=$*-1; other=$*-2; \
-	if [ -f $$other.in ]; then \
-	    CLASSPATH=$(CPATH) ./test-tablut $< $$other.in; \
-	else \
-	    CLASSPATH=$(CPATH) ./test-tablut $<; \
-        fi
-
-	@first=$*-1; other=$*-2; \
-	if [ -f $$other.in ]; then \
-	    if [ ! -f $@ ] || [ ! -f $$other.std ] \
-               || ! diff $$first.out $@ >/dev/null \
-               || ! diff $$other.out $$other.std; \
-            then \
-                mv $$first.out $@; \
-	        mv $$other.out $$other.std; \
-	        echo " (modified)"; \
-	    else \
-	        touch $@; \
-	        echo; \
-	    fi; \
-	elif [ ! -f $@ ] || ! diff $$first.out $@ >/dev/null; then \
-            mv $$first.out $@; \
-	    echo " (modified)"; \
-	else \
-	    touch $@; \
-	    echo; \
-        fi
-
-std: compile $(TESTS:.in=.std)
-
 # 'make tidy' will clean up stuff you don't need.
-tidy:
+clean:
 	$(RM) -r *~ *.out *.err __pycache__
-
-# 'make clean' tidies up and also removes stuff you can reconstruct.
-clean: tidy
-	$(RM) *.std
-
-
