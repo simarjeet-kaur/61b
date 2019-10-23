@@ -4,11 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 
-//import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
-import java.util.Arrays;
 
 import static enigma.EnigmaException.*;
 
@@ -42,17 +40,16 @@ public final class Main {
             throw error("Only 1, 2, or 3 command-line arguments allowed");
         }
 
-        _config = getInput(args[0]); //args[0] is the name of the config file
+        _config = getInput(args[0]);
 
         if (args.length > 1) {
-            _input = getInput(args[1]); //args[1] is optional, it's the message to be put in
+            _input = getInput(args[1]);
         } else {
             _input = new Scanner(System.in);
         }
 
         if (args.length > 2) {
-            _output = getOutput(args[2]); //names the output file for the processed messages, otherwise it'll just go
-            //to the standard output
+            _output = getOutput(args[2]);
         } else {
             _output = System.out;
         }
@@ -98,24 +95,25 @@ public final class Main {
     private Machine readConfig() {
         try {
             String alphabet = _config.nextLine();
-            if (alphabet.contains("(") || alphabet.contains("*") || alphabet.contains(")")) {
+            if (alphabet.contains("(")
+                    || alphabet.contains("*") || alphabet.contains(")")) {
                 throw new EnigmaException("Incorrect Alphabet format");
             }
             _alphabet = new Alphabet(alphabet);
             if (!_config.hasNextInt()) {
-                throw new EnigmaException("No number of rotors/pawls"); //does it need this
+                throw new EnigmaException("No number of rotors/pawls");
             }
             int numRotors = _config.nextInt();
             if (!_config.hasNextInt()) {
                 throw new EnigmaException("No number of pawls");
             }
             int numPawls = _config.nextInt();
-            ArrayList<Rotor> allRotors = new ArrayList<Rotor>();
+            ArrayList<Rotor> allRotors = new ArrayList<>();
             while (_config.hasNext()) {
                 allRotors.add(readRotor());
             }
-            Rotor[] _allRotors = allRotors.toArray(new Rotor[allRotors.size()]);
-            return new Machine(_alphabet, numRotors, numPawls, _allRotors);
+            Rotor[] rotors = allRotors.toArray(new Rotor[allRotors.size()]);
+            return new Machine(_alphabet, numRotors, numPawls, rotors);
         } catch (NoSuchElementException excp) {
             throw error("configuration file truncated");
         }
@@ -129,7 +127,7 @@ public final class Main {
             char type;
             String notches;
             String permutations;
-            Permutation _perm;
+            Permutation perm;
 
             name = _config.next();
             typeAndNotches = _config.next();
@@ -146,18 +144,15 @@ public final class Main {
                 notches = typeAndNotches.substring(1);
             }
 
-            _perm = new Permutation(permutations, _alphabet);
+            perm = new Permutation(permutations, _alphabet);
 
             if (type == 'M') {
-                return new MovingRotor(name, _perm, notches);
-            }
-            else if (type == 'N') {
-                return new FixedRotor(name, _perm);
-            }
-            else if (type == 'R') {
-                return new Reflector(name, _perm);
-            }
-            else {
+                return new MovingRotor(name, perm, notches);
+            } else if (type == 'N') {
+                return new FixedRotor(name, perm);
+            } else if (type == 'R') {
+                return new Reflector(name, perm);
+            } else {
                 throw new EnigmaException("Wrong type");
             }
         } catch (NoSuchElementException excp) {
@@ -167,29 +162,19 @@ public final class Main {
     /** Set M according to the specification given on SETTINGS,
      *  which must have the format specified in the assignment. */
     private void setUp(Machine M, String settings) {
-        //* B Beta III IV I AXLE (YF) (ZH)
-        //Scanner _settings = settings;
         int numRotors = M.numRotors();
-        String [] _settings = settings.split(" +");
-        //System.out.print(Arrays.toString(_settings));
-        //needs a * at the beginning
+        String [] set = settings.split(" +");
         String [] rotors = new String[numRotors];
-        System.arraycopy(_settings, 1, rotors, 0, numRotors);
-        //System.out.print(Arrays.toString(rotors));
-        //B to I is the name of the rotors now in rotors array
-        String setting = _settings[numRotors + 1];
-        //System.out.print(setting);
-        //AXLE are the names of the settings, would come after the * and after the rotors' names, so
+        System.arraycopy(set, 1, rotors, 0, numRotors);
+        String setting = set[numRotors + 1];
         M.insertRotors(rotors);
         M.setRotors(setting);
-        //YF and ZH are the steckered things reflectors, these become the plugboard
-        if (_settings.length - 2 - numRotors == 0) {
-        } else {
-
-            String[] steckered = new String[_settings.length - 2 - numRotors];
-            System.arraycopy(_settings, 2 + numRotors, steckered, 0, _settings.length - 2 - numRotors);
+        if (set.length - 2 - numRotors != 0) {
+            String[] steckered = new String[set.length - 2 - numRotors];
+            System.arraycopy(set, 2 + numRotors, steckered,
+                    0, set.length - 2 - numRotors);
             String result = "";
-            for (int i = 0; i < steckered.length; i ++) {
+            for (int i = 0; i < steckered.length; i++) {
                 result += steckered[i];
             }
             M.setPlugboard(new Permutation(result, _alphabet));
@@ -208,17 +193,8 @@ public final class Main {
         _output.println();
     }
 
-    public String findNotches(String NameType) {
-        String result;
-        result = "";
-        for (int i = 0; i < NameType.length() - 1; i ++) {
-            result += NameType.charAt(i);
-        }
-        return result;
-    }
-
     /** Alphabet used in this machine. */
-    Alphabet _alphabet;
+    private Alphabet _alphabet;
 
     /** Source of input messages. */
     private Scanner _input;

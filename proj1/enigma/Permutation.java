@@ -2,10 +2,6 @@ package enigma;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static enigma.EnigmaException.*;
 
 /** Represents a permutation of a range of integers starting at 0 corresponding
  *  to the characters of an alphabet.
@@ -13,18 +9,23 @@ import static enigma.EnigmaException.*;
  */
 class Permutation {
 
+    /** Cycles. */
+    private String _cycles;
+    /** List of Cycles. */
+    private ArrayList<String> _listOfCycles;
+    /** Permuted alphabet. */
+    private HashMap<Integer, Character> _permutedAlphabet;
+    /** Inverted alphabet. */
+    private HashMap<Integer, Character> _invertedAlphabet;
+    /** Split cycles. */
+    private String[] _splitCycles;
+
+
     /** Set this Permutation to that specified by CYCLES, a string in the
      *  form "(cccc) (cc) ..." where the c's are characters in ALPHABET, which
      *  is interpreted as a permutation in cycle notation.  Characters in the
      *  alphabet that are not included in any cycle map to themselves.
      *  Whitespace is ignored. */
-
-    String _cycles;
-    ArrayList<String> _listOfCycles;
-    HashMap<Integer, Character> _permutedAlphabet;
-    HashMap<Integer, Character> _invertedAlphabet;
-    String[] _splitCycles;
-
     Permutation(String cycles, Alphabet alphabet) {
         _cycles = cycles;
         _alphabet = alphabet;
@@ -105,30 +106,26 @@ class Permutation {
     /** Alphabet of this permutation. */
     private Alphabet _alphabet;
 
-    /**split cycles here */
+    /**split cycles here.
+     * @param cycles the strings passed in.
+     * @return an array of strings.
+     * */
     String[] splitCycles(String cycles) {
         String cycles1 = cycles.replace(")(", " ");
         String cycles2 = cycles1.replace(") (", " ");
-
-        //add an enigma exception here for when there are floating ( ) without partners but are not on the ends
-        //or if there are )) or (( pairs those can't happen either
-        //iterate through each cycle that is made and if there are still a ( or ) throw an error except for the last
-        //and first one
-
         String cycles3 = cycles2.replace("(", "");
         String cycles4 = cycles3.replace(")", "");
         _splitCycles = cycles4.split(" ");
-//        for (int i = 0; i < _splitCycles.length; i++) {
-//            Pattern special = Pattern.compile("[!@#$%&*()_+=|<>?{}\\[\\]~-]");
-//            Matcher m = special.matcher(_splitCycles[i]);
-//            if (m.find()) {
-//                throw new EnigmaException("Incorrect permutation format");
         return _splitCycles;
     }
 
-    /** finding the cycle that char c is in, returns itself as a string if it's not in any cycle */
+    /** finding the cycle that char c is in, returns itself
+     * as a string if it's not in any cycle.
+     * @param c the character passed in.
+     * @return the cycle it is in.
+     * */
     String findCycle(char c) {
-        for (int i = 0; i < splitCycles(_cycles).length; i ++) {
+        for (int i = 0; i < splitCycles(_cycles).length; i++) {
             if (splitCycles(_cycles)[i].indexOf(c) > -1) {
                 return splitCycles(_cycles)[i];
             }
@@ -136,7 +133,10 @@ class Permutation {
         return String.valueOf(c);
     }
 
-    /** finding the right mapped letter from the permutation */
+    /** finding the right mapped letter from the permutation.
+     * @param c the character passed in.
+     * @return the permuted letter.
+     * */
     char findPermute(char c) {
         if (findCycle(c).length() <= 1) {
             return c;
@@ -151,6 +151,10 @@ class Permutation {
         }
     }
 
+    /**find the inverted character.
+     * @param c the character passed in.
+     * @return the inverted character.
+     * */
     char findInvert(char c) {
         if (findCycle(c).length() <= 1) {
             return c;

@@ -1,19 +1,16 @@
 package enigma;
 
-import static enigma.EnigmaException.*;
-
 /** Superclass that represents a rotor in the enigma machine.
- *  @author
+ *  @author Simarjeet Kaur
  */
 class Rotor {
-
-    int _setting;
+    /**rotor setting.*/
+    private int _setting;
     /** A rotor named NAME whose permutation is given by PERM. */
     Rotor(String name, Permutation perm) {
         _name = name;
         _permutation = perm;
-        _setting = 0; //is this right? can we assume it starts at 0?
-        // FIXME: add more fields as needed
+        _setting = 0;
     }
 
     /** Return my name. */
@@ -66,8 +63,7 @@ class Rotor {
     int convertForward(int p) {
         int a = _permutation.wrap(p + _setting);
         int b = _permutation.permute(a);
-        int c =  _permutation.wrap(b - _setting);
-        return c;
+        return _permutation.wrap(b - _setting);
     }
 
     /** Return the conversion of E (an integer in the range 0..size()-1)
@@ -75,8 +71,7 @@ class Rotor {
     int convertBackward(int e) {
         int a = _permutation.wrap(e + _setting);
         int b = _permutation.invert(a);
-        int c =  _permutation.wrap(b - _setting);
-        return c;
+        return _permutation.wrap(b - _setting);
     }
 
     /** Returns true iff I am positioned to allow the rotor to my left
