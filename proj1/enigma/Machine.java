@@ -62,6 +62,15 @@ class Machine {
                 }
             }
         }
+        int movingRotors = 0;
+        for (int i = 0; i < rotors.length; i++) {
+            if (_sortedRotors[i].rotates()) {
+                movingRotors++;
+            }
+        }
+        if (movingRotors != numPawls()) {
+            throw new EnigmaException("Wrong number of pawls");
+        }
     }
 
     /** Set my rotors according to SETTING, which must be a string of
