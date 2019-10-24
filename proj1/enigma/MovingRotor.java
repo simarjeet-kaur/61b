@@ -34,5 +34,7 @@ class MovingRotor extends Rotor {
     }
 
     @Override
-    boolean rotates() { return true; }
+    boolean rotates() {
+        return true;
+    }
 }
