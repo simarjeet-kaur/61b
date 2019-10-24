@@ -55,10 +55,6 @@ class Machine {
      *  available rotors (ROTORS[0] names the reflector).
      *  Initially, all rotors are set at their 0 setting. */
     void insertRotors(String[] rotors) {
-        if (_sortedRotors.length != numRotors()) {
-            throw new EnigmaException("Rotors are not named correctly");
-        }
-
         for (int i = 0; i < rotors.length; i++) {
             for (Rotor rotor : _allRotors) {
                 if (rotor.name().equals(rotors[i])) {
@@ -74,6 +70,9 @@ class Machine {
     void setRotors(String setting) {
         if (setting.length() != numRotors() - 1) {
             throw new EnigmaException("Setting is incorrect length");
+        }
+        if (_sortedRotors.length != numRotors()) {
+            throw new EnigmaException("Rotors are not named correctly");
         }
         for (int i = 1; i < numRotors(); i++) {
             if (!_alphabet.contains(setting.charAt(i - 1))) {
