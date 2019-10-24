@@ -79,6 +79,9 @@ public final class Main {
     private void process() {
         Machine machine = readConfig();
         String setting = _input.nextLine();
+        if (setting.charAt(0) != '*') {
+            throw new EnigmaException("Wrong setting");
+        }
         setUp(machine, setting);
         while (_input.hasNextLine()) {
             String next = _input.nextLine();
