@@ -33,4 +33,6 @@ class MovingRotor extends Rotor {
         this.set(permutation().wrap(this.setting() + 1));
     }
 
+    @Override
+    boolean rotates() { return true; }
 }

@@ -114,12 +114,12 @@ class Machine {
     private void advanceAllRotors() {
         Arrays.fill(_booleanArray, false);
         for (int i = 1; i < _sortedRotors.length; i++) {
-            if ((_sortedRotors[i].rotates()
+            if (i == _booleanArray.length - 1) {
+                _booleanArray[i] = true;
+            } else if ((_sortedRotors[i].rotates()
                     && _sortedRotors[i + 1].atNotch())) {
                 _booleanArray[i] = true;
                 _booleanArray[i + 1] = true;
-            } else if (i == _booleanArray.length - 1) {
-                _booleanArray[i] = true;
             }
         }
         for (int i = 0; i < _sortedRotors.length; i++) {
