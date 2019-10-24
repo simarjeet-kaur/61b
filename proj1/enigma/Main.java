@@ -166,6 +166,9 @@ public final class Main {
         String [] set = settings.split(" +");
         String [] rotors = new String[numRotors];
         System.arraycopy(set, 1, rotors, 0, numRotors);
+        if (numRotors + 1 > set.length - 1) {
+            throw new EnigmaException("Incorrect Length");
+        }
         String setting = set[numRotors + 1];
         M.insertRotors(rotors);
         M.setRotors(setting);
