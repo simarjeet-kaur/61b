@@ -114,7 +114,7 @@ class Board {
 
     /** Return the contents of the square at COL ROW. */
     final Piece get(char col, char row) {
-        return get(row - '1', col - 'a');
+        return get(col - 'a', row - '1');
     }
 
     /** Set square S to P. */
