@@ -141,7 +141,7 @@ class Board {
 
     /** Return true iff FROM is a valid starting square for a move. */
     boolean isLegal(Square from) {
-        return get(from) == _turn;
+        return get(from).side() == _turn;
     }
 
     /** Return true iff FROM-TO is a valid move. */

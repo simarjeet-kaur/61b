@@ -5,7 +5,7 @@ package tablut;
  */
 enum Piece {
 
-    /* EMPTY: empty square. WHITE and BLACK: pieces, SPEAR: a spear. */
+    /* EMPTY: empty square. WHITE, BLACK, and KING: pieces. */
     EMPTY("-", null), WHITE("W", "White"), BLACK("B", "Black"),
     KING("K", "King");
 
