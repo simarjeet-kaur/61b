@@ -18,7 +18,6 @@ public class ListUtilities {
 				input.remove(i);
 			}
 		}
-
 		return input;
 	}
 }

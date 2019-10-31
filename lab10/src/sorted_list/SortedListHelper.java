@@ -19,7 +19,7 @@ public class SortedListHelper {
         boolean inserted = false;
 
         for (int i = 0; i < list.size(); i++) {
-            if (item.compareTo(list.get(i)) < 0) {
+            if ((item.compareTo(list.get(i)) < 0) && !inserted) {
                 list.add(i, item);
                 inserted = true;
             }

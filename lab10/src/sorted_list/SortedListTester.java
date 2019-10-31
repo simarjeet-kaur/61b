@@ -42,5 +42,9 @@ public class SortedListTester {
 		SortedListHelper.insertIntoSortedList(list, 60);
 		assertEquals(3, list.size());
 		assertTrue(SortedListHelper.isListSorted(list));
+
+		SortedListHelper.insertIntoSortedList(list, 30);
+		assertEquals(4, list.size());
+		assertTrue(SortedListHelper.isListSorted(list));
 	}
 }
