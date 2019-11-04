@@ -5,6 +5,7 @@ import jdk.jshell.spi.ExecutionControl;
 import java.util.Formatter;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Stack;
 
 import static tablut.Piece.*;
 import static tablut.Square.*;
@@ -57,12 +58,12 @@ class  Board {
             return;
         }
         init();
-        this._limit = _limit;
-        this._board = _board;
-        this._turn = _turn;
-        this._winner = _winner;
-        this._moveCount = _moveCount;
-        this._repeated = _repeated;
+        _limit = model._limit;
+        _board = model._board ;
+        _turn = model._turn;
+        _winner = model._winner;
+        _moveCount = model._moveCount;
+        _repeated = model._repeated;
     }
 
     /** Clears the board to the initial position. */
@@ -137,9 +138,10 @@ class  Board {
      *  0 <= COL, ROW <= 9. */
     final Piece get(int col, int row) {
         if (col < 0 || row > 9) {
-            throw new ExceptionInInitializerError("Invalid input"); //fixme
+            throw new ExceptionInInitializerError("Invalid input"); //fixme - what
+            //should go in the exception name
         }
-        return _board[row][col]; // FIXME
+        return _board[row][col]; // fixme
     }
 
     /** Return the contents of the square at COL ROW. */
@@ -154,7 +156,9 @@ class  Board {
 
     /** Set square S to P and record for undoing. */
     final void revPut(Piece p, Square s) {
-        // FIXME
+        //previous.push(null); //how to record - record the move or the changing?
+        //FIXME
+        put(p, s);
     }
 
     /** Set square COL ROW to P. */
@@ -166,6 +170,13 @@ class  Board {
      *  board.  For this to be true, FROM-TO must be a rook move and the
      *  squares along it, other than FROM, must be empty. */
     boolean isUnblockedMove(Square from, Square to) {
+        if (from.isRookMove(to)) {
+            //iterate through all the squares in between from and to
+            //make sure their pieces are empty
+           // if (piece != empty) {
+            //    break;
+            //}
+        }
         return false; // FIXME
     }
 
@@ -176,8 +187,22 @@ class  Board {
 
     /** Return true iff FROM-TO is a valid move. */
     boolean isLegal(Square from, Square to) {
+        if (isUnblockedMove(from, to) && to != THRONE) {
+            return true;
+        } else if (isUnblockedMove(from, to) && to == THRONE) {
+            return get(from) == KING;
+        }
         return false; // FIXME
+
+//        All pieces move like chess rooks: any number of
+//        squares orthogonally (horizontally or vertically).
+//        Pieces may not jump over each other or land on top
+//        of another piece. No piece other than the king may
+//        land on the throne, although any piece may pass through
+//        it when it is empty.
+
     }
+
 
     /** Return true iff MOVE is a legal move in the current
      *  position. */
@@ -188,6 +213,7 @@ class  Board {
     /** Move FROM-TO, assuming this is a legal move. */
     void makeMove(Square from, Square to) {
         assert isLegal(from, to);
+        put(get(from), to);
         // FIXME
     }
 
@@ -220,12 +246,18 @@ class  Board {
     /** Clear the undo stack and board-position counts. Does not modify the
      *  current position or win status. */
     void clearUndo() {
-        // FIXME
+        //clear stack
+        //previous.clear();
+        //clear board position counts
+        //FIXME
+        //make sure current position and win status stay the same
     }
 
     /** Return a new mutable list of all legal moves on the current board for
      *  SIDE (ignoring whose turn it is at the moment). */
     List<Move> legalMoves(Piece side) {
+//        for (int i = 0)
+            //when is move ever defined and what the heck is it?
         return null;  // FIXME
     }
 
@@ -293,10 +325,14 @@ class  Board {
     private boolean _repeated;
     /**Limit*/
     private int _limit;
-    /**board initialization*/
+    /**Board initialization.*/
     private Piece[][] _board;
-    /**record of moves*/
-    private Piece[] _moves; //should probably be something else, but the idea is there
+    /**Current positions.*/
+    private Square _currentPosition;
+    /**Stack that represents the past moves.*/
+    private Stack _previous;
+    /**List of valid moves.*/
+    private List<Move> _moves;
     // FIXME: Other state?
 
 }
