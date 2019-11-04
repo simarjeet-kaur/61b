@@ -1,5 +1,7 @@
 package tablut;
 
+import jdk.jshell.spi.ExecutionControl;
+
 import java.util.Formatter;
 import java.util.HashSet;
 import java.util.List;
@@ -10,9 +12,9 @@ import static tablut.Move.mv;
 
 
 /** The state of a Tablut Game.
- *  @author
+ *  @author Simarjeet Kaur
  */
-class Board {
+class  Board {
 
     /** The number of squares on a side of the board. */
     static final int SIZE = 9;
@@ -55,16 +57,40 @@ class Board {
             return;
         }
         init();
-        // FIXME
+        this._limit = _limit;
+        this._board = _board;
+        this._turn = _turn;
+        this._winner = _winner;
+        this._moveCount = _moveCount;
+        this._repeated = _repeated;
     }
 
     /** Clears the board to the initial position. */
     void init() {
-        // FIXME
+        _board = new Piece[SIZE][SIZE];
+        for (Square s : INITIAL_DEFENDERS) {
+            put(WHITE, s);
+        }
+        for (Square s : INITIAL_ATTACKERS) {
+            put(BLACK, s);
+        }
+        for (int i = 0; i < SIZE; i ++) {
+            for (int j = 0; j < SIZE; j ++) {
+                if (_board[j][i] == null) {
+                    put(EMPTY, sq(i, j));
+                }
+            }
+        }
+        put(KING, sq(THRONE.row(), THRONE.col()));
+//        _board[THRONE.row()][THRONE.col()] = get(THRONE);
     }
 
     /** Set the move limit to LIM.  It is an error if 2*LIM <= moveCount(). */
-    void setMoveLimit(int n) {
+    void setMoveLimit(int LIM) {
+        if (2*LIM <= moveCount()) {
+            //throw new Exception("Limit is incorrect");
+        }
+        _limit = LIM;
         // FIXME
     }
 
@@ -87,6 +113,7 @@ class Board {
     /** Record current position and set winner() next mover if the current
      *  position is a repeat. */
     private void checkRepeated() {
+
         // FIXME
     }
 
@@ -98,7 +125,7 @@ class Board {
 
     /** Return location of the king. */
     Square kingPosition() {
-        return null; // FIXME
+        return null; // _board[THRONE.row()][THRONE.col()]; // FIXME
     }
 
     /** Return the contents the square at S. */
@@ -109,7 +136,10 @@ class Board {
     /** Return the contents of the square at (COL, ROW), where
      *  0 <= COL, ROW <= 9. */
     final Piece get(int col, int row) {
-        return null; // FIXME
+        if (col < 0 || row > 9) {
+            throw new ExceptionInInitializerError("Invalid input"); //fixme
+        }
+        return _board[row][col]; // FIXME
     }
 
     /** Return the contents of the square at COL ROW. */
@@ -119,7 +149,7 @@ class Board {
 
     /** Set square S to P. */
     final void put(Piece p, Square s) {
-        // FIXME
+        _board[s.row()][s.col()] = p; //fixme
     }
 
     /** Set square S to P and record for undoing. */
@@ -201,7 +231,7 @@ class Board {
 
     /** Return true iff SIDE has a legal move. */
     boolean hasMove(Piece side) {
-        return false; // FIXME
+        return legalMoves(side) != null; // FIXME
     }
 
     @Override
@@ -261,7 +291,12 @@ class Board {
     private int _moveCount;
     /** True when current board is a repeated position (ending the game). */
     private boolean _repeated;
-
+    /**Limit*/
+    private int _limit;
+    /**board initialization*/
+    private Piece[][] _board;
+    /**record of moves*/
+    private Piece[] _moves; //should probably be something else, but the idea is there
     // FIXME: Other state?
 
 }
