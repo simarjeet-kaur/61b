@@ -1,7 +1,9 @@
 package tablut;
+
 import org.junit.Test;
 import static org.junit.Assert.*;
 import ucb.junit.textui;
+import java.util.List;
 
 /** Junit tests for our Tablut Board class.
  *  @author Vivant Sakore
@@ -10,7 +12,7 @@ public class TablutTests {
 
     /** Run the JUnit tests in this package. */
     public static void main(String[] ignored) {
-        textui.runClasses(IteratorTests.class);
+        textui.runClasses(TablutTests.class);
     }
 
     /**
