@@ -69,6 +69,12 @@ class  Board {
     /** Clears the board to the initial position. */
     void init() {
         _board = new Piece[SIZE][SIZE];
+        _turn = BLACK;
+        _limit = 0; //fix
+        _winner = null;
+        _moveCount = 0; //fix
+        _repeated = false; //fix
+
         for (Square s : INITIAL_DEFENDERS) {
             put(WHITE, s);
         }
@@ -83,16 +89,16 @@ class  Board {
             }
         }
         put(KING, sq(THRONE.row(), THRONE.col()));
-//        _board[THRONE.row()][THRONE.col()] = get(THRONE);
+        //take a snapshot here in your hashset
     }
 
     /** Set the move limit to LIM.  It is an error if 2*LIM <= moveCount(). */
     void setMoveLimit(int LIM) {
         if (2*LIM <= moveCount()) {
-            //throw new Exception("Limit is incorrect");
+            throw new IllegalArgumentException("Limit input is incorrect");
         }
         _limit = LIM;
-        // FIXME
+        // fixme
     }
 
     /** Return a Piece representing whose move it is (WHITE or BLACK). */
@@ -114,6 +120,7 @@ class  Board {
     /** Record current position and set winner() next mover if the current
      *  position is a repeat. */
     private void checkRepeated() {
+        //ask about this
 
         // FIXME
     }
@@ -126,7 +133,7 @@ class  Board {
 
     /** Return location of the king. */
     Square kingPosition() {
-        return null; // _board[THRONE.row()][THRONE.col()]; // FIXME
+        return null; //_board[THRONE.row()]; // _board[THRONE.row()][THRONE.col()]; // FIXME
     }
 
     /** Return the contents the square at S. */
@@ -156,8 +163,8 @@ class  Board {
 
     /** Set square S to P and record for undoing. */
     final void revPut(Piece p, Square s) {
-        //previous.push(null); //how to record - record the move or the changing?
-        //FIXME
+       //how to record - record the move or the changing?
+        //is this really necessary to implement?
         put(p, s);
     }
 
@@ -171,14 +178,48 @@ class  Board {
      *  squares along it, other than FROM, must be empty. */
     boolean isUnblockedMove(Square from, Square to) {
         if (from.isRookMove(to)) {
+            if (from.row() == to.row() && to.col() > from.col()) {
+                for (int i = from.col(); i < to.col(); i++) {
+                    if (_board[to.row()][i] != EMPTY) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        } else if (from.row() == to.row() && to.col() < from.col()) {
+            for (int i = to.col(); i < from.col(); i++) {
+                if (_board[to.row()][i] != EMPTY) {
+                    return false;
+                }
+            }
+            return true;
+        } else if (from.col() == to.col() && to.row() > from.row()) {
+            for (int i = from.row(); i < to.row(); i++) {
+                if (_board[i][to.col()] != EMPTY) {
+                    return false;
+                }
+            }
+            return true;
+        } else if (from.col() == to.col() && to.row() < from.row()) {
+            for (int i = to.row(); i < from.row(); i++) {
+                if (_board[i][to.col()] != EMPTY) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+            //for loop between each sqaure in between from and to and see if it's empty
             //iterate through all the squares in between from and to
             //make sure their pieces are empty
            // if (piece != empty) {
             //    break;
             //}
-        }
-        return false; // FIXME
-    }
+            //is there a chance they'll give you the same piece, as in like no moving
+            //?
+        // FIXME
+
 
     /** Return true iff FROM is a valid starting square for a move. */
     boolean isLegal(Square from) {
@@ -187,12 +228,16 @@ class  Board {
 
     /** Return true iff FROM-TO is a valid move. */
     boolean isLegal(Square from, Square to) {
-        if (isUnblockedMove(from, to) && to != THRONE) {
+            //limit count is over
+        if (_moveCount <= 0) {
+            return false;
+        } else if (isUnblockedMove(from, to) && to != THRONE) {
             return true;
+            //if you're going to a throne, you need to check if you're starting as a king going to a throne's spot
         } else if (isUnblockedMove(from, to) && to == THRONE) {
             return get(from) == KING;
-        }
-        return false; // FIXME
+            //if it's blocked, return false
+        } else return isUnblockedMove(from, to);
 
 //        All pieces move like chess rooks: any number of
 //        squares orthogonally (horizontally or vertically).
@@ -200,6 +245,7 @@ class  Board {
 //        of another piece. No piece other than the king may
 //        land on the throne, although any piece may pass through
 //        it when it is empty.
+        //check if there are no more moves too - move count limit
 
     }
 
@@ -213,8 +259,25 @@ class  Board {
     /** Move FROM-TO, assuming this is a legal move. */
     void makeMove(Square from, Square to) {
         assert isLegal(from, to);
-        put(get(from), to);
+        if (_moveCount <= _limit) {
+            put(get(from), to);
+            put(EMPTY, from);
+            _previous.push(mv(from, to)); //stack of moves
+            _gameStates.add(encodedBoard()); //hashSet of gameStates
+            //decrement the move count here too
+            _moveCount = _moveCount - 1;
+            if (_turn == BLACK) {
+                _turn = WHITE;
+            } else {
+                _turn = BLACK;
+            }
+        }
+        //make from empty
         // FIXME
+
+        //add to your hashset of game states
+        //check to see if the previous board is the same as this one according to
+        //spec change the winner
     }
 
     /** Move according to MOVE, assuming it is a legal move. */
@@ -234,11 +297,18 @@ class  Board {
             undoPosition();
             // FIXME
         }
+        //removing the game state from the hashset
+        //changing the instance variable
+        //get rid of the last move from the stack
+        //how to control moving a space back -
     }
 
     /** Remove record of current position in the set of positions encountered,
      *  unless it is a repeated position or we are at the first move. */
     private void undoPosition() {
+        //check all the things a board records and check what you need to change
+        //there are a lot of things it stores each time that you need to change
+        //remove the record of the current position unless
         // FIXME
         _repeated = false;
     }
@@ -246,24 +316,42 @@ class  Board {
     /** Clear the undo stack and board-position counts. Does not modify the
      *  current position or win status. */
     void clearUndo() {
+        //what is a board position account
         //clear stack
-        //previous.clear();
+        _previous.clear();
         //clear board position counts
-        //FIXME
+        _moveCount = 0;
+        //get rid of gamestates too?
+        //fixme
         //make sure current position and win status stay the same
     }
 
     /** Return a new mutable list of all legal moves on the current board for
      *  SIDE (ignoring whose turn it is at the moment). */
     List<Move> legalMoves(Piece side) {
-//        for (int i = 0)
-            //when is move ever defined and what the heck is it?
-        return null;  // FIXME
+        Square compared = null;
+        for (int i = 0; i < _board.length; i++) {
+            for (int j = 0; j < _board.length; j++) {
+                if (_board[i][j] == side) {
+                    compared = sq(i, j);
+                }
+            }
+        }
+
+        for (int i = 0; i < _board.length; i++) {
+            for (int j = 0; j < _board.length; j++)  {
+                if (isLegal(compared, sq(i, j))) {
+                    //isLegal takes in two squares
+                    _moves.add(mv(compared, sq(i, j)));
+                }
+            }
+        }
+        return _moves;  // fixme
     }
 
     /** Return true iff SIDE has a legal move. */
     boolean hasMove(Piece side) {
-        return legalMoves(side) != null; // FIXME
+        return _moves.size() > 0; // fixme
     }
 
     @Override
@@ -330,9 +418,11 @@ class  Board {
     /**Current positions.*/
     private Square _currentPosition;
     /**Stack that represents the past moves.*/
-    private Stack _previous;
+    private Stack<Move> _previous;
     /**List of valid moves.*/
     private List<Move> _moves;
+    /**HashSet of GameStates.*/
+    private HashSet<String> _gameStates;
     // FIXME: Other state?
 
 }
