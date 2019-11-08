@@ -254,7 +254,7 @@ class Board {
 
     /** Piece whose turn it is (WHITE or BLACK). */
     private Piece _turn;
-    /** Cached value of winner on this board, or EMPTY if it has not been
+    /** Cached value of winner on this board, or null if it has not been
      *  computed. */
     private Piece _winner;
     /** Number of (still undone) moves since initial position. */
