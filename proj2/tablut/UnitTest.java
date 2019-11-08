@@ -52,19 +52,48 @@ public class UnitTest {
     public void testIsUnblocked() {
         Board _testBoard;
         _testBoard = new Board();
-        assertEquals(true, _testBoard.isUnblockedMove(sq(0), sq(2)));
-        assertEquals(false, _testBoard.isUnblockedMove(sq(0), sq(9)));
+        assertEquals(true, _testBoard.isUnblockedMove(sq(5), sq(8)));
+        assertEquals(false, _testBoard.isUnblockedMove(sq(4), sq(8)));
         assertEquals(false, _testBoard.isUnblockedMove(sq(8), sq(80)));
         assertEquals(false, _testBoard.isUnblockedMove(sq(8), sq(9)));
+        assertEquals(true, _testBoard.isUnblockedMove(sq(5), sq(8)));
+        assertEquals(true, _testBoard.isUnblockedMove(sq(3), sq(12)));
     }
 
     @Test
     public void TestIsLegal() {
         Board _testBoard;
         _testBoard = new Board();
-        //assertEquals(true, _testBoard.isLegal());
+        _testBoard.setMoveLimit(5);
+        assertEquals(true, _testBoard.isLegal(sq(5), sq(8)));
+        assertEquals(false, _testBoard.isLegal(sq(3), sq(5)));
+        assertEquals(true, _testBoard.isLegal(sq(3), sq(12)));
+        assertEquals(true, _testBoard.isLegal(sq(42), sq(78)));
+        assertEquals(true, _testBoard.isLegal(sq(43), sq(52)));
+        //   assertEquals(false,)
     }
+//
+//    @Test
+//    public void testMakeMove() {
+//        Board _testBoard;
+//        _testBoard = new Board();
+//        _testBoard.setMoveLimit(5);
+//        _testBoard.makeMove(sq(3), sq(2));
+//        Piece taken = _testBoard.get(sq(2));
+//        assertEquals(taken, Piece.EMPTY);
+//        assertEquals(_testBoard.get(sq(3)), taken);
+//    }
 
+    @Test
+    public void testPut() {
+        Board _testBoard;
+        _testBoard = new Board();
+        _testBoard.put(Piece.EMPTY, sq(4, 0));
+        assertEquals(Piece.EMPTY, _testBoard.get(4, 0));
+        _testBoard.put(Piece.BLACK, sq(0, 0));
+        assertEquals(Piece.BLACK, _testBoard.get(0, 0));
+    }
 }
+
 
 
