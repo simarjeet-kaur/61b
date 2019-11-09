@@ -122,11 +122,13 @@ class  Board {
      *  position is a repeat. */
     private void checkRepeated() {
         if (_gameStates.contains(encodedBoard())) {
+            _repeated = true;
             if (_turn == BLACK) {
                 _winner = WHITE;
             } else {
                 _winner = BLACK;
             }
+            //FIXME: how do you end the game here
         }
         // fixme
     }
@@ -281,13 +283,54 @@ class  Board {
 
     /** Move FROM-TO, assuming this is a legal move. */
     void makeMove(Square from, Square to) {
+        //assert that it is a legal move
         assert isLegal(from, to);
+        //check the movecount before you make a move (check if this is
+        //already in isLegal
         if (_moveCount <= _limit) {
+            //move the from and to using put, from becomes empty after you move it
             put(get(from), to);
             put(EMPTY, from);
-            //FIXME - also check the captured around it before you check repeated
-            //checking if it's a repeat before you add it
+            //set these arraylists to new empty array lists so you can add them to the stacks
+            ArrayList<Piece> _capturedPieces = new ArrayList<Piece>();
+            ArrayList<Square> _capturedSquares = new ArrayList<Square>();
+            for (int i = 0; i < 4; i++) {
+                Square s0 = to;
+                Square s2 = to.rookMove(i, 2);
+                Square between = s0.between(s2);
+                if (get(s0) == get(s2) && get(between) != EMPTY && between != THRONE) {
+                    //FIXME throne case
+
+                    //Square between = s0.between(s2);
+                    capture(s0, s2);
+                    _capturedSquares.add(between);
+                    _capturedPieces.add(get(between));
+                } else if (get(s0) == get(s2) && between == THRONE) {
+
+ //                   Captures result only as a result of enemy moves;
+//                    a piece may move so as to land between two enemy
+//                    pieces without being captured. A single move can
+//                    capture up to three pieces.
+//
+//                    The king is captured like other pieces except when
+//                    he is on the throne square or on one of the four
+//                    squares orthogonally adjacent to the throne. In
+//                    that case, the king is captured only when surrounded
+//                    on all four sides by hostile squares (of which
+//                    the empty throne may be one).
+
+                }
+            }
+            //adding the arraylists to the stacks you've made
+            _undoSquares.add(_capturedSquares);
+            _undoPieces.add(_capturedPieces);
+            //also check the captured around it before you check repeated
+            //check repeated before you add it to the stack - maybe add to the stack in
+            //check repeated so you don't add it to the stack if it is repeated
             checkRepeated();
+            //figure out how to end the game if the check repeated is called and goes through
+            //maybe do some sort of if statement to see if the winner changed - how do you end
+            //the game basically FIXME QUESTION ABOUT ENDING THE GAME
             //add to moves stack
             _undoMoves.push(mv(from, to)); //stack of moves
             //add to gameStates hashset
@@ -317,6 +360,9 @@ class  Board {
     /** Capture the piece between SQ0 and SQ2, assuming a piece just moved to
      *  SQ0 and the necessary conditions are satisfied. */
     private void capture(Square sq0, Square sq2) {
+        Square between = sq0.between(sq2);
+        _board[between.col()][between.row()] = get(sq0);
+
        // if (sq0.isRookMove(sq2) && null) {
 
         //capture - store the piece that was capture and it's location
