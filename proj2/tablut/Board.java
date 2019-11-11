@@ -298,19 +298,41 @@ class  Board {
                 Square s0 = to;
                 Square s2 = to.rookMove(i, 2);
                 Square between = s0.between(s2);
-                if (get(s0) == get(s2) && get(between) != EMPTY && between != THRONE) {
+                if (get(s0) == get(s2) && between != THRONE) {
                     //FIXME throne case
-
+                    //THRONE is the square the piece KING is in
                     //Square between = s0.between(s2);
                     capture(s0, s2);
                     _capturedSquares.add(between);
                     _capturedPieces.add(get(between));
-                } else if (get(s0) == get(s2) && between == THRONE) {
+                } else if (get(s0) == get(s2) && get(between) == EMPTY || get(s0) != get(s2)) {
+                    _capturedSquares.add(null);
+                    _capturedPieces.add(null);
+                } else if (get(s0) == get(s2) && get(between) == KING && between == THRONE) {
+                    boolean check = true;
+                    for (int j = 0; j < 4; j ++) {
+                        Square sA = between;
+                        Square sC = to.rookMove(i, 2);
+                        if (get(sA) != get(sC)) {
+                            check = false;
+                        }
+                    }
+                    if (check) {
+                        _capturedSquares.add(THRONE);
+                        _capturedPieces.add(KING);
+                    } else {
+                        _capturedSquares.add(null);
+                        _capturedPieces.add(null);
+                    }
 
  //                   Captures result only as a result of enemy moves;
 //                    a piece may move so as to land between two enemy
 //                    pieces without being captured. A single move can
 //                    capture up to three pieces.
+
+//                      //this is taken care of in the if statements,
+                        //capture is not checked from when something moves into a captured position,
+                        //only checked when it is the s0 and s2 moving
 //
 //                    The king is captured like other pieces except when
 //                    he is on the throne square or on one of the four
@@ -359,9 +381,11 @@ class  Board {
 
     /** Capture the piece between SQ0 and SQ2, assuming a piece just moved to
      *  SQ0 and the necessary conditions are satisfied. */
-    private void capture(Square sq0, Square sq2) {
+    void capture(Square sq0, Square sq2) {
         Square between = sq0.between(sq2);
-        _board[between.col()][between.row()] = get(sq0);
+        if (get(sq0) == get(sq2)) {
+            _board[between.col()][between.row()] = get(sq0);
+        }
 
        // if (sq0.isRookMove(sq2) && null) {
 

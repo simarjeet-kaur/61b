@@ -93,6 +93,21 @@ public class UnitTest {
         _testBoard.put(Piece.BLACK, sq(0, 0));
         assertEquals(Piece.BLACK, _testBoard.get(0, 0));
     }
+
+    @Test
+    public void testCapture() {
+        Board _testBoard;
+        _testBoard = new Board();
+        _testBoard.put(Piece.WHITE, sq(2, 0));
+        _testBoard.put(Piece.BLACK, sq(1, 0));
+        _testBoard.capture(sq(3, 0), sq(1, 0));
+        assertEquals(Piece.BLACK, _testBoard.get(sq(2, 0)));
+        _testBoard.put(Piece.WHITE, sq(0, 0));
+        _testBoard.put(Piece.BLACK, sq(0, 1));
+        _testBoard.put(Piece.BLACK, sq(0, 2));
+        _testBoard.capture(sq(0, 0), sq(0, 2));
+        assertEquals(Piece.BLACK, _testBoard.get(sq(0, 1)));
+    }
 }
 
 
