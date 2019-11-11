@@ -70,9 +70,9 @@ public class BTree<T extends Comparable<T>> {
         /** A node containing the keys in KEYS and null children. */
         @SuppressWarnings("unchecked")
         TwoThreeFourNode(T... keys) {
-            this.items = (T[]) new Object[items.length];
-            System.arraycopy(items, 0, this.items, 0, items.length);
-            this.children = (Node<T>[]) new Node[items.length + 1];
+            items = (T[]) new Object[keys.length];
+            System.arraycopy(keys, 0, this.items, 0, keys.length);
+            children = (Node<T>[]) new Node[keys.length + 1];
         }
 
         @Override

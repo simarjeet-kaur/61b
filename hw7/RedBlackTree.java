@@ -169,7 +169,7 @@ public class RedBlackTree<T extends Comparable<T>> {
          * children.
          */
         RBTreeNode(boolean black, T value) {
-            this(black, item, null, null);
+            this(black, value, null, null);
         }
 
         /**
@@ -180,7 +180,7 @@ public class RedBlackTree<T extends Comparable<T>> {
                    RBTreeNode<T> lft, RBTreeNode<T> rght) {
             isBlack = black;
             item = value;
-            left = lfft;
+            left = lft;
             right = rght;
         }
     }
