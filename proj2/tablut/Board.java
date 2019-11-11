@@ -297,20 +297,28 @@ class  Board {
             for (int i = 0; i < 4; i++) {
                 Square s0 = to;
                 Square s2 = to.rookMove(i, 2);
-                Square between = s0.between(s2);
-                if (get(s0) == get(s2) && between != THRONE) {
+                Square between;
+                if (s2 == null) {
+                    between = null;
+                } else {
+                    between = s0.between(s2);
+                }
+                if (between == null) {
+                    _capturedSquares.add(null);
+                    _capturedPieces.add(null);
+                } else if (get(s0) == get(s2) && get(between) == EMPTY || get(s0) != get(s2)) {
+                    _capturedSquares.add(null);
+                    _capturedPieces.add(null);
+                } else if (get(s0) == get(s2) && get(between) == KING && between != THRONE) {
                     //FIXME throne case
                     //THRONE is the square the piece KING is in
                     //Square between = s0.between(s2);
                     capture(s0, s2);
                     _capturedSquares.add(between);
                     _capturedPieces.add(get(between));
-                } else if (get(s0) == get(s2) && get(between) == EMPTY || get(s0) != get(s2)) {
-                    _capturedSquares.add(null);
-                    _capturedPieces.add(null);
                 } else if (get(s0) == get(s2) && get(between) == KING && between == THRONE) {
                     boolean check = true;
-                    for (int j = 0; j < 4; j ++) {
+                    for (int j = 0; j < 4; j++) {
                         Square sA = between;
                         Square sC = to.rookMove(i, 2);
                         if (get(sA) != get(sC)) {
@@ -320,10 +328,12 @@ class  Board {
                     if (check) {
                         _capturedSquares.add(THRONE);
                         _capturedPieces.add(KING);
+                        _winner = BLACK;
                     } else {
                         _capturedSquares.add(null);
                         _capturedPieces.add(null);
                     }
+                }
 
  //                   Captures result only as a result of enemy moves;
 //                    a piece may move so as to land between two enemy
@@ -340,7 +350,8 @@ class  Board {
 //                    that case, the king is captured only when surrounded
 //                    on all four sides by hostile squares (of which
 //                    the empty throne may be one).
-
+                if (get(from) == KING && to.isEdge()) {
+                    _winner = WHITE;
                 }
             }
             //adding the arraylists to the stacks you've made
