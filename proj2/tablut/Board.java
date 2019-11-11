@@ -246,14 +246,14 @@ class  Board {
     /** Return true iff FROM-TO is a valid move. */
     boolean isLegal(Square from, Square to) {
             //limit count is over
-        if (isUnblockedMove(from, to) && to == THRONE && get(from) == KING) {
-            return turn() == WHITE;
+       if (_turn != get(from) && get(from) != KING) {
+           return false;
+       } else if (isUnblockedMove(from, to) && to == THRONE && get(from) == KING) {
+            return _turn == WHITE;
         } else if (isUnblockedMove(from, to) && to != THRONE) {
             return true;
             //if you're going to a throne, you need to check if you're starting as a king going to a throne's spot
             //if it's blocked, return false
-        } else if (turn() != get(from)) {
-            return false;
         } else return isUnblockedMove(from, to);
 //
 //        if (_winner != null) {
