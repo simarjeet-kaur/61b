@@ -246,14 +246,14 @@ class  Board {
     /** Return true iff FROM-TO is a valid move. */
     boolean isLegal(Square from, Square to) {
             //limit count is over
-        if (turn() != get(from)) {
-            return false;
-        } else if (isUnblockedMove(from, to) && to == THRONE){
-            return get(from) == KING;
+        if (isUnblockedMove(from, to) && to == THRONE && get(from) == KING) {
+            return turn() == WHITE;
         } else if (isUnblockedMove(from, to) && to != THRONE) {
             return true;
             //if you're going to a throne, you need to check if you're starting as a king going to a throne's spot
             //if it's blocked, return false
+        } else if (turn() != get(from)) {
+            return false;
         } else return isUnblockedMove(from, to);
 //
 //        if (_winner != null) {
@@ -289,6 +289,9 @@ class  Board {
         //already in isLegal
         if (_moveCount <= _limit) {
             //move the from and to using put, from becomes empty after you move it
+            if (get(from) == KING && to.isEdge()) {
+                _winner = WHITE;
+            }
             put(get(from), to);
             put(EMPTY, from);
             //set these arraylists to new empty array lists so you can add them to the stacks
@@ -350,9 +353,6 @@ class  Board {
 //                    that case, the king is captured only when surrounded
 //                    on all four sides by hostile squares (of which
 //                    the empty throne may be one).
-                if (get(from) == KING && to.isEdge()) {
-                    _winner = WHITE;
-                }
             }
             //adding the arraylists to the stacks you've made
             _undoSquares.add(_capturedSquares);

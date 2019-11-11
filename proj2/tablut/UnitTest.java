@@ -113,7 +113,23 @@ public class UnitTest {
     public void testMakeMove() {
         Board _testBoard;
         _testBoard = new Board();
-        _testBoard.makeMove(sq(3, 0), sq(2, 0));
+        _testBoard.makeMove(sq(7, 4), sq(7, 6));
+        //assertEquals(Piece.BLACK, _testBoard.get(sq(7, 6)));
+        _testBoard.makeMove(sq(4, 3), sq(1, 3));
+        _testBoard.makeMove(sq(4, 4), sq(4, 3));
+        assertEquals(Piece.KING, _testBoard.get(sq(4, 3)));
+    }
+
+    @Test
+    public void testIsLegal() {
+        Board _testBoard;
+        _testBoard = new Board();
+        _testBoard.makeMove(sq(7, 4), sq(7, 6));
+        //assertEquals(Piece.BLACK, _testBoard.get(sq(7, 6)));
+        _testBoard.makeMove(sq(4, 3), sq(1, 3));
+        assertTrue(_testBoard.isLegal(sq(4, 4), sq(4, 3)));
+        //_testBoard.makeMove(sq(4, 4), sq(4, 3));
+        //assertEquals(Piece.KING, _testBoard.get(sq(4, 3)));
     }
 }
 
