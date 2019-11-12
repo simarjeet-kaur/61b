@@ -441,8 +441,12 @@ class  Board {
                     put(Piece.BLACK, square);
                 } else if (piece == BLACK) {
                     put(Piece.WHITE, square);
+                } else if (piece == KING) {
+                    put(Piece.KING, square);
                 }
             }
+            _board = _gameStates.pop();
+            
         }
         //if you're in the first board, don't do anything - movecount checks this
         //removing the game state from the hashset
@@ -560,7 +564,7 @@ class  Board {
 
     /** Piece whose turn it is (WHITE or BLACK). */
     private Piece _turn;
-    /** Cached value of winner on this board, or EMPTY if it has not been
+    /** Cached value of winner on this board, or null if it has not been
      *  computed. */
     private Piece _winner;
     /** Number of (still undone) moves since initial position. */

@@ -7,7 +7,6 @@
 #           to F-1.std (and F-2.std) and report discrepencies.
 #    clean: Remove all the .class files produced by java compilation, 
 #          all Emacs backup files, and testing output files.
-#    outputs: Create .std files from current application and .in files.
 #
 # You can use this file without understanding most of it, of course, but
 # I strongly recommend that you try to figure it out, and where you cannot,
