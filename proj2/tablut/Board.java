@@ -429,6 +429,20 @@ class  Board {
             //capture - store the piece that was capture and it's location
                 //
             // FIXME
+            Move undone = _undoMoves.pop();
+            put(get(undone.from()), sq(undone.from().col(), undone.from().row()));
+            put(get(undone.to()), sq(undone.to().col(), undone.to().row()));
+            ArrayList<Piece> capturedPieces = _undoPieces.pop();
+            ArrayList<Square> capturedSquares = _undoSquares.pop();
+            for (int i = 0; i < capturedPieces.size(); i++) {
+                Piece piece = capturedPieces.get(i);
+                Square square = capturedSquares.get(i);
+                if (piece == WHITE || piece == KING) {
+                    put(Piece.BLACK, square);
+                } else if (piece == BLACK) {
+                    put(Piece.WHITE, square);
+                }
+            }
         }
         //if you're in the first board, don't do anything - movecount checks this
         //removing the game state from the hashset
@@ -449,6 +463,7 @@ class  Board {
         if (!_repeated) {
             _gameStates.remove(encodedBoard());
         }
+
         // FIXME
         _repeated = false;
     }

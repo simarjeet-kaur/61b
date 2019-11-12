@@ -131,6 +131,14 @@ public class UnitTest {
         //_testBoard.makeMove(sq(4, 4), sq(4, 3));
         //assertEquals(Piece.KING, _testBoard.get(sq(4, 3)));
     }
+
+    @Test
+    public void testUndo() {
+        Board _testBoard;
+        _testBoard = new Board();
+        _testBoard.put(Piece.WHITE, sq(2, 0));
+        _testBoard.makeMove(sq());
+    }
 }
 
 
