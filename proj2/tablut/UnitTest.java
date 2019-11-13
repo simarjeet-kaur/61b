@@ -121,6 +121,12 @@ public class UnitTest {
     }
 
     @Test
+    public void testMakeMove1() {
+        Board _testBoard;
+      //  _testBoard.makeMove(sq );
+    }
+
+    @Test
     public void testIsLegal() {
         Board _testBoard;
         _testBoard = new Board();
@@ -137,7 +143,7 @@ public class UnitTest {
         Board _testBoard;
         _testBoard = new Board();
         _testBoard.put(Piece.WHITE, sq(2, 0));
-        _testBoard.makeMove(sq());
+        //_testBoard.makeMove(sq());
     }
 }
 
