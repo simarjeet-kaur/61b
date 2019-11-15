@@ -209,6 +209,9 @@ class AI extends Player {
                         if (saveMove) {
                             _lastFoundMove = m;
                         }
+                        if (beta <= alpha) {
+                            break;
+                        } //FIXME SEE IF YOU NEED THIS
                     }
                     board.undo();
                 }
@@ -247,15 +250,56 @@ class AI extends Player {
         }
         staticCounter = counter - oppCounter;
 
+        //checking how far the king is from the edge and if it's an unblocked move to the edge
+        int distance = 0;
+        int surrounding = 0;
+        for (int i = 0; i < board.getSize(board); i++) {
+            for (int j = 0; j < board.getSize(board); j ++) {
+                if (board.retBoard()[i][j] == KING) {
+                    Piece king = board.retBoard()[i][j];
+                    Square kingS = sq(i, j);
+                    distance = max(i, j);
+
+                    if (i <= j) {
+                        Square edge = sq(0, j);
+                        if (board.isUnblockedMove(kingS, edge)) {
+                            distance = distance * 2;
+                        }
+                    } else {
+                        Square edge = sq(i, 0);
+                        if (board.isUnblockedMove(kingS, edge)) {
+                            distance = distance * 2;
+                        }
+                    }
+
+                    //checking if the king is surrounded by black pieces
+                    Square North = kingS.rookMove(0, 1);
+                    Square East = kingS.rookMove(1, 1);
+                    Square South = kingS.rookMove(2, 1);
+                    Square West = kingS.rookMove(3, 1);
+
+                    if (North != null && board.get(North) == Piece.BLACK) {
+                        surrounding++;
+                    } else if (East != null && board.get(East) == Piece.BLACK) {
+                        surrounding++;
+                    } else if (West != null && board.get(West) == Piece.BLACK) {
+                        surrounding++;
+                    } else if (South != null && board.get(South) == Piece.BLACK) {
+                        surrounding ++;
+                    }
+                }
+            }
+        }
+
+        int score = distance + staticCounter - surrounding;
         //do a bunch of if statements about different cases
 
 
         if (board.turn() == BLACK) {
-        //    if ()
-          //  return ;
+            score = -score;
         }
 
-        return staticCounter;
+        return score;
 
 //        Piece[][] board1 = board.retBoard();
 //        int distance = 0;

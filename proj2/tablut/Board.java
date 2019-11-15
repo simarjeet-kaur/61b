@@ -53,6 +53,20 @@ class Board {
             return;
         }
         init();
+//
+//        this._board = model._board;
+//        this._moveCount = model._moveCount;
+//        this._limit = model._limit;
+//        this._repeated = model._repeated;
+//        this._turn = model._turn;
+//        //this._winner = model._winner;
+//        this._undoPieces = model._undoPieces;
+//        this._undoSquares = model._undoSquares;
+//        this._undoMoves = model._undoMoves;
+//        //this._gameStates = model._gameStates;
+//       // this._checkRepeated = model._checkRepeated;
+//
+
         _limit = model._limit;
         _board = model._board ;
         _turn = model._turn;
@@ -816,6 +830,10 @@ class Board {
     private ArrayList<Move> _legalMoves;
     /**HashSet of GameStates.*/
     private HashSet<String> _gameStates;
+    /** Getting the board size.*/
+    public int getSize(Board board) {
+        return SIZE;
+    }
     // FIXME: Other state?
 
 }
