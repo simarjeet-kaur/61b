@@ -53,6 +53,22 @@ class Board {
             return;
         }
         init();
+
+        _limit = model._limit;
+        for (int i = 0; i < _board.length; i ++) {
+            for (int j = 0; j < _board.length; j ++) {
+                _board[i][j] = model._board[i][j];
+            }
+        }
+        _turn = model._turn;
+        _winner = model._winner;
+        _moveCount = model._moveCount;
+        _repeated = model._repeated;
+        _undoPieces = (Stack<ArrayList<Piece>>) model._undoPieces.clone();
+        _undoSquares = (Stack<ArrayList<Square>>) model._undoSquares.clone();
+        _undoMoves = (Stack<Move>) model._undoMoves.clone();
+        _gameStates = (HashSet<String>) model._gameStates.clone();
+
 //
 //        this._board = model._board;
 //        this._moveCount = model._moveCount;
@@ -66,13 +82,6 @@ class Board {
 //        //this._gameStates = model._gameStates;
 //       // this._checkRepeated = model._checkRepeated;
 //
-
-        _limit = model._limit;
-        _board = model._board ;
-        _turn = model._turn;
-        _winner = model._winner;
-        _moveCount = model._moveCount;
-        _repeated = model._repeated;
     }
 
     /** Clears the board to the initial position. */
@@ -81,13 +90,12 @@ class Board {
         _turn = BLACK;
         _limit = Integer.MAX_VALUE; //fix
         _winner = null;
-        _moveCount = _limit; //fix
+        _moveCount = 0; //fix
         _repeated = false; //fix
         _undoMoves = new Stack<Move>();
         _gameStates = new HashSet<String>();
         _undoPieces = new Stack<ArrayList<Piece>>();
         _undoSquares = new Stack<ArrayList<Square>>();
-
 
         for (Square s : INITIAL_DEFENDERS) {
             put(WHITE, s);
@@ -138,6 +146,7 @@ class Board {
         if (_gameStates.contains(encodedBoard())) {
             _repeated = true;
             if (_turn == BLACK) {
+                //System.out.println("here");
                 _winner = WHITE;
             } else {
                 _winner = BLACK;
@@ -377,6 +386,7 @@ class Board {
         if (_moveCount <= _limit) {
             //move the from and to using put, from becomes empty after you move it
             if (get(from) == KING && to.isEdge()) {
+                //System.out.print("here");
                 _winner = WHITE;
             }
             _undoMoves.push(mv(from, to)); //stack of moves
@@ -560,7 +570,7 @@ class Board {
             //add to gameStates hashset
             _gameStates.add(encodedBoard()); //hashSet of gameStates
             //decrement the move count here too
-            _moveCount = _moveCount - 1;
+            _moveCount = _moveCount + 1;
             if (_turn == BLACK) {
                 _turn = WHITE;
             } else {
@@ -586,6 +596,7 @@ class Board {
         //add to your hashset of game states
         //check to see if the previous board is the same as this one according to
         //spec change the winner
+        //System.out.println(_board);
     }
 
     /** Move according to MOVE, assuming it is a legal move. */
@@ -597,11 +608,11 @@ class Board {
      *  SQ0 and the necessary conditions are satisfied. */
     void capture(Square sq0, Square sq2) {
         Square between = sq0.between(sq2);
-        if (get(sq0) == EMPTY) {
-            _board[between.col()][between.row()] = get(sq2);
-        } else {
-            _board[between.col()][between.row()] = get(sq0);
-        }
+        //if (get(sq0) == EMPTY) {
+            _board[between.col()][between.row()] = Piece.EMPTY;
+        //} else {
+       //     _board[between.col()][between.row()] = get(sq0);
+      //  }
 
        // if (sq0.isRookMove(sq2) && null) {
 

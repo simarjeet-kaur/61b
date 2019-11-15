@@ -143,12 +143,14 @@ class AI extends Player {
             //find min find max simple finds
         //call them from find move, whichever you want to start from
         Board b = new Board(board());
+        //System.out.println(b);
         if (b.turn() == WHITE) {
             findMove(b, maxDepth(b), true, 1, Integer.MIN_VALUE, Integer.MAX_VALUE);
         } else {
             findMove(b, maxDepth(b), true, -1, Integer.MIN_VALUE, Integer.MAX_VALUE);
         }
         // FIXME - see the deal with savemove
+       // System.out.println(b);
         return _lastFoundMove;
     }
 
@@ -263,12 +265,12 @@ class AI extends Player {
                     if (i <= j) {
                         Square edge = sq(0, j);
                         if (board.isUnblockedMove(kingS, edge)) {
-                            distance = distance * 2;
+                            distance = distance * 5;
                         }
                     } else {
                         Square edge = sq(i, 0);
                         if (board.isUnblockedMove(kingS, edge)) {
-                            distance = distance * 2;
+                            distance = distance * 5;
                         }
                     }
 

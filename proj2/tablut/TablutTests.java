@@ -24,7 +24,7 @@ public class TablutTests {
     public void testLegalWhiteMoves() {
         // FIXME: REPLACE THIS LINE - Build a board by initializing it with initialBoardState
         Board b = new Board();
-       // b._turn = Piece.WHITE;
+        //b._turn = Piece.WHITE;
 
         List<Move> movesList = b.legalMoves(Piece.WHITE); // FIXME: Get legal moves for white pieces
 
