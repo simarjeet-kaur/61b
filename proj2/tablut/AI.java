@@ -125,7 +125,9 @@ class AI extends Player {
 
     @Override
     String myMove() {
-        return findMove().toString(); // fixme
+        Move move = findMove();
+        _controller.reportMove(move);
+        return move.toString(); // fixme
     }
 
     @Override
@@ -141,8 +143,12 @@ class AI extends Player {
             //find min find max simple finds
         //call them from find move, whichever you want to start from
         Board b = new Board(board());
-        _lastFoundMove = null;
-        // FIXME
+        if (b.turn() == WHITE) {
+            findMove(b, maxDepth(b), true, 1, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        } else {
+            findMove(b, maxDepth(b), true, -1, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        }
+        // FIXME - see the deal with savemove
         return _lastFoundMove;
     }
 
@@ -160,11 +166,12 @@ class AI extends Player {
                          int sense, int alpha, int beta) {
         //keep changing alpha and beta and call it recursively until you're done
         //keep changing sense depending on what's going on
+        int bestSoFar;
         if (depth == 0 || board.winner() != null) {
             return staticScore(board);
         } else {
             if (sense == 1) {
-                int bestSoFar = -INFTY;
+                bestSoFar = -INFTY;
                 List<Move> whiteMoves = board.legalMoves(Piece.WHITE);
                 //find max goes here
                 for (Move m : whiteMoves) {
@@ -172,35 +179,42 @@ class AI extends Player {
                     //what is alpha, beta, saveMove
                     //int saved = staticScore(board);
                     //response is the next level, what you see while traversing the tree
-                    int response = findMove(board, depth-1, saveMove, -1, alpha, beta);
+                    int response = findMove(board, depth-1, false, -1, alpha, beta); //changed saveMove to be false
                     if (response >= bestSoFar) {
                         bestSoFar = response;
                         //board.setValue(response);
-                        //response = 0; //giving the board a value //FIXME
+                        //response = 0; //giving the board a value
                         alpha = max(alpha, response);
-                        _lastFoundMove = m;
+                        if (saveMove) {
+                            _lastFoundMove = m;
+                        }
                         if (beta <= alpha) {
                             break;
                         }
                     }
                     board.undo();
                 }
-                return 0;
+                //board.makeMove(_lastFoundMove); //FIXME
+                return bestSoFar;
             } else {
             // if (sense == -1) - find min here
-                int bestSoFar = INFTY;
+                bestSoFar = INFTY;
                 List<Move> blackMoves = board.legalMoves(Piece.BLACK);
                 for (Move m : blackMoves) {
                     board.makeMove(m);
-                    int response = findMove(board, depth-1, saveMove, 1, alpha, beta);
+                    int response = findMove(board, depth-1, false, 1, alpha, beta);  //changed saveMove to be false
                     if (response <= bestSoFar) {
                         bestSoFar = response;
                         beta = min(beta, response);
-                        _lastFoundMove = m;
+                        if (saveMove) {
+                            _lastFoundMove = m;
+                        }
                     }
+                    board.undo();
                 }
+                //board.makeMove(_lastFoundMove); //FIXME
             }
-        return 0; // FIXME
+        return bestSoFar; // fixme
         }
     }
 
@@ -212,21 +226,64 @@ class AI extends Player {
 
     /** Return a heuristic value for BOARD. */
     private int staticScore(Board board) {
+
+        //whos the winner
+        Piece winner = board.winner();
+        if (winner == WHITE) {
+            return WINNING_VALUE;
+        } else if (winner == BLACK) {
+            return -WINNING_VALUE;
+        }
+
+        //number of pieces on each side
+        int counter = 0;
+        int oppCounter = 0;
+        int staticCounter = 0;
+        for (Move ignored: board.legalMoves(board.turn())) {
+            counter++;
+        }
+        for (Move ignored : board.legalMoves(board.turn().opponent())) {
+            oppCounter++;
+        }
+        staticCounter = counter - oppCounter;
+
+        //do a bunch of if statements about different cases
+
+
+        if (board.turn() == BLACK) {
+        //    if ()
+          //  return ;
+        }
+
+        return staticCounter;
+
+//        Piece[][] board1 = board.retBoard();
+//        int distance = 0;
+//        int edge = 0;
+//        if (board.turn() == WHITE) {
+//            for (int i = 0; i < Board.SIZE; i++) {
+//                for (int j = 0; j < Board.SIZE; j ++) {
+//                    if (board1[i][j] == KING) {
+//                        distance = min(Board.SIZE+1 - i, Board.SIZE+1 - j);
+//                        Square kingSq = sq(i, j);
+//                    }
+//                    if (board.isLegal(sq(i, j), sq(i, j))) {
+//                        edge = 1;
+//                    }
+//                }
+//            }
+//            return distance + edge;
+//        } else {
+//            return board.pieceLocations(BLACK).size();
+//        }
+
+
         //like simplefindmax
         //black wins if king is capture - check to see how many blacks are on the board, if king surrounded
-        //white wins if king is on an edge, see how close it is to the edge - see if it has a clear way to edge, any black
+        //white wins if king is on an edge, see how close it is to the edge -
+        // see if it has a clear way to edge, any black
         //pieces blocking it, how less black pieces there are
-        return 0;  // FIXME
     }
-
-//    /**Finding the simpMaxMove.*/
-//    Move simpleFindMax(Square square, double alpha, double beta) {
-//        if (square.maxPlayerWon()) {
-//            return "arificial move with value +inifinity";
-//        } else if (square.minPlayerWon()) {
-//            return "arificial "Move" with value -infinity"
-//        }
-//    }
 
     // FIXME: More here.
 
