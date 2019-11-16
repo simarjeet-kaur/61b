@@ -8,7 +8,8 @@ import java.util.List;
 import static tablut.Utils.*;
 
 /** Represents a position on a Tablut board.  Positions are numbered
- *  from 0 (lower-left corner) to BOARD_SIZE * BOARD_SIZE - 1 (upper-right corner).
+ *  from 0 (lower-left corner) to
+ *  BOARD_SIZE * BOARD_SIZE - 1 (upper-right corner).
  *  Squares are immutable and unique: there is precisely one square created for
  *  each distinct position.  Clients create squares using the factory method
  *  sq, not the constructor.  Because there is a unique Square object for each

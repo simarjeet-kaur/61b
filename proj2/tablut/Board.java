@@ -1,6 +1,10 @@
 package tablut;
 
-import java.util.*;
+import java.util.Formatter;
+import java.util.Stack;
+import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 
 import static tablut.Piece.*;
 import static tablut.Square.*;
@@ -55,8 +59,8 @@ class Board {
         init();
 
         _limit = model._limit;
-        for (int i = 0; i < _board.length; i ++) {
-            for (int j = 0; j < _board.length; j ++) {
+        for (int i = 0; i < _board.length; i++) {
+            for (int j = 0; j < _board.length; j++) {
                 _board[i][j] = model._board[i][j];
             }
         }
@@ -68,30 +72,16 @@ class Board {
         _undoSquares = (Stack<ArrayList<Square>>) model._undoSquares.clone();
         _undoMoves = (Stack<Move>) model._undoMoves.clone();
         _gameStates = (HashSet<String>) model._gameStates.clone();
-
-//
-//        this._board = model._board;
-//        this._moveCount = model._moveCount;
-//        this._limit = model._limit;
-//        this._repeated = model._repeated;
-//        this._turn = model._turn;
-//        //this._winner = model._winner;
-//        this._undoPieces = model._undoPieces;
-//        this._undoSquares = model._undoSquares;
-//        this._undoMoves = model._undoMoves;
-//        //this._gameStates = model._gameStates;
-//       // this._checkRepeated = model._checkRepeated;
-//
     }
 
     /** Clears the board to the initial position. */
     void init() {
         _board = new Piece[SIZE][SIZE];
         _turn = BLACK;
-        _limit = Integer.MAX_VALUE; //fix
+        _limit = Integer.MAX_VALUE;
         _winner = null;
-        _moveCount = 0; //fix
-        _repeated = false; //fix
+        _moveCount = 0;
+        _repeated = false;
         _undoMoves = new Stack<Move>();
         _gameStates = new HashSet<String>();
         _undoPieces = new Stack<ArrayList<Piece>>();
@@ -103,25 +93,24 @@ class Board {
         for (Square s : INITIAL_ATTACKERS) {
             put(BLACK, s);
         }
-        for (int i = 0; i < SIZE; i ++) {
-            for (int j = 0; j < SIZE; j ++) {
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
                 if (get(i, j) == null) {
                     put(EMPTY, sq(i, j));
                 }
             }
         }
         put(KING, sq(THRONE.col(), THRONE.row()));
-        //take a snapshot here in your hashset
         _gameStates.add(encodedBoard());
     }
 
-    /** Set the move limit to LIM.  It is an error if 2*LIM <= moveCount(). */
-    void setMoveLimit(int LIM) {
-        if (2*LIM <= moveCount()) {
+    /** Set the move limit to n.  It is an error if 2*n <= moveCount().
+     * @param n is the move limit*/
+    void setMoveLimit(int n) {
+        if (2 * n <= moveCount()) {
             throw new IllegalArgumentException("Limit input is incorrect");
         }
-        _limit = LIM;
-        // fixme
+        _limit = n;
     }
 
     /** Return a Piece representing whose move it is (WHITE or BLACK). */
@@ -145,14 +134,8 @@ class Board {
     private void checkRepeated() {
         if (_gameStates.contains(encodedBoard())) {
             _repeated = true;
-            if (_turn == BLACK) {
-                //System.out.println("here");
-                _winner = WHITE;
-            } else {
-                _winner = BLACK;
-            }
+            _winner = _turn.opponent();
         }
-        // fixme
     }
 
     /** Return the number of moves since the initial position that have not been
@@ -163,9 +146,9 @@ class Board {
 
     /** Return location of the king. */
     Square kingPosition() {
-        int _row = THRONE.row();
-        int _col = THRONE.col();
-        return sq(_col, _row); //_board[THRONE.row()]; // _board[THRONE.row()][THRONE.col()]; // fixme
+        int row = THRONE.row();
+        int col = THRONE.col();
+        return sq(col, row);
     }
 
     /** Return the contents the square at S. */
@@ -177,11 +160,9 @@ class Board {
      *  0 <= COL, ROW <= 9. */
     final Piece get(int col, int row) {
         if (col < 0 || row > 9) {
-            throw new ExceptionInInitializerError("Invalid input"); //fixme - what
-            //should go in the exception name
+            throw new ExceptionInInitializerError("Invalid input");
         }
         return _board[col][row];
-                //_board[row][col]; // fixme - CHANGED
     }
 
     /** Return the contents of the square at COL ROW. */
@@ -191,17 +172,11 @@ class Board {
 
     /** Set square S to P. */
     final void put(Piece p, Square s) {
-        _board[s.col()][s.row()] = p; //fixme
+        _board[s.col()][s.row()] = p;
     }
-    //_board[s.row()][s.col()] = p;
 
     /** Set square S to P and record for undoing. */
     final void revPut(Piece p, Square s) {
-       //how to record - record the move or the changing?
-        //is this really necessary to implement?
-        //_previous.push(mv(get(p), s));
-        //save the record and then call put
-        //don't really need this
         put(p, s);
     }
 
@@ -219,28 +194,28 @@ class Board {
                 return false;
             } else if (from.row() == to.row() && to.col() > from.col()) {
                 for (int i = from.col() + 1; i < to.col(); i++) {
-                    if (_board[i][to.row()] != EMPTY) { //FIXME - SWITCHED
+                    if (_board[i][to.row()] != EMPTY) {
                         return false;
                     }
                 }
                 return true;
             } else if (from.row() == to.row() && to.col() < from.col()) {
                 for (int i = to.col() + 1; i < from.col(); i++) {
-                    if (_board[i][to.row()] != EMPTY) { //FIXME - SWITCHED
+                    if (_board[i][to.row()] != EMPTY) {
                         return false;
                     }
                 }
                 return true;
             } else if (from.col() == to.col() && to.row() > from.row()) {
                 for (int i = from.row() + 1; i < to.row(); i++) {
-                    if (_board[to.col()][i] != EMPTY) { //FIXME- SWITCHED
+                    if (_board[to.col()][i] != EMPTY) {
                         return false;
                     }
                 }
                 return true;
             } else if (from.col() == to.col() && to.row() < from.row()) {
                 for (int i = to.row() + 1; i < from.row(); i++) {
-                    if (_board[to.col()][i] != EMPTY) { //FIXME- SWITCHEd
+                    if (_board[to.col()][i] != EMPTY) {
                         return false;
                     }
                 }
@@ -249,16 +224,6 @@ class Board {
         }
         return false;
     }
-            //for loop between each sqaure in between from and to and see if it's empty
-            //iterate through all the squares in between from and to
-            //make sure their pieces are empty
-           // if (piece != empty) {
-            //    break;
-            //}
-            //is there a chance they'll give you the same piece, as in like no moving
-            //?
-        // FIXME
-
 
     /** Return true iff FROM is a valid starting square for a move. */
     boolean isLegal(Square from) {
@@ -267,25 +232,16 @@ class Board {
 
     /** Return true iff FROM-TO is a valid move. */
     boolean isLegal(Square from, Square to) {
-            //limit count is over
-       if (_turn != get(from) && get(from) != KING) {
-           return false;
-       } else if (isUnblockedMove(from, to) && to == THRONE && get(from) == KING) {
+        if (_turn != get(from) && get(from) != KING) {
+            return false;
+        } else if (isUnblockedMove(from, to) && to == THRONE
+                && get(from) == KING) {
             return _turn == WHITE;
         } else if (isUnblockedMove(from, to) && to != THRONE) {
             return true;
-            //if you're going to a throne, you need to check if you're starting as a king going to a throne's spot
-            //if it's blocked, return false
-        } else return isUnblockedMove(from, to);
-
-//        All pieces move like chess rooks: any number of
-//        squares orthogonally (horizontally or vertically).
-//        Pieces may not jump over each other or land on top
-//        of another piece. No piece other than the king may
-//        land on the throne, although any piece may pass through
-//        it when it is empty.
-        //check if there are no more moves too - move count limit
-
+        } else {
+            return isUnblockedMove(from, to);
+        }
     }
 
 
@@ -295,39 +251,22 @@ class Board {
         return isLegal(move.from(), move.to());
     }
 
-    /**checks if a square is surrounded by hostile squares according to the square it is trying to capture.*/
+    /**Checks if a square is surrounded by hostile squares
+     * according to the square it is trying to capture.
+     * @param middle refers to the square it's taking in
+     * @param compare refers to the square it's comparing to
+     * @return is a boolean*/
     boolean isHostile(Square middle, Square compare) {
-
-        //A piece other than the king is captured when, as a result of
-        // an enemy move to an orthogonally adjacent square, the piece is
-        // enclosed on two opposite sides (again orthogonally) by hostile squares.
-        // A square is hostile if it contains an enemy piece, or if it is the throne
-        // square and is empty (that is, it is hostile to both white and black
-        // pieces).
-
-
-        // The occupied throne is also hostile to white pieces when
-        // three of the four squares surrounding it are occupied by black pieces.
-
-
-        // Captures result only as a result of enemy moves; a piece may move so as
-        // to land between two enemy pieces without being captured. A single move can
-        // capture up to three pieces.
-
-
-        //boolean checked = true;
         if (middle == null || compare == null) {
             return false;
-        } else if ((get(middle) == WHITE || get(middle) == KING) && get(compare) == BLACK) {
-            //FIXME - changed this
+        } else if ((get(middle) == WHITE || get(middle) == KING)
+                && get(compare) == BLACK) {
             return true;
-        } else if (get(middle) == BLACK && get(compare) == WHITE) {
+        } else if ((get(middle) == BLACK && get(compare) == WHITE)
+                || (get(middle) == BLACK && get(compare) == KING)) {
             return true;
         } else if (compare == THRONE && get(compare) == EMPTY) {
             return true;
-
-            //The occupied throne is also hostile to white pieces when
-            // three of the four squares surrounding it are occupied by black pieces.
 
         } else if (compare == THRONE && get(compare) == WHITE) {
             Square north = compare.rookMove(0, 1);
@@ -336,7 +275,7 @@ class Board {
             Square west = compare.rookMove(3, 1);
             int check = 0;
             for (int i = 0; i < 4; i++) {
-                if (get(Objects.requireNonNull(compare.rookMove(i, 1))) == BLACK) {
+                if (get(compare.rookMove(i, 1)) == BLACK) {
                     check++;
                 }
             }
@@ -347,229 +286,161 @@ class Board {
         return false;
     }
 
-
-
-//        } else if (get(middle) == BLACK) {
-//            if (get(middle.rookMove(0, 1)) != WHITE ||
-//                   // get(middle.rookMove(0, 1)) != THRONE &&
-//                         //   middle.
-//
-//
-//                  //  && get(middle.rookMove(2, 1)) != WHITE )
-//                    {
-//                checked = false;
-//            } else if (get(middle.rookMove(3, 1)) != WHITE
-//                    && get(middle.rookMove(3, 1)) != WHITE ) {
-//                checked = false;
-//            }
-//           // return checked;
-//        } else if (get(middle) == EMPTY) {
-//            return false;
-//        } else if (get(middle) == KING) {
-//
-//            //The king is captured like other pieces
-//            // except when he is on the throne square
-//            // or on one of the four squares orthogonally
-//            // adjacent to the throne. In that case,
-//            // the king is captured only when surrounded
-//            // on all four sides by hostile squares (of
-//            // which the empty throne may be one)
-//        return false; //FIXME
-//    }
-
     /** Move FROM-TO, assuming this is a legal move. */
     void makeMove(Square from, Square to) {
-        //assert that it is a legal move
         assert isLegal(from, to);
-        //check the movecount before you make a move (check if this is
-        //already in isLegal
         if (_moveCount <= _limit) {
-            //move the from and to using put, from becomes empty after you move it
             if (get(from) == KING && to.isEdge()) {
-                //System.out.print("here");
                 _winner = WHITE;
             }
-            _undoMoves.push(mv(from, to)); //stack of moves
+            _undoMoves.push(mv(from, to));
             put(get(from), to);
             put(EMPTY, from);
-            //set these arraylists to new empty array lists so you can add them to the stacks
-            ArrayList<Piece> _capturedPieces = new ArrayList<Piece>();
-            ArrayList<Square> _capturedSquares = new ArrayList<Square>();
-
-            Square capturedNorth;
-            Square capturedEast;
-            Square capturedSouth;
-            Square capturedWest;
-
+            ArrayList<Piece> capturedPiecesList = new ArrayList<Piece>();
+            ArrayList<Square> capturedSquaresList = new ArrayList<Square>();
             Square toNorth = to.rookMove(0, 2);
             Square toEast = to.rookMove(1, 2);
             Square toSouth = to.rookMove(2, 2);
             Square toWest = to.rookMove(3, 2);
-
-            //finding the possible caputured squares and seeing if they should
-            //be captured
-
             if (toNorth != null) {
-                capturedNorth = to.between(toNorth);
-
-                Square North = capturedNorth.rookMove(0, 1);
-                Square East = capturedNorth.rookMove(1, 1);
-                Square South = capturedNorth.rookMove(2, 1);
-                Square West = capturedNorth.rookMove(3, 1);
-
-                //KING CASE
-                //The king is captured like other pieces except when
-                // he is on the throne square or on one of the four
-                // squares orthogonally adjacent to the throne. In that case,
-                // the king is captured only when surrounded on all four sides
-                // by hostile squares (of which the empty throne may be one).
-
-                //if it's a king
-
-                if (get(capturedNorth) == KING) {
-                    //if it's on a throne or associated position
-                    if (capturedNorth == THRONE || capturedNorth == NTHRONE || capturedNorth == STHRONE
-                    || capturedNorth == WTHRONE || capturedNorth == ETHRONE) {
-                        //if it's all surrounded by hostile pieces
-                        if (isHostile(capturedNorth, North) && isHostile(capturedNorth, South)
-                        && isHostile(capturedNorth, East) && isHostile(capturedNorth, West)) {
-                            _capturedSquares.add(capturedNorth);
-                            _capturedPieces.add(get(capturedNorth));
-                            capture(South, North);
-                            _winner = BLACK;
-                        }
+                Square capturedNorth = to.between(toNorth);
+                Square north = capturedNorth.rookMove(0, 1);
+                Square east = capturedNorth.rookMove(1, 1);
+                Square south = capturedNorth.rookMove(2, 1);
+                Square west = capturedNorth.rookMove(3, 1);
+                if (get(capturedNorth) == KING && (capturedNorth == THRONE
+                        || capturedNorth == NTHRONE || capturedNorth == STHRONE
+                        || capturedNorth == WTHRONE
+                        || capturedNorth == ETHRONE)) {
+                    if (isHostile(capturedNorth, north)
+                            && isHostile(capturedNorth, south)
+                            && isHostile(capturedNorth, east)
+                            && isHostile(capturedNorth, west)) {
+                        capturedSquaresList.add(capturedNorth);
+                        capturedPiecesList.add(get(capturedNorth));
+                        capture(south, north);
+                        _winner = BLACK;
+                    }
+                } else {
+                    if (isHostile(capturedNorth, north)
+                            && isHostile(capturedNorth, south)) {
+                        capturedSquaresList.add(capturedNorth);
+                        capturedPiecesList.add(get(capturedNorth));
+                        capture(south, north);
+                    } else if (isHostile(capturedNorth, east)
+                            && isHostile(capturedNorth, west)) {
+                        capturedSquaresList.add(capturedNorth);
+                        capturedPiecesList.add(get(capturedNorth));
+                        capture(east, west);
                     }
                 }
-
-                //not a king
-
-                if (isHostile(capturedNorth, North) && isHostile(capturedNorth, South)) {
-                    _capturedSquares.add(capturedNorth);
-                    _capturedPieces.add(get(capturedNorth));
-                    capture(South, North);
-                } else if (isHostile(capturedNorth, East) && isHostile(capturedNorth, West)) {
-                    _capturedSquares.add(capturedNorth);
-                    _capturedPieces.add(get(capturedNorth));
-                    capture(East, West);
-                }
             }
-
             if (toEast != null) {
-                capturedEast = to.between(toEast);
-
-                Square North = capturedEast.rookMove(0, 1);
-                Square East = capturedEast.rookMove(1, 1);
-                Square South = capturedEast.rookMove(2, 1);
-                Square West = capturedEast.rookMove(3, 1);
-
-                if (get(capturedEast) == KING) {
-                    //if it's on a throne or associated position
-                    if (capturedEast == THRONE || capturedEast == NTHRONE || capturedEast == STHRONE
-                            || capturedEast == WTHRONE || capturedEast == ETHRONE) {
-                        //if it's all surrounded by hostile pieces
-                        if (isHostile(capturedEast, North) && isHostile(capturedEast, South)
-                                && isHostile(capturedEast, East) && isHostile(capturedEast, West)) {
-                            _capturedSquares.add(capturedEast);
-                            _capturedPieces.add(get(capturedEast));
-                            capture(South, North);
-                            _winner = BLACK;
-                        }
+                Square capturedEast = to.between(toEast);
+                Square north = capturedEast.rookMove(0, 1);
+                Square east = capturedEast.rookMove(1, 1);
+                Square south = capturedEast.rookMove(2, 1);
+                Square west = capturedEast.rookMove(3, 1);
+                if (get(capturedEast) == KING && (capturedEast == THRONE
+                        || capturedEast == NTHRONE
+                        || capturedEast == STHRONE
+                        || capturedEast == WTHRONE
+                        || capturedEast == ETHRONE)) {
+                    if (isHostile(capturedEast, north)
+                            && isHostile(capturedEast, south)
+                            && isHostile(capturedEast, east)
+                            && isHostile(capturedEast, west)) {
+                        capturedSquaresList.add(capturedEast);
+                        capturedPiecesList.add(get(capturedEast));
+                        capture(south, north);
+                        _winner = BLACK;
+                    }
+                } else {
+                    if (isHostile(capturedEast, north)
+                            && isHostile(capturedEast, south)) {
+                        capturedSquaresList.add(capturedEast);
+                        capturedPiecesList.add(get(capturedEast));
+                        capture(south, north);
+                    } else if (isHostile(capturedEast, east)
+                            && isHostile(capturedEast, west)) {
+                        capturedSquaresList.add(capturedEast);
+                        capturedPiecesList.add(get(capturedEast));
+                        capture(east, west);
                     }
                 }
-
-                if (isHostile(capturedEast, North) && isHostile(capturedEast, South)) {
-                    _capturedSquares.add(capturedEast);
-                    _capturedPieces.add(get(capturedEast));
-                    capture(South, North);
-                } else if (isHostile(capturedEast, East) && isHostile(capturedEast, West)) {
-                    _capturedSquares.add(capturedEast);
-                    _capturedPieces.add(get(capturedEast));
-                    capture(East, West);
-                }
             }
-
             if (toSouth != null) {
-                capturedSouth = to.between(toSouth);
-
-                Square North = capturedSouth.rookMove(0, 1);
-                Square East = capturedSouth.rookMove(1, 1);
-                Square South = capturedSouth.rookMove(2, 1);
-                Square West = capturedSouth.rookMove(3, 1);
-
-                if (get(capturedSouth) == KING) {
-                    //if it's on a throne or associated position
-                    if (capturedSouth == THRONE || capturedSouth == NTHRONE || capturedSouth == STHRONE
-                            || capturedSouth == WTHRONE || capturedSouth == ETHRONE) {
-                        //if it's all surrounded by hostile pieces
-                        if (isHostile(capturedSouth, North) && isHostile(capturedSouth, South)
-                                && isHostile(capturedSouth, East) && isHostile(capturedSouth, West)) {
-                            _capturedSquares.add(capturedSouth);
-                            _capturedPieces.add(get(capturedSouth));
-                            capture(South, North);
-                            _winner = BLACK;
-                        }
+                Square capturedSouth = to.between(toSouth);
+                Square north = capturedSouth.rookMove(0, 1);
+                Square east = capturedSouth.rookMove(1, 1);
+                Square south = capturedSouth.rookMove(2, 1);
+                Square west = capturedSouth.rookMove(3, 1);
+                if (get(capturedSouth) == KING && (capturedSouth == THRONE
+                        || capturedSouth == NTHRONE
+                        || capturedSouth == STHRONE
+                        || capturedSouth == WTHRONE
+                        || capturedSouth == ETHRONE)) {
+                    if (isHostile(capturedSouth, north)
+                            && isHostile(capturedSouth, south)
+                            && isHostile(capturedSouth, east)
+                            && isHostile(capturedSouth, west)) {
+                        capturedSquaresList.add(capturedSouth);
+                        capturedPiecesList.add(get(capturedSouth));
+                        capture(south, north);
+                        _winner = BLACK;
+                    }
+                } else {
+                    if (isHostile(capturedSouth, north)
+                            && isHostile(capturedSouth, south)) {
+                        capturedSquaresList.add(capturedSouth);
+                        capturedPiecesList.add(get(capturedSouth));
+                        capture(south, north);
+                    } else if (isHostile(capturedSouth, east)
+                            && isHostile(capturedSouth, west)) {
+                        capturedSquaresList.add(capturedSouth);
+                        capturedPiecesList.add(get(capturedSouth));
+                        capture(east, west);
                     }
                 }
-
-                if (isHostile(capturedSouth, North) && isHostile(capturedSouth, South)) {
-                    _capturedSquares.add(capturedSouth);
-                    _capturedPieces.add(get(capturedSouth));
-                    capture(South, North);
-                } else if (isHostile(capturedSouth, East) && isHostile(capturedSouth, West)) {
-                    _capturedSquares.add(capturedSouth);
-                    _capturedPieces.add(get(capturedSouth));
-                    capture(East, West);
-                }
             }
-
             if (toWest != null) {
-                capturedWest = to.between(toWest);
-
-                Square North = capturedWest.rookMove(0, 1);
-                Square East = capturedWest.rookMove(1, 1);
-                Square South = capturedWest.rookMove(2, 1);
-                Square West = capturedWest.rookMove(3, 1);
-
-                if (get(capturedWest) == KING) {
-                    //if it's on a throne or associated position
-                    if (capturedWest == THRONE || capturedWest == NTHRONE || capturedWest == STHRONE
-                            || capturedWest == WTHRONE || capturedWest == ETHRONE) {
-                        //if it's all surrounded by hostile pieces
-                        if (isHostile(capturedWest, North) && isHostile(capturedWest, South)
-                                && isHostile(capturedWest, East) && isHostile(capturedWest, West)) {
-                            _capturedSquares.add(capturedWest);
-                            _capturedPieces.add(get(capturedWest));
-                            capture(South, North);
-                            _winner = BLACK;
-                        }
+                Square capturedWest = to.between(toWest);
+                Square north = capturedWest.rookMove(0, 1);
+                Square east = capturedWest.rookMove(1, 1);
+                Square south = capturedWest.rookMove(2, 1);
+                Square west = capturedWest.rookMove(3, 1);
+                if (get(capturedWest) == KING && (capturedWest == THRONE
+                        || capturedWest == NTHRONE
+                        || capturedWest == STHRONE
+                        || capturedWest == WTHRONE
+                        || capturedWest == ETHRONE)) {
+                    if (isHostile(capturedWest, north)
+                            && isHostile(capturedWest, south)
+                            && isHostile(capturedWest, east)
+                            && isHostile(capturedWest, west)) {
+                        capturedSquaresList.add(capturedWest);
+                        capturedPiecesList.add(get(capturedWest));
+                        capture(south, north);
+                        _winner = BLACK;
+                    }
+                } else {
+                    if (isHostile(capturedWest, north)
+                            && isHostile(capturedWest, south)) {
+                        capturedSquaresList.add(capturedWest);
+                        capturedPiecesList.add(get(capturedWest));
+                        capture(south, north);
+                    } else if (isHostile(capturedWest, east)
+                            && isHostile(capturedWest, west)) {
+                        capturedSquaresList.add(capturedWest);
+                        capturedPiecesList.add(get(capturedWest));
+                        capture(east, west);
                     }
                 }
-
-                if (isHostile(capturedWest, North) && isHostile(capturedWest, South)) {
-                    _capturedSquares.add(capturedWest);
-                    _capturedPieces.add(get(capturedWest));
-                    capture(South, North);
-                } else if (isHostile(capturedWest, East) && isHostile(capturedWest, West)) {
-                    _capturedSquares.add(capturedWest);
-                    _capturedPieces.add(get(capturedWest));
-                    capture(East, West);
-                }
             }
-
-            //adding the arraylists to the stacks you've made
-            _undoSquares.add(_capturedSquares);
-            _undoPieces.add(_capturedPieces);
-            //also check the captured around it before you check repeated
-            //check repeated before you add it to the stack - maybe add to the stack in
-            //check repeated so you don't add it to the stack if it is repeated
+            _undoSquares.add(capturedSquaresList);
+            _undoPieces.add(capturedPiecesList);
             checkRepeated();
-            //figure out how to end the game if the check repeated is called and goes through
-            //maybe do some sort of if statement to see if the winner changed - how do you end
-            //the game basically FIXME QUESTION ABOUT ENDING THE GAME
-            //add to moves stack
-            //add to gameStates hashset
-            _gameStates.add(encodedBoard()); //hashSet of gameStates
-            //decrement the move count here too
+            _gameStates.add(encodedBoard());
             _moveCount = _moveCount + 1;
             if (_turn == BLACK) {
                 _turn = WHITE;
@@ -577,8 +448,8 @@ class Board {
                 _turn = BLACK;
             }
             boolean kingCheck = false;
-            for (int i = 0; i < SIZE; i ++) {
-                for (int j = 0; j < SIZE; j ++) {
+            for (int i = 0; i < SIZE; i++) {
+                for (int j = 0; j < SIZE; j++) {
                     if (_board[i][j] == KING) {
                         kingCheck = true;
                         break;
@@ -589,14 +460,6 @@ class Board {
                 _winner = BLACK;
             }
         }
-        // FIXME
-
-        //check capture for all of its neighbors - check neighbors in the capture
-
-        //add to your hashset of game states
-        //check to see if the previous board is the same as this one according to
-        //spec change the winner
-        //System.out.println(_board);
     }
 
     /** Move according to MOVE, assuming it is a legal move. */
@@ -608,32 +471,7 @@ class Board {
      *  SQ0 and the necessary conditions are satisfied. */
     void capture(Square sq0, Square sq2) {
         Square between = sq0.between(sq2);
-        //if (get(sq0) == EMPTY) {
-            _board[between.col()][between.row()] = Piece.EMPTY;
-        //} else {
-       //     _board[between.col()][between.row()] = get(sq0);
-      //  }
-
-       // if (sq0.isRookMove(sq2) && null) {
-
-        //capture - store the piece that was capture and it's location
-            //switch it when you do undo
-            //store it as a square and the piece seperately
-            //create a class that
-            //always pop from both stacks
-            //capture might capture multiple or just one
-            //you can't capture diagonally
-            //stack of array list to keep track of how many and which got captured
-            //iterate through this list and switch them back
-            //add something to your capture stack whether there's something or nothing
-            //iterate through each square and add each piece to it
-            //keep three stacks - one piece, one square, one moves
-
-            //throne case end up being a bunch of if cases
-            //in order to capture something, it needs to be surrounded by the same color
-            //this means it should be wrapped by a black and black or a white and white
-            // FIXME
-       // }
+        _board[between.col()][between.row()] = Piece.EMPTY;
     }
 
     /** Undo one move.  Has no effect on the initial board. */
@@ -650,104 +488,56 @@ class Board {
             ArrayList<Piece> capturedPieces = _undoPieces.pop();
             ArrayList<Square> capturedSquares = _undoSquares.pop();
             for (int i = 0; i < capturedPieces.size(); i++) {
-                if (capturedPieces.get(i) != EMPTY && capturedSquares.get(i) != null) {
+                if (capturedPieces.get(i) != EMPTY
+                        && capturedSquares.get(i) != null) {
                     Piece piece = capturedPieces.get(i);
                     Square square = capturedSquares.get(i);
                     put(piece, square);
                 }
             }
-//            if (_winner != null) {
-//                _winner = null;
-//            }
+            if (_winner != null) {
+                _winner = null;
+            }
             _moveCount--;
-            //_board = _gameStates.remove();
         }
-        }
-        //if you're in the first board, don't do anything - movecount checks this
-        //removing the game state from the hashset
-        //changing the instance variable
-        //get rid of the last move from the stack
-        //how to control moving a space back -
+    }
 
     /** Remove record of current position in the set of positions encountered,
      *  unless it is a repeated position or we are at the first move. */
     private void undoPosition() {
-        //check all the things a board records and check what you need to change
-        //there are a lot of things it stores each time that you need to change
-        //remove the record of the current position unless
-        //if repeated, make sure you don't get rid of the most recent encoded board, but if
-        //it is not repeated, you can get rid of it, at the end change repeated = false
-        //remove(encodedboard)
         if (!_repeated) {
             _gameStates.remove(encodedBoard());
         }
-
-        // FIXME
         _repeated = false;
     }
 
     /** Clear the undo stack and board-position counts. Does not modify the
      *  current position or win status. */
     void clearUndo() {
-        //what is a board position account
-        //clear stack
         _undoMoves.clear();
-        //clear board position counts
-        //_moveCount = 0; FIXME don't do this
-        //get rid of gamestates too?
-        //FIXME get rid of all the gamestates - board positions
-        //fixme
-        //make sure current position and win status stay the same
+        _gameStates.clear();
     }
 
     /** Return a new mutable list of all legal moves on the current board for
      *  SIDE (ignoring whose turn it is at the moment). */
     List<Move> legalMoves(Piece side) {
-        //side is a color - this is the color you need to look through all the possible moves for each piece that is this color
-        //compared to every other spot
-        ArrayList<Move> _legalMoves = new ArrayList<Move>();
-        HashSet<Square> _pieces = pieceLocations(side);
-        for (Square s : _pieces) {
+        ArrayList<Move> legalMoves = new ArrayList<Move>();
+        HashSet<Square> squares = pieceLocations(side);
+        for (Square s : squares) {
             for (int i = 0; i < SIZE; i++) {
-                for (int j = 0; j < SIZE; j ++) {
+                for (int j = 0; j < SIZE; j++) {
                     if (isLegal(s, sq(i, j))) {
-                        _legalMoves.add(mv(s, sq(i, j)));
+                        legalMoves.add(mv(s, sq(i, j)));
                     }
                 }
             }
         }
-        //Square compared;
-        //for (int i = 0; i < SIZE; i++) {
-//            for (int j = 0; j < SIZE; j++) {
-//                if (_board[i][j] == side) {
-//                    compared = sq(i, j);
-//                }
-//            }
-////        }
-//
-//        for (int i = 0; i < SIZE; i++) {
-//            for (int j = 0; j < SIZE; j++)  {
-//                Square compared2 = sq(i, j);
-//                if (isUnblockedMove(compared, compared2) && compared2 == THRONE && get(compared) == KING) {
-//                return _turn == WHITE;
-//            } else if (isUnblockedMove(from, to) && to != THRONE) {
-//                return true;
-//                //if you're going to a throne, you need to check if you're starting as a king going to a throne's spot
-//                //if it's blocked, return false
-//            } else return isUnblockedMove(from, to);
-//
-//                if (isLegal(compared, sq(i, j))) {
-//                    //isLegal takes in two squares
-//                    _legalMoves.add(mv(compared, sq(i, j)));
-//                }
-//            }
-//        }
-        return _legalMoves;  // fixme
+        return legalMoves;
     }
 
     /** Return true iff SIDE has a legal move. */
     boolean hasMove(Piece side) {
-        return legalMoves(side).size() > 0; // fixme
+        return legalMoves(side).size() > 0;
     }
 
     @Override
@@ -784,15 +574,25 @@ class Board {
     /** Return the locations of all pieces on SIDE. */
     HashSet<Square> pieceLocations(Piece side) {
         assert side != EMPTY;
-        HashSet<Square> _pieceLocs = new HashSet<>();
-        for (int i = 0; i < SIZE; i ++) {
-            for (int j = 0; j < SIZE; j ++) {
-                if (_board[i][j] == side) {
-                    _pieceLocs.add(sq(i, j));
+        HashSet<Square> pieceLocs = new HashSet<>();
+        if (side == BLACK) {
+            for (int i = 0; i < SIZE; i++) {
+                for (int j = 0; j < SIZE; j++) {
+                    if (_board[i][j] == side) {
+                        pieceLocs.add(sq(i, j));
+                    }
+                }
+            }
+        } else {
+            for (int i = 0; i < SIZE; i++) {
+                for (int j = 0; j < SIZE; j++) {
+                    if (_board[i][j] == WHITE || _board[i][j] == KING) {
+                        pieceLocs.add(sq(i, j));
+                    }
                 }
             }
         }
-        return _pieceLocs; // FIXME
+        return pieceLocs;
     }
 
     /** Return the contents of _board in the order of SQUARE_LIST as a sequence
@@ -811,11 +611,6 @@ class Board {
         return _board;
     }
 
-//    /**Returns if two squares on a board are unblocked.*/
-//    boolean isUnblocked1(Board board, Square sq1, Square sq2) {
-//
-//    }
-//
     /** Piece whose turn it is (WHITE or BLACK). */
     private Piece _turn;
     /** Cached value of winner on this board, or null if it has not been
@@ -825,7 +620,7 @@ class Board {
     private int _moveCount;
     /** True when current board is a repeated position (ending the game). */
     private boolean _repeated;
-    /**Limit*/
+    /**Limit.*/
     private int _limit;
     /**Board initialization.*/
     private Piece[][] _board;
@@ -835,16 +630,17 @@ class Board {
     private Stack<Move> _undoMoves;
     /**Stack that represents undo Pieces.*/
     private Stack<ArrayList<Piece>> _undoPieces;
-    /**Stack that represents undo Squares*/
+    /**Stack that represents undo Squares.*/
     private Stack<ArrayList<Square>> _undoSquares;
     /**List of valid moves.*/
     private ArrayList<Move> _legalMoves;
     /**HashSet of GameStates.*/
     private HashSet<String> _gameStates;
-    /** Getting the board size.*/
-    public int getSize(Board board) {
+    /** Getting the board size.
+     * @param board is the board
+     * @return is the int size*/
+    int getSize(Board board) {
         return SIZE;
     }
-    // FIXME: Other state?
 
 }
