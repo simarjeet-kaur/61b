@@ -296,35 +296,39 @@ class Board {
                 || capturedDirection == ETHRONE;
     }
 
-    /**Checking if you need to capture a piece.*/
-//    void realCapture(Square toSqaure, Square direction, ArrayList<Piece> capturedP,
-//                     ArrayList<Square> capturedS) {
-//        Square capturedNorth = toSquare.between(direction);
-//        Square n = capturedNorth.rookMove(0, 1);
-//        Square e = capturedNorth.rookMove(1, 1);
-//        Square s = capturedNorth.rookMove(2, 1);
-//        Square w = capturedNorth.rookMove(3, 1);
-//        if (get(capturedNorth) == KING && checkThrone(capturedNorth)) {
-//            if (checkFour(capturedNorth, n, s, e, w)) {
-//                updateUndo(capturedP, capturedS, capturedNorth);
-//                capture(s, n);
-//                _winner = BLACK;
-//            }
-//        } else {
-//            if (checkTwo(capturedNorth, n, s)) {
-//                updateUndo(capturedP, capturedS, capturedNorth);
-//                capture(s, n);
-//            } else if (checkTwo(capturedNorth, e, w)) {
-//                updateUndo(capturedP, capturedS, capturedNorth);
-//                capture(e, w);
-//            }
-//        }
-//    }
+    /**Checking if you need to capture a piece.
+     * @param realTo to sqaure
+     * @param directionTo direction square
+     * @param pieceList piece array list
+     * @param squareList square array list*/
+    void realCapture(Square realTo, Square directionTo,
+                     ArrayList<Piece> pieceList,
+                     ArrayList<Square> squareList) {
+        Square capturedNorth = realTo.between(directionTo);
+        Square n = capturedNorth.rookMove(0, 1);
+        Square e = capturedNorth.rookMove(1, 1);
+        Square s = capturedNorth.rookMove(2, 1);
+        Square w = capturedNorth.rookMove(3, 1);
+        if (get(capturedNorth) == KING && checkThrone(capturedNorth)) {
+            if (checkFour(capturedNorth, n, s, e, w)) {
+                updateUndo(pieceList, squareList, capturedNorth);
+                capture(s, n);
+                _winner = BLACK;
+            }
+        } else {
+            if (checkTwo(capturedNorth, n, s)) {
+                updateUndo(pieceList, squareList, capturedNorth);
+                capture(s, n);
+            } else if (checkTwo(capturedNorth, e, w)) {
+                updateUndo(pieceList, squareList, capturedNorth);
+                capture(e, w);
+            }
+        }
+    }
 
 
     /** Move FROM-TO, assuming this is a legal move. */
     void makeMove(Square from, Square to) {
-        //assert isLegal(from, to);
         if (_moveCount <= _limit) {
             if (get(from) == KING && to.isEdge()) {
                 _winner = WHITE;
@@ -339,92 +343,16 @@ class Board {
             Square toSouth = to.rookMove(2, 2);
             Square toWest = to.rookMove(3, 2);
             if (toNorth != null) {
-                Square capturedNorth = to.between(toNorth);
-                Square n = capturedNorth.rookMove(0, 1);
-                Square e = capturedNorth.rookMove(1, 1);
-                Square s = capturedNorth.rookMove(2, 1);
-                Square w = capturedNorth.rookMove(3, 1);
-                if (get(capturedNorth) == KING && checkThrone(capturedNorth)) {
-                    if (checkFour(capturedNorth, n, s, e, w)) {
-                        updateUndo(capPieceL, capSquareL, capturedNorth);
-                        capture(s, n);
-                        _winner = BLACK;
-                    }
-                } else {
-                    if (checkTwo(capturedNorth, n, s)) {
-                        updateUndo(capPieceL, capSquareL, capturedNorth);
-                        capture(s, n);
-                    } else if (checkTwo(capturedNorth, e, w)) {
-                        updateUndo(capPieceL, capSquareL, capturedNorth);
-                        capture(e, w);
-                    }
-                }
+                realCapture(toNorth, to, capPieceL, capSquareL);
             }
             if (toEast != null) {
-                Square capturedEast = to.between(toEast);
-                Square n = capturedEast.rookMove(0, 1);
-                Square e = capturedEast.rookMove(1, 1);
-                Square s = capturedEast.rookMove(2, 1);
-                Square w = capturedEast.rookMove(3, 1);
-                if (get(capturedEast) == KING && (checkThrone(capturedEast))) {
-                    if (checkFour(capturedEast, n, s, e, w)) {
-                        updateUndo(capPieceL, capSquareL, capturedEast);
-                        capture(s, n);
-                        _winner = BLACK;
-                    }
-                } else {
-                    if (checkTwo(capturedEast, n, s)) {
-                        updateUndo(capPieceL, capSquareL, capturedEast);
-                        capture(s, n);
-                    } else if (checkTwo(capturedEast, e, w)) {
-                        updateUndo(capPieceL, capSquareL, capturedEast);
-                        capture(e, w);
-                    }
-                }
+                realCapture(toEast, to, capPieceL, capSquareL);
             }
             if (toSouth != null) {
-                Square capSouth = to.between(toSouth);
-                Square n = capSouth.rookMove(0, 1);
-                Square e = capSouth.rookMove(1, 1);
-                Square s = capSouth.rookMove(2, 1);
-                Square w = capSouth.rookMove(3, 1);
-                if (get(capSouth) == KING && (checkThrone(capSouth))) {
-                    if (checkFour(capSouth, n, s, e, w)) {
-                        updateUndo(capPieceL, capSquareL, capSouth);
-                        capture(s, n);
-                        _winner = BLACK;
-                    }
-                } else {
-                    if (checkTwo(capSouth, n, s)) {
-                        updateUndo(capPieceL, capSquareL, capSouth);
-                        capture(s, n);
-                    } else if (checkTwo(capSouth, e, w)) {
-                        updateUndo(capPieceL, capSquareL, capSouth);
-                        capture(e, w);
-                    }
-                }
+                realCapture(toSouth, to, capPieceL, capSquareL);
             }
             if (toWest != null) {
-                Square capturedWest = to.between(toWest);
-                Square n = capturedWest.rookMove(0, 1);
-                Square e = capturedWest.rookMove(1, 1);
-                Square s = capturedWest.rookMove(2, 1);
-                Square w = capturedWest.rookMove(3, 1);
-                if (get(capturedWest) == KING && (checkThrone(capturedWest))) {
-                    if (checkFour(capturedWest, n, s, e, w)) {
-                        updateUndo(capPieceL, capSquareL, capturedWest);
-                        capture(s, n);
-                        _winner = BLACK;
-                    }
-                } else {
-                    if (checkTwo(capturedWest, n, s)) {
-                        updateUndo(capPieceL, capSquareL, capturedWest);
-                        capture(s, n);
-                    } else if (checkTwo(capturedWest, e, w)) {
-                        updateUndo(capPieceL, capSquareL, capturedWest);
-                        capture(e, w);
-                    }
-                }
+                realCapture(toWest, to, capPieceL, capSquareL);
             }
             _undoSquares.add(capSquareL);
             _undoPieces.add(capPieceL);
