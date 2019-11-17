@@ -286,9 +286,45 @@ class Board {
         return false;
     }
 
+    /** Check if Throne piece.
+     * @param capturedDirection sqaure
+     * @return boolean*/
+    boolean checkThrone(Square capturedDirection) {
+        return capturedDirection == THRONE
+                || capturedDirection == NTHRONE || capturedDirection == STHRONE
+                || capturedDirection == WTHRONE
+                || capturedDirection == ETHRONE;
+    }
+
+    /**Checking if you need to capture a piece.*/
+//    void realCapture(Square toSqaure, Square direction, ArrayList<Piece> capturedP,
+//                     ArrayList<Square> capturedS) {
+//        Square capturedNorth = toSquare.between(direction);
+//        Square n = capturedNorth.rookMove(0, 1);
+//        Square e = capturedNorth.rookMove(1, 1);
+//        Square s = capturedNorth.rookMove(2, 1);
+//        Square w = capturedNorth.rookMove(3, 1);
+//        if (get(capturedNorth) == KING && checkThrone(capturedNorth)) {
+//            if (checkFour(capturedNorth, n, s, e, w)) {
+//                updateUndo(capturedP, capturedS, capturedNorth);
+//                capture(s, n);
+//                _winner = BLACK;
+//            }
+//        } else {
+//            if (checkTwo(capturedNorth, n, s)) {
+//                updateUndo(capturedP, capturedS, capturedNorth);
+//                capture(s, n);
+//            } else if (checkTwo(capturedNorth, e, w)) {
+//                updateUndo(capturedP, capturedS, capturedNorth);
+//                capture(e, w);
+//            }
+//        }
+//    }
+
+
     /** Move FROM-TO, assuming this is a legal move. */
     void makeMove(Square from, Square to) {
-        assert isLegal(from, to);
+        //assert isLegal(from, to);
         if (_moveCount <= _limit) {
             if (get(from) == KING && to.isEdge()) {
                 _winner = WHITE;
@@ -296,170 +332,171 @@ class Board {
             _undoMoves.push(mv(from, to));
             put(get(from), to);
             put(EMPTY, from);
-            ArrayList<Piece> capturedPiecesList = new ArrayList<Piece>();
-            ArrayList<Square> capturedSquaresList = new ArrayList<Square>();
+            ArrayList<Piece> capPieceL = new ArrayList<Piece>();
+            ArrayList<Square> capSquareL = new ArrayList<Square>();
             Square toNorth = to.rookMove(0, 2);
             Square toEast = to.rookMove(1, 2);
             Square toSouth = to.rookMove(2, 2);
             Square toWest = to.rookMove(3, 2);
             if (toNorth != null) {
                 Square capturedNorth = to.between(toNorth);
-                Square north = capturedNorth.rookMove(0, 1);
-                Square east = capturedNorth.rookMove(1, 1);
-                Square south = capturedNorth.rookMove(2, 1);
-                Square west = capturedNorth.rookMove(3, 1);
-                if (get(capturedNorth) == KING && (capturedNorth == THRONE
-                        || capturedNorth == NTHRONE || capturedNorth == STHRONE
-                        || capturedNorth == WTHRONE
-                        || capturedNorth == ETHRONE)) {
-                    if (isHostile(capturedNorth, north)
-                            && isHostile(capturedNorth, south)
-                            && isHostile(capturedNorth, east)
-                            && isHostile(capturedNorth, west)) {
-                        capturedSquaresList.add(capturedNorth);
-                        capturedPiecesList.add(get(capturedNorth));
-                        capture(south, north);
+                Square n = capturedNorth.rookMove(0, 1);
+                Square e = capturedNorth.rookMove(1, 1);
+                Square s = capturedNorth.rookMove(2, 1);
+                Square w = capturedNorth.rookMove(3, 1);
+                if (get(capturedNorth) == KING && checkThrone(capturedNorth)) {
+                    if (checkFour(capturedNorth, n, s, e, w)) {
+                        updateUndo(capPieceL, capSquareL, capturedNorth);
+                        capture(s, n);
                         _winner = BLACK;
                     }
                 } else {
-                    if (isHostile(capturedNorth, north)
-                            && isHostile(capturedNorth, south)) {
-                        capturedSquaresList.add(capturedNorth);
-                        capturedPiecesList.add(get(capturedNorth));
-                        capture(south, north);
-                    } else if (isHostile(capturedNorth, east)
-                            && isHostile(capturedNorth, west)) {
-                        capturedSquaresList.add(capturedNorth);
-                        capturedPiecesList.add(get(capturedNorth));
-                        capture(east, west);
+                    if (checkTwo(capturedNorth, n, s)) {
+                        updateUndo(capPieceL, capSquareL, capturedNorth);
+                        capture(s, n);
+                    } else if (checkTwo(capturedNorth, e, w)) {
+                        updateUndo(capPieceL, capSquareL, capturedNorth);
+                        capture(e, w);
                     }
                 }
             }
             if (toEast != null) {
                 Square capturedEast = to.between(toEast);
-                Square north = capturedEast.rookMove(0, 1);
-                Square east = capturedEast.rookMove(1, 1);
-                Square south = capturedEast.rookMove(2, 1);
-                Square west = capturedEast.rookMove(3, 1);
-                if (get(capturedEast) == KING && (capturedEast == THRONE
-                        || capturedEast == NTHRONE
-                        || capturedEast == STHRONE
-                        || capturedEast == WTHRONE
-                        || capturedEast == ETHRONE)) {
-                    if (isHostile(capturedEast, north)
-                            && isHostile(capturedEast, south)
-                            && isHostile(capturedEast, east)
-                            && isHostile(capturedEast, west)) {
-                        capturedSquaresList.add(capturedEast);
-                        capturedPiecesList.add(get(capturedEast));
-                        capture(south, north);
+                Square n = capturedEast.rookMove(0, 1);
+                Square e = capturedEast.rookMove(1, 1);
+                Square s = capturedEast.rookMove(2, 1);
+                Square w = capturedEast.rookMove(3, 1);
+                if (get(capturedEast) == KING && (checkThrone(capturedEast))) {
+                    if (checkFour(capturedEast, n, s, e, w)) {
+                        updateUndo(capPieceL, capSquareL, capturedEast);
+                        capture(s, n);
                         _winner = BLACK;
                     }
                 } else {
-                    if (isHostile(capturedEast, north)
-                            && isHostile(capturedEast, south)) {
-                        capturedSquaresList.add(capturedEast);
-                        capturedPiecesList.add(get(capturedEast));
-                        capture(south, north);
-                    } else if (isHostile(capturedEast, east)
-                            && isHostile(capturedEast, west)) {
-                        capturedSquaresList.add(capturedEast);
-                        capturedPiecesList.add(get(capturedEast));
-                        capture(east, west);
+                    if (checkTwo(capturedEast, n, s)) {
+                        updateUndo(capPieceL, capSquareL, capturedEast);
+                        capture(s, n);
+                    } else if (checkTwo(capturedEast, e, w)) {
+                        updateUndo(capPieceL, capSquareL, capturedEast);
+                        capture(e, w);
                     }
                 }
             }
             if (toSouth != null) {
-                Square capturedSouth = to.between(toSouth);
-                Square north = capturedSouth.rookMove(0, 1);
-                Square east = capturedSouth.rookMove(1, 1);
-                Square south = capturedSouth.rookMove(2, 1);
-                Square west = capturedSouth.rookMove(3, 1);
-                if (get(capturedSouth) == KING && (capturedSouth == THRONE
-                        || capturedSouth == NTHRONE
-                        || capturedSouth == STHRONE
-                        || capturedSouth == WTHRONE
-                        || capturedSouth == ETHRONE)) {
-                    if (isHostile(capturedSouth, north)
-                            && isHostile(capturedSouth, south)
-                            && isHostile(capturedSouth, east)
-                            && isHostile(capturedSouth, west)) {
-                        capturedSquaresList.add(capturedSouth);
-                        capturedPiecesList.add(get(capturedSouth));
-                        capture(south, north);
+                Square capSouth = to.between(toSouth);
+                Square n = capSouth.rookMove(0, 1);
+                Square e = capSouth.rookMove(1, 1);
+                Square s = capSouth.rookMove(2, 1);
+                Square w = capSouth.rookMove(3, 1);
+                if (get(capSouth) == KING && (checkThrone(capSouth))) {
+                    if (checkFour(capSouth, n, s, e, w)) {
+                        updateUndo(capPieceL, capSquareL, capSouth);
+                        capture(s, n);
                         _winner = BLACK;
                     }
                 } else {
-                    if (isHostile(capturedSouth, north)
-                            && isHostile(capturedSouth, south)) {
-                        capturedSquaresList.add(capturedSouth);
-                        capturedPiecesList.add(get(capturedSouth));
-                        capture(south, north);
-                    } else if (isHostile(capturedSouth, east)
-                            && isHostile(capturedSouth, west)) {
-                        capturedSquaresList.add(capturedSouth);
-                        capturedPiecesList.add(get(capturedSouth));
-                        capture(east, west);
+                    if (checkTwo(capSouth, n, s)) {
+                        updateUndo(capPieceL, capSquareL, capSouth);
+                        capture(s, n);
+                    } else if (checkTwo(capSouth, e, w)) {
+                        updateUndo(capPieceL, capSquareL, capSouth);
+                        capture(e, w);
                     }
                 }
             }
             if (toWest != null) {
                 Square capturedWest = to.between(toWest);
-                Square north = capturedWest.rookMove(0, 1);
-                Square east = capturedWest.rookMove(1, 1);
-                Square south = capturedWest.rookMove(2, 1);
-                Square west = capturedWest.rookMove(3, 1);
-                if (get(capturedWest) == KING && (capturedWest == THRONE
-                        || capturedWest == NTHRONE
-                        || capturedWest == STHRONE
-                        || capturedWest == WTHRONE
-                        || capturedWest == ETHRONE)) {
-                    if (isHostile(capturedWest, north)
-                            && isHostile(capturedWest, south)
-                            && isHostile(capturedWest, east)
-                            && isHostile(capturedWest, west)) {
-                        capturedSquaresList.add(capturedWest);
-                        capturedPiecesList.add(get(capturedWest));
-                        capture(south, north);
+                Square n = capturedWest.rookMove(0, 1);
+                Square e = capturedWest.rookMove(1, 1);
+                Square s = capturedWest.rookMove(2, 1);
+                Square w = capturedWest.rookMove(3, 1);
+                if (get(capturedWest) == KING && (checkThrone(capturedWest))) {
+                    if (checkFour(capturedWest, n, s, e, w)) {
+                        updateUndo(capPieceL, capSquareL, capturedWest);
+                        capture(s, n);
                         _winner = BLACK;
                     }
                 } else {
-                    if (isHostile(capturedWest, north)
-                            && isHostile(capturedWest, south)) {
-                        capturedSquaresList.add(capturedWest);
-                        capturedPiecesList.add(get(capturedWest));
-                        capture(south, north);
-                    } else if (isHostile(capturedWest, east)
-                            && isHostile(capturedWest, west)) {
-                        capturedSquaresList.add(capturedWest);
-                        capturedPiecesList.add(get(capturedWest));
-                        capture(east, west);
+                    if (checkTwo(capturedWest, n, s)) {
+                        updateUndo(capPieceL, capSquareL, capturedWest);
+                        capture(s, n);
+                    } else if (checkTwo(capturedWest, e, w)) {
+                        updateUndo(capPieceL, capSquareL, capturedWest);
+                        capture(e, w);
                     }
                 }
             }
-            _undoSquares.add(capturedSquaresList);
-            _undoPieces.add(capturedPiecesList);
+            _undoSquares.add(capSquareL);
+            _undoPieces.add(capPieceL);
             checkRepeated();
             _gameStates.add(encodedBoard());
             _moveCount = _moveCount + 1;
-            if (_turn == BLACK) {
-                _turn = WHITE;
-            } else {
-                _turn = BLACK;
-            }
-            boolean kingCheck = false;
-            for (int i = 0; i < SIZE; i++) {
-                for (int j = 0; j < SIZE; j++) {
-                    if (_board[i][j] == KING) {
-                        kingCheck = true;
-                        break;
-                    }
-                }
-            }
-            if (!kingCheck) {
+            changeTurn();
+            if (!kingCheck()) {
                 _winner = BLACK;
             }
         }
+    }
+
+    /**Updating undo for the move.
+     * @param capturedP is the piece list
+     * @param capturedS is the square list
+     * @param s is the square*/
+    void updateUndo(ArrayList<Piece> capturedP,
+                    ArrayList<Square> capturedS, Square s) {
+        capturedP.add(get(s));
+        capturedS.add(s);
+    }
+
+
+    /**Change the turn.*/
+    void changeTurn() {
+        if (_turn == BLACK) {
+            _turn = WHITE;
+        } else {
+            _turn = BLACK;
+        }
+    }
+
+    /**Check if all four sides are hostile.
+     * @param captured is the captured square
+     * @param direction1 first direction
+     * @param direction2 second direction
+     * @param direction3 third direction
+     * @param direction4 fourth direction
+     * @return a boolean*/
+    boolean checkFour(Square captured,
+                      Square direction1, Square direction2,
+                      Square direction3, Square direction4) {
+        return isHostile(captured, direction1)
+                && isHostile(captured, direction2)
+                && isHostile(captured, direction3)
+                && isHostile(captured, direction4);
+    }
+
+    /**Check if two sides are hostile.
+     * @param captured is the captured square
+     * @param direction1 is the first direction
+     * @param direction2 is the second direction
+     * @return a boolean*/
+    boolean checkTwo(Square captured, Square direction1, Square direction2) {
+        return isHostile(captured, direction1)
+                && isHostile(captured, direction2);
+    }
+
+    /**KingCheck.
+     * @return boolean*/
+    boolean kingCheck() {
+        boolean check = false;
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                if (_board[i][j] == KING) {
+                    check = true;
+                    break;
+                }
+            }
+        }
+        return check;
     }
 
     /** Move according to MOVE, assuming it is a legal move. */
