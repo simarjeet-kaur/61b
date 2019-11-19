@@ -38,7 +38,16 @@ public class MySortingAlgorithms {
     public static class InsertionSort implements SortingAlgorithm {
         @Override
         public void sort(int[] array, int k) {
-            // FIXME
+            k = Integer.min(k, array.length); //need to keep reassigning k because you'll call this again probably
+            //make a the min between k and the length of the array - this is the number you're comparing up until
+            for (int i = 0; i < k; i++) {
+                //compare up until a
+                for (int j = i; j > 0 && array[j] < array[j - 1]; j--) {
+                    //compare from each pair, see if they are ordered, if not swap
+                    //this is the basis of insertion sort
+                    swap(array, j, j - 1);
+                }
+            }
         }
 
         @Override
@@ -56,7 +65,17 @@ public class MySortingAlgorithms {
     public static class SelectionSort implements SortingAlgorithm {
         @Override
         public void sort(int[] array, int k) {
-            // FIXME
+            k = Integer.min(k, array.length); //need to keep reassigning k because you'll probably use it later
+            for (int i = 0; i < k; i++) {
+                int min = i; //set min to be the i and you can check from j = 1 to j = k if they are comparable
+                for (int j = i + 1; j < k; j++) {
+                    if (array[j] < array[min]) {
+                        min = j; //as soon as the left is greater than the one min you are checking, change the j and min
+                    }
+                }
+                swap(array, i, min); //then swap these too
+                //this is essentially iterating through the whole thing to see when you need to make a swap
+            }
         }
 
         @Override
@@ -71,9 +90,45 @@ public class MySortingAlgorithms {
       * not the entire algorithm, which is easier to do recursively.
       */
     public static class MergeSort implements SortingAlgorithm {
+
+        //first make a merge method that does all the work.  this will do the merging and comparing, but not the
+        //sorting which the later methods will do
+        private void merge(int[] array, int[] temp, int low, int middle, int high) {
+            for (int i = low; i <= high; i++) { //go from low to high
+                temp[i] = array[i]; //for each value here, take the ith value in temp and put it into the temp array
+                //at the same location
+            }
+            int i = low; //now set low to i
+            int j = middle + 1; //and j to middle + 1
+            for (int k = low; k <= high ; k++) { //starting at low, up until high, continue merging
+                if (i > middle) { //if you're at a spot that is less than the middle,
+                    array[k] = temp[j++]; //
+                } else if (j > high) {
+                    array[k] = temp[i++];
+                } else if (temp[j] < temp[i]) {
+                    array[k] = temp[j++];
+                } else {
+                    array[k] = temp[i++];
+                }
+            }
+        }
+
         @Override
         public void sort(int[] array, int k) {
-            // FIXME
+            int[] aux = new int[array.length];
+            int hi = Integer.min(k - 1, array.length - 1);
+            sort(array, aux, 0, hi);
+            //this first sort
+        }
+
+        private void sort(int[] array, int[] aux, int lo, int hi) {
+            if (hi <= lo) {
+                return;
+            }
+            int mid = lo + (hi - lo) / 2;
+            sort(array, aux, lo, mid);
+            sort(array, aux, mid + 1, hi);
+            merge(array, aux, lo, mid, hi);
         }
 
         // may want to add additional methods
