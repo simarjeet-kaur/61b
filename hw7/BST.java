@@ -14,11 +14,20 @@ public class BST {
     }
 
     /**
-     * // Provide a descriptive comment for this method here.
+     * Converts the linkedList to a tree.
      */
     private BSTNode linkedListToTree(Iterator iter, int n) {
-        // YOUR CODE HERE
-        return null;
+        BSTNode root = new BSTNode(); //create a new BSTnode
+        if (n == 0) {
+            return null; //if there is nothing n length is 0 you have an empty BST
+        } else if (n == 1) {
+            root.item = iter.next(); //if n == 1, this is the first real base case,
+        } else {
+            root.left = linkedListToTree(iter, n / 2);
+            root.item = iter.next();
+            root.right = linkedListToTree(iter, (n - 1) / 2);
+        }
+        return root;
     }
 
     /**
