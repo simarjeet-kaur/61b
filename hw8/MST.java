@@ -17,7 +17,28 @@ public class MST {
      *  are a subset of those in E (they do not include copies of the
      *  original edges, just the original edges themselves.) */
     public static int[][] mst(int V, int[][] E) {
-        return null;  // FIXME
+        int [][] copy;
+        for (int i = 0; i < E.length; i ++) {
+            for (int j = 0; j < E[i]; j++) {
+                copy[i][j] = E[i][j];
+            }
+        }
+        Arrays.sort(copy, EDGE_WEIGHT_COMPARATOR);
+        //make a unionfind
+        int a = 0;
+        int b = 0;
+        int[][] copy1 = new int[V-1][3];
+        UnionFind unionFind = new UnionFind(V);
+        while (a < V-1) {
+            int[] copy2 = copy[b++];
+            int k = copy2[0];
+            int h = copy2[1];
+            if (unionFind.samePartition(k, h) != true) {
+                unionFind.union(k, h);
+                copy1[a++] = copy2
+            }
+        }
+        return copy1;  // FIXME
     }
 
     /** An ordering of edges by weight. */

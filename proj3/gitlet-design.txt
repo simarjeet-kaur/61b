@@ -4,11 +4,128 @@ Gitlet Design Document
 
 Classes and Data Structures
 ---------------------------
+- Repo class
+    - staging area
+        - instance variable that represents added staging area things
+            - for each file that needs to be added, it should be a new file made of the file name that needs to be added
+            - and it's file contents which are the blobs
+        - instance variable that represents removed staging area things - could be a list of file names
+    - tracked/untracked files
+        -
+    - head - will be a commit that is most recent
+    - branches - can be represented by the most current commit of these branches (list of commits)
+        - branches are new when you split off a new commit
+
+    - instance variable branches
+        - lists the names of the branches
+
+    - this is where all the commands are - because you need to access everything in the repo to edit it
+
+    - instance variables
+        - make a list of the branches
+        - have a staging area hashmap
+        - have an untracked files list/array
+
+    - methods
+        - constructor() - takes in nothing
+            - this will be where you make the directory, make the initial empty/null commit
+                - make a staging area file and commits file
+                - every time you make a commit, add it to the commits folder by making a file called it's SHA-id
+                - this way you have it all saved somewhere
+                    - the contents of this file should be the serialized commit
+            - remember that you need a hashmap to keep track of commits/files/edits
+                - do this by saving the branches as a hashmap of head commits - get the head, map it to it's proper commit
+            - make the staging area and untracked filed empty hasmas and array lists, respectively (of strings)
+        - method init
+            - this makes a new directory .gitlet in the repo
+                - use makeDir to do this
+                - should make a new repo too
+                    - branches will be just master, pointing to the empty commit
+            - automatically starts with an empty commit
+                - make a new commit of no files/blobs, just a message, time, location, etc
+            - check if a directory already exists - do this by looking for a directory called .gitlet that
+                - already exists
+        //these methods don't necessarily need to be written in the order they appear//
+        - method add
+            - should take in the file name
+            - add(string fileName)
+                - need to make sure this file exists (google documentation for this method)
+                - print out error message and exit without doing anything else
+            - 1) make a file newFile(file name, blob) - where blob is the copy of the file contents
+            - 2) get the blob saves for this same file name from the commit (hashMap that keeps track of all of this)
+                - check the current commit
+            - 3) if the blobs (compared from step 2) are the same, do nothing
+            - 4) if not, add the newFile(file name, blob) to the staging area
+        - method commit
+            - "saves snapshot of certain files in the commit and staging area so they can be
+             restored later"
+            - look at the files in the staging area - for each of the files in here, put them
+            in the tracked files
+            - now the new commit needs to be this one - commit now contains the version of the file
+            it got from its parent
+            - will save and track any files that were staged but NOT tracked by the parent
+            - files tracked in the current commit are now untracked in the next commit - make the next
+            commit's tracked/staging area empty
+            - other notes
+                - doesn't change files in the working directory, only what's in the .gitlet directory
+                    - add to the commits file
+            - head pointer now points to this commit
+            - previous head pointer is this commit's parent (remember this when making a new commit)
+                - will come with a message that will also go into making this new commit
+            - SHA-id of the commit will include the file (blob) references of its files, parent ref, log message.
+            commit time
+            - failure cases:
+                - no files have been staged (is the staging area empty)
+                - no commit message (check args)
+        - method rm
+            - unstage the file if it's currently staged (look at staging area)
+            - if it is marked tracked by the current commit, mark to indicate it won't be included in the next commit
+                - store this somewhere in the .gitlet directory (tracking area)
+            - remove this from the working directory if not done already - do not remove unless tracked in the current commit
+            - failure cases
+                - if it's not staged or tracked by the head commit, give an error
+        - method log
+            - STARTING at the head commit, display info about each commit backwards until at the initial commit
+                - you'll know this once this one doesn't have a head or maybe set some instance variable if it's
+                the first commit (some boolean first = false/true for each commit, first would be true, everything else
+                is false)
+
+
+            need to alter the head and the master
+            - connect your blob to the commit
+        - method
+
+- Commit class
+    - instance variable for time
+    - instance variable for location
+    - instance variable for the message
+    - instance variable for blobs in the commit
+    - instance variable ID for SHA-id
+        - SHA-id should be made of the blobs in the commit, nothing else
+    - instance variable for hashMap of blobs to the file name
+        - every time you add, edit this hashmap that you'll use to make the commit
+    - constructor(time, location, message, blobs, ID)
+    - method to grab the time
+    - method to grab the location
+    - method to grab the message
+        - these will be used in the log method
+    - method to grab the blobs
+    - method to grab the ID
+- Main class
+    - this is where all the commands are
+    - at the beginning, you will need to parse through the args they give you to figure out what they're trying to ask
+    - make sure the command is valid
 
 
 Algorithms
 ----------
 
-
 Persistence
 -----------
+
+Other Concepts
+----------
+- blobs
+    - blobs are essentially copies of the files you're trying to add
+    - this means, to make them, make them a copy of the file you're trying to add by using what is in the utils
+    - give it a unique SHA-id (?) possibly

@@ -101,20 +101,20 @@ public class MySortingAlgorithms {
             int i = low; //now set low to i
             int j = middle + 1; //and j to middle + 1
             for (int k = low; k <= high ; k++) { //starting at low, up until high, continue merging
-                if (i > middle) { //if you're at a spot that is less than the middle,
-                    array[k] = temp[j++]; //
-                } else if (j > high) {
-                    array[k] = temp[i++];
-                } else if (temp[j] < temp[i]) {
-                    array[k] = temp[j++];
+                if (i > middle) { //if you're at a spot that is past the middle
+                    array[k] = temp[j++]; //set this index in the array to be the next value
+                } else if (j > high) { //if j, which is the middle + 1, is greater than your highest value,
+                    array[k] = temp[i++]; //set the kth value in the array to be the temp +1 of the low
+                } else if (temp[j] < temp[i]) { //if temp[j] < temp[i]
+                    array[k] = temp[j++]; //array[k] will become temp[j++] again
                 } else {
-                    array[k] = temp[i++];
+                    array[k] = temp[i++]; //otherwise, just set it equal to the temp i ++
                 }
             }
         }
 
         @Override
-        public void sort(int[] array, int k) {
+        public void sort(int[] array, int k) { //this sorting method will
             int[] aux = new int[array.length];
             int hi = Integer.min(k - 1, array.length - 1);
             sort(array, aux, 0, hi);
