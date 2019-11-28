@@ -116,6 +116,32 @@ Classes and Data Structures
     - at the beginning, you will need to parse through the args they give you to figure out what they're trying to ask
     - make sure the command is valid
 
+MAIN SKELETON CODE
+
+/**At the beggining, check to make sure whatever command is inputted is valid.  Grab args[0] as the command.*/
+(not a method, just a try catch exception)
+    //also check if the repo exists so far.  Make a function later to check for this.
+    //use this repo (make another function to save the repo contents and return them) to make the calls on
+    //depending on what the command is, call it on the repo with the appropriate arguments too
+/**Check if repo exists.*/
+boolean checkRepo() { //check if the directory has a repo. }
+/**Save contents of the repo to use later.*/
+void saveRepo() { //save repo }
+/**Return the repo.*/
+Repo returnRepo() { //return the repo. }
+/**Repo you will be using.*/
+Repo theRepo;
+/**Command that is inputted.*/
+String command;
+/**Boolean that tells if the repo exists.*/
+Boolean repoExists;
+
+COMMIT SKELETON CODE
+
+/**Need an init to make a commit.*/
+Commit(String message, String time, String location, boolean isParent, hashMap files,
+
+
 
 Algorithms
 ----------

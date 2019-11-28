@@ -21,15 +21,7 @@ public class Main {
         /**Checking to see that the args begins with the right operands.  Sets variable command to the command.*/
 
         String command;
-
-        if (args.length > 2) {
-            if (args[0] != "java" && args[1] != "gitlet.Main") {
-                Utils.message("Incorrect operands.");
-                throw new GitletException();
-            } else {
-                command = args[2];
-            }
-        }
+        Repo theRepo;
 
         /**List of viable commands.*/
         String[] arrayOfCommands = {"init", "add", "commit", "rm", "log", "global-log", "find", "status", "checkout",
@@ -41,14 +33,22 @@ public class Main {
                 Utils.message("Please enter a command.");
                 throw new GitletException();
             } else {
-                if (Arrays.stream(arrayOfCommands).anyMatch(args[0]::equals)) {
-
+                if (Arrays.stream(arrayOfCommands).anyMatch(args[0]::equals)) { //seeing if there is a valid command put in
+                    //if there is, make an array for the operands.  then check for the init first - it needs to exist before you call anything
+                    //so here, set something for the init case
+                    //if (repoExists()) {
+                    //    theRepo = getTheRepo();
+                    //}
+                    //now call whatever the arg is onto theRepo
+                    if (args[0] == "add") {
+                        System.out.print("This is add test.");
+                    }
                 } else {
                     Utils.message("No command with that name exists.");
                     throw new GitletException();
                 }
             }
-
+        catch
         }
 
         //look at the args main takes in and use this to determine which call to make

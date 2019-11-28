@@ -16,7 +16,7 @@ public class UnionFind {
         size = new int[N+1];
         for (int i = 1; i < N + 1; i++) {
             u[i] = i;
-            size[i] = 1
+            size[i] = 1;
         }
         newArry = new int[Integer.SIZE - Integer.numberOfLeadingZeros(N)];
     }

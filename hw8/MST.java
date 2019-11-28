@@ -35,7 +35,7 @@ public class MST {
             int h = copy2[1];
             if (unionFind.samePartition(k, h) != true) {
                 unionFind.union(k, h);
-                copy1[a++] = copy2
+                copy1[a++] = copy2;
             }
         }
         return copy1;  // FIXME
