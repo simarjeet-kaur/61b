@@ -42,13 +42,13 @@ public class UnionFind {
 
     /** Union U and V into a single partition, returning its representative. */
     public int union(int u1, int v) {
-        u = find(u1);
+        u1 = find(u1);
         v = find(v);
         if (u1 == v) {
             return u1; //when they are the same return u1
         } else if (size[u1] < size[v]) {
             u[u1] = v;
-            size[u] += size[v];
+            size[u1] += size[v];
             return v;
             //when u1 is less than v, change the original u array to v at u1
         }
