@@ -51,7 +51,12 @@ public class UnionFind {
             size[u1] += size[v];
             return v;
             //when u1 is less than v, change the original u array to v at u1
+        } else {
+            u[v] = u1;
+            size[u1] += size[v];
+            return v;
         }
+
     }
 
     private int[] u;
