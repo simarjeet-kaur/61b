@@ -17,12 +17,7 @@ public class MST {
      *  are a subset of those in E (they do not include copies of the
      *  original edges, just the original edges themselves.) */
     public static int[][] mst(int V, int[][] E) {
-        int [][] copy;
-        for (int i = 0; i < E.length; i ++) {
-            for (int j = 0; j < E[i]; j++) {
-                copy[i][j] = E[i][j];
-            }
-        }
+        int [][] copy = Arrays.copyOf(E, E.length);
         Arrays.sort(copy, EDGE_WEIGHT_COMPARATOR);
         //make a unionfind
         int a = 0;
