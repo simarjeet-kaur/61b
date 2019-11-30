@@ -30,8 +30,8 @@ public class Main {
         /**Checking if the args is input correctly.*/
         try {
             if (args.length == 0) {
-                Utils.message("Please enter a command.");
-                throw new GitletException();
+                //Utils.message("Please enter a command.");
+                throw new GitletException("Please enter a command.");
             } else {
                 if (Arrays.stream(arrayOfCommands).anyMatch(args[0]::equals)) { //seeing if there is a valid command put in
                     //if there is, make an array for the operands.  then check for the init first - it needs to exist before you call anything
@@ -44,8 +44,8 @@ public class Main {
                         System.out.print("This is add test.");
                     }
                 } else {
-                    Utils.message("No command with that name exists.");
-                    throw new GitletException();
+                   // Utils.message("No command with that name exists.");
+                    throw new GitletException("No command with that name exists.");
                 }
             }
         catch

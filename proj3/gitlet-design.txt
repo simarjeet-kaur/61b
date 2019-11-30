@@ -56,6 +56,26 @@ Classes and Data Structures
                 - check the current commit
             - 3) if the blobs (compared from step 2) are the same, do nothing
             - 4) if not, add the newFile(file name, blob) to the staging area
+            - on adding the file from Piazza:
+                -  "We can use new File(...) but that will not be enough. When you're copying a file,
+                you must create a new File object in Java and get the contents of the file you're trying
+                to copy and write the contents so that the file persists on disk. I highly recommend looking
+                 over the methods readContents and writeContents in Utils. Specifically what name you want
+                 to give to the copy is up to your design but it would be helpful to have it be dependent
+                 on the content of the file."
+                - "You know first not to stage a file that already exists in the same state in the current commit.
+                 So if I have a.txt which contains "hello", then I add it and commit it, if I then add it again after
+                 making that first commit, it will not go into the staging area because the content - "hello" - is
+                 unchanged. Okay, so now let's change it. I change a.txt to "hello!" then add it. Now a.txt is in
+                 the staging area. Finally, let's say I change my mind and manually change a.txt back to "hello"
+                 (by editing it not using checkout), then add it again. Now we remove it from the staging area,
+                 because a.txt is exactly the same as it was in the current commit. Basically because it is possible
+                 to change a blob (change its content then change it back) but not want to add it, make sure you are
+                 keep track of changes in files based on their actual content, not just the fact that they have been
+                 edited."
+                    - here is where you'll probably check the SHA-id of blobs
+
+
         - method commit
             - "saves snapshot of certain files in the commit and staging area so they can be
              restored later"
@@ -100,25 +120,28 @@ Classes and Data Structures
     - instance variable for location
     - instance variable for the message
     - instance variable for blobs in the commit
-    - instance variable ID for SHA-id
+    - instance variable ID for SHA-id - make it in the constructor
         - SHA-id should be made of the blobs in the commit, nothing else
     - instance variable for hashMap of blobs to the file name
         - every time you add, edit this hashmap that you'll use to make the commit
+        - My current plan is to completely copy over the parent commit's hashmap of files (blobs) into my new commit,
+         then update the values of the keys according the contents in the staging area.
+            - this is how you update the hash map for the commit
+
     - constructor(time, location, message, blobs, ID)
     - method to grab the time
     - method to grab the location
     - method to grab the message
         - these will be used in the log method
     - method to grab the blobs
-    - method to grab the ID
+    - method to grab the SHA ID
 - Main class
-    - this is where all the commands are
     - at the beginning, you will need to parse through the args they give you to figure out what they're trying to ask
     - make sure the command is valid
 
 MAIN SKELETON CODE
 
-/**At the beggining, check to make sure whatever command is inputted is valid.  Grab args[0] as the command.*/
+/**At the beginning, check to make sure whatever command is inputted is valid.  Grab args[0] as the command.*/
 (not a method, just a try catch exception)
     //also check if the repo exists so far.  Make a function later to check for this.
     //use this repo (make another function to save the repo contents and return them) to make the calls on
@@ -133,13 +156,104 @@ Repo returnRepo() { //return the repo. }
 Repo theRepo;
 /**Command that is inputted.*/
 String command;
+/**follow up arguments.*/
+String followUpArgs;
 /**Boolean that tells if the repo exists.*/
 Boolean repoExists;
 
-COMMIT SKELETON CODE
+REPO CLASS SKELETON CODE
+/**Constructor method.*/
+Repo Repo() {}
+- create a bunch of instance variables + initialize them
+/**Staging area adding/removing.*/
+ArrayList<String> _adding; //staging area with what to add - try file names
+ArrayList<String> _removing; //what needs to be removed - file names
+    //could also be a hashmap maybe, with it being adding/removing mapped to file names and their updated versions?
+/**Most recent commit, called the head.*/
+String _head; //SHA-id of the most recent commit (whenever you make a commit, change this)
+/**Branches represented by the most recent commit of each brance.*/
+ArrayList<String> _branches;  //every time you make a new branch/commit, this also needs to be changed - should be SHA-ids
+/**The add method adds a copy of the file as it exists to the staging area.*/
+void add(String fileName) {
+    - need to first make sure this fileName exists (google the documentation to check for this)
+        - if it doesn't exist, print out the error message
+    - 1) make a file newFile(fileName, blob), where the blob is the copy of the file contents (see: Utils)
+        - "We can use new File(...) but that will not be enough. When you're copying a file,
+         you must create a new File object in Java and get the contents of the file you're trying
+         to copy and write the contents so that the file persists on disk. I highly recommend looking
+         over the methods readContents and writeContents in Utils. Specifically what name you want
+         to give to the copy is up to your design but it would be helpful to have it be dependent
+         on the content of the file."
+    - 2) get the blob from the current commit hashMap that should be tracking all of this - could be a hashMap of SHA
+    -id's of these blobs or just using the byte arrays?
+    - 3) check and compare the blob from 2) and 1). If they are the same, do nothing.
+    - 4) If they are different, add the newFile(fileName, blob) to the staging area
+    - hint from Piazza: "You know first not to stage a file that already exists in the same state in the current commit.
+                     So if I have a.txt which contains "hello", then I add it and commit it, if I then add it again after
+                     making that first commit, it will not go into the staging area because the content - "hello" - is
+                     unchanged. Okay, so now let's change it. I change a.txt to "hello!" then add it. Now a.txt is in
+                     the staging area. Finally, let's say I change my mind and manually change a.txt back to "hello"
+                     (by editing it not using checkout), then add it again. Now we remove it from the staging area,
+                     because a.txt is exactly the same as it was in the current commit. Basically because it is possible
+                     to change a blob (change its content then change it back) but not want to add it, make sure you are
+                     keep track of changes in files based on their actual content, not just the fact that they have been
+                     edited."
+                        - here is where you'll probably check the SHA-id of blobs
+    }
+/**commit method.*/
+void commit() {
+    - create a new commit, serialize it, add it to the commit
+}
+/**rm method.*/
+/**log method.*/
+/**global-log method.*/
+/**find method.*/
+/**status method.*/
+/**checkout method.*/
+- three diff types of checkout that it needs to look out for
+/**branch method.*/
+/**rm-branch method.*/
+/**reset method.*/
+/**merge method.*/
 
+
+COMMIT CLASS SKELETON CODE
+ **commit should implement serializable*
 /**Need an init to make a commit.*/
-Commit(String message, String time, String location, boolean isParent, hashMap files,
+Commit(String message, String time, String location, boolean isFirst)
+- message will be the commit message
+- time will be the time
+- location is the location
+- isFirst is true only for the first initial commit (because this will be traced back to for the rest of the commits
+    in the project
+/**Instance variables.*/
+String _message;
+String _time;
+String _location;
+boolean _isFirst;
+HashMap _blobs;
+    - this will contain nothing at first and in the future will be copy's of the parent's commit's hash map
+    plus whatever is new in the staging area - so read the staging area and add it to the next commit
+Commit parent;
+    - SHA-id of the commit before it
+/**Return the message.*/
+String returnMessage()
+/**Return the time.*/
+String returnTime()
+/**Return the location.*/
+String returnLocation()
+/**Return the boolean _isFirst.*/
+boolean returnIsFirst()
+/**Return the hashMap _blobs.*/
+hashMap returnBlobs()
+/**Return the SHA-id.*/
+String returnId()
+/**Return the parent commit.*/
+commit returnParent()
+
+ADD method (in repo) skeleton code
+
+
 
 
 
