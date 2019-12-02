@@ -5,13 +5,13 @@ Gitlet Design Document
 Classes and Data Structures
 ---------------------------
 - Repo class
-    - staging area
-        - instance variable that represents added staging area things
+    - staging area directory
+        - file that represents added staging area things
             - for each file that needs to be added, it should be a new file made of the file name that needs to be added
             - and it's file contents which are the blobs
-        - instance variable that represents removed staging area things - could be a list of file names
-    - tracked/untracked files
-        -
+        - file that represents removed staging area things - could be a list of file names
+    - tracked/untracked files director\
+
     - head - will be a commit that is most recent
     - branches - can be represented by the most current commit of these branches (list of commits)
         - branches are new when you split off a new commit
@@ -166,13 +166,21 @@ REPO CLASS SKELETON CODE
 Repo Repo() {}
 - create a bunch of instance variables + initialize them
 /**Staging area adding/removing.*/
+~~~~make this a directory~~~~~
 ArrayList<String> _adding; //staging area with what to add - try file names
 ArrayList<String> _removing; //what needs to be removed - file names
-    //could also be a hashmap maybe, with it being adding/removing mapped to file names and their updated versions?
+~~~~make this a directory too~~~~
+/**Tracked files. Should be another directory in the repo with a bunch of names of file in it.*/
+Directory???? trackedFiles;
 /**Most recent commit, called the head.*/
-String _head; //SHA-id of the most recent commit (whenever you make a commit, change this)
+    //make this also a directory thing with the actual serialized commit in it!
+/**Master branch, initially points to the initial commit, then to the current branch after that.
+The default initial branch.*/
+String _master;
 /**Branches represented by the most recent commit of each brance.*/
 ArrayList<String> _branches;  //every time you make a new branch/commit, this also needs to be changed - should be SHA-ids
+/**Tree of the commit's sha-ids.*/
+Tree <String> _commitTree;
 /**The add method adds a copy of the file as it exists to the staging area.*/
 void add(String fileName) {
     - need to first make sure this fileName exists (google the documentation to check for this)
@@ -201,12 +209,61 @@ void add(String fileName) {
                         - here is where you'll probably check the SHA-id of blobs
     }
 /**commit method.*/
-void commit() {
-    - create a new commit, serialize it, add it to the commit
+void commit(String message) {
+    - create a new commit - using the message, time, etc, serialize it
+    - add it to the commit directory by using something like the following:
+        -   public void saveDog() {
+                  capers.Utils.writeObject(capers.Utils.join(DOG_FOLDER, this._name), this);
+              }
+        where
+        -    static void writeObject(File file, Serializable obj) {
+                  writeContents(file, serialize(obj));
+              }
+    - should only deal with whatever is in the staging area, nothing else - it's hash map will now differ from
+    its parent (how much?)
+    - this new commit will be made with the blob and file from the staging area
+    - update the hashmap by copying the one from before and updating it to match what's in the
+    staging area
+    - change the master and head instance variables of the repo (thisRepo._master = new SHA-id, etc)
+        - this commit's parent is the previous head commit
+    - will save and start tracking which files are staged but not tracked by the parent
+    - any files tracked in the current commit can become untracked in the new commit BECAUSE of the rm command
+    - clear the staging area
+    - does not affect the working directory (that's rm)
+    - new commit should be added to the commit tree (make this in repo? with SHA-id's?)
+    - failure cases to take care of:
+        - if no files have been staged/marked for untracking print "No changes added to the commit."
+        - it is NOT a failure if the tracked file doesn't exist in the working directory, ignore everything
+        outside of the .gitlet directory
 }
 /**rm method.*/
-/**log method.*/
+void rm(String fileName) {
+    - unstage the specified file - only that one file
+    - if it's tracked in this commit, don't add it in the next commit by marking it as so (somewhere in the
+    .gitlet directory) - maybe have a staging area and tracked files directories in the repo
+    - remove the file from the working directory if the user has not already done so - do not remove
+    it unless it's tracked in the current commit
+    - failure cases: if the file is neither staged nor tracked by the HEAD commit - print the error
+    message "No reason to remove the file."
+}
+/**log method. Starting at the head commit, display information about each commit backwards until you hit
+the initial commit, following the first parent commit links, ignoring any second parents from merge commits.*/
+void log() {
+    - access the head commit from the head directory. deserialize this and print out it's info
+    - so this for the parent commit of the head commit
+    - use a while loop until parent commit == null
+    - look at merge to figure out what to do when there is a merge commit and two parents
+    - look at spec for the format of the printing out
+        - there is a === before each commit and an empty line after it
+        - each entry displays the SHA-id of the commit too
+        - timestamps should reflect the commit time in the current timezone (see Time class)
+    - use System.out.println and the get methods in the Commit object class
+    - Java classes java.util.Date and java.util.Formatter will be useful
+    - for merge commits (when there are two parents) add a line below the commit that says
+        "Merge developed into master."
+}
 /**global-log method.*/
+
 /**find method.*/
 /**status method.*/
 /**checkout method.*/
