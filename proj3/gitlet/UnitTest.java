@@ -4,6 +4,8 @@ import ucb.junit.textui;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import java.io.File;
+
 /** The suite of all JUnit tests for the gitlet package.
  *  @author
  */
@@ -18,6 +20,20 @@ public class UnitTest {
     /** A dummy test to avoid complaint. */
     @Test
     public void placeholderTest() {
+    }
+
+    @Test
+    public void testingDoubleInit() {
+        Repo theRepo;
+        theRepo = new Repo();
+        assertTrue(repoExists());
+        //return repoExists();
+    }
+
+    private static boolean repoExists() {
+            File checking = new File(".gitlet");
+            boolean check = checking.exists();
+            return check;
     }
 
 }

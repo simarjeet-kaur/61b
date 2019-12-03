@@ -161,6 +161,16 @@ String followUpArgs;
 /**Boolean that tells if the repo exists.*/
 Boolean repoExists;
 
+General overview structure:
+    - every time you add, make a blob with file contents.  serialize this and add it to the blobs folder with the
+    sha-id the name of the blob
+    - make a hash-map with the file name connecting to the sha-id of the blob
+    - compare this to the blobs in the current commit for each file by comparing the sha-ids
+        - current commit will also have a hash map with these blobs and their file names according to what was passed into it
+        from the staging area
+    - when you need to revert a file back, you can use the blob with that sha-id to write the contents of the file again
+
+
 REPO CLASS SKELETON CODE
 /**Constructor method.*/
 Repo Repo() {}
@@ -263,16 +273,164 @@ void log() {
         "Merge developed into master."
 }
 /**global-log method.*/
-
+void global-log() {
+    - looks through every single commit
+    - sift through that directory, deserialize every commit in the folder
+    - order doesn't matter
+}
 /**find method.*/
+void find(String message) {
+    - find all the commits with this message
+    - do this by looking through all the commits, deserialize, grab it's message, see if it matches, if it does, print out the id
+    - if no such commit exists, print out the error message "Found no commit with that message."
+}
 /**status method.*/
-/**checkout method.*/
-- three diff types of checkout that it needs to look out for
-/**branch method.*/
-/**rm-branch method.*/
-/**reset method.*/
-/**merge method.*/
+void status() {
+    - for branches: print out the === and then the names of the branches
+        which are in the _branches hashMap keys of the repo
+    - look through
+    === Branches ===
+    *master
+    other-branch
 
+    === Staged Files ===
+    wug.txt
+    wug2.txt
+
+    === Removed Files ===
+    goodbye.txt
+}
+/**checkout method.*/
+    - three diff types of checkout that it needs to look out for
+    (1) java gitlet.Main checkout -- [file name]
+        - go to the head commit in front of the current branch and overwrite this file
+        according to how it's represented here (this will not be staged)
+            - overwrite a file by just creating a new file with the exact same name
+    (2) java gitlet.Main checkout [commit id] -- [file name]
+        - go to the commit listed, look at the hashmap there for this file, and
+        overwrite the file according to how it's listed here with the blobs (look into blob folder)
+    (3) java gitlet.Main checkout [branch name]
+        - takes ALL the files in this branch's head commit and overwrites them
+        - this given branch will now be the current branch + its head is the new head
+        - any files that are tracked here by not present in the checked-out branch are deleted
+        - staging area is cleared, unless the checked-out branch is the current branch
+
+        - failure case: if a branch with that name doesn't exist, print out "A branch with that name does not exist."
+        - if you try to remove the branch you're currently on, print out "Cannot remove the current branch."
+
+/**branch method.*/
+void branch(String branchName) {
+    - creates a new branch with the name branchName
+    - edit the Repo's _branches hashMap by adding a new key and value - the branch name the new commit
+    being the current head commit
+    - doesn't need to automatically switch to working on this branch (should there be a current branch instance variable in repo?)
+    -
+}
+/**rm-branch method.*/
+void rm-branch(String branchName) {
+    - deletes the branch with this name
+    - only deletes the pointer with this name
+    - not the actual commits
+    - just edit the hashMap?
+}
+/**reset method.*/
+void reset(String commitID) {
+    - failures:
+            CHECK THESE FIRST
+            if no commit with the given id exists, print "No commit with that id exists."
+            if a working file is untracked and would be overwritten, print
+            "There is an untracked file in the way; delete it or add it first."
+    - checks out all the files tracked by the current commit (use checkout)
+    - removes racked files that are not present in this commit
+    - moves current branch's head to that commit node (move it back to a previous commit)
+    - staging area is cleared
+    (basically a checkout of an arbitrary commit that also changes the current branch head)
+}
+/**merge method.*/
+void merge(String branchName) {
+
+     - check failure cases first:
+         - failure cases:
+                - if there are staged additions or removals present print "You have uncommitted changes"
+                and exit
+                - if a branch with the given name doesn't exist, print "A branch with that name doesn't exist"
+                - if trying to merge a branch with itself, print "Cannot merge a branch with itself"
+                -  if merge would generate an error because the commit has no changes in it, let the normal
+                commit error message occur
+                - if an untracked file wil be overwritten or deleted, print "There is an untracked file in the way;
+                delete it or add it first."
+
+    - merge files from the given branch into the current branch
+    - consider the split point: the latest common ancestor of the current and given branch heads
+        - find this by looking through their parents until they match
+        - cannot be before the split, must be exactly at the split (not just any random common ancestor, see visual)
+        - if the split point is the same commit as the given branch, then we do nothing - the merge is complete
+        - operation ends with the message "Given branch is an ancestor of the current branch."
+        - if the split point is the current branch, the current branch is set to the same commit as the given branch
+            - operation ends after printing the message "Current branch fast-forwarded."
+        - any files that have been modified in the given branch SINCE the split point
+        but not modified in the CURRENT branch since the split point should be changed
+        to their version in the GIVEN branch
+            - i.e. check it out from the commit at the front of the given branch
+            - these files should be staged, automatically
+            - "modified in the given branch since the split point" means the version
+             of the file as it exists in the commit at the front of the given branch
+             has different content from the version of the file at the split point
+             (check the blob differences in the file hash map in the two commits you're
+             comparing)
+        - any files that have been modified in both the current and given branch in the same way
+        (i.e. both to files with the same content or both removes) are left unchanged by the merge
+            - they're the same, so unchanged
+        - if a file is removed in both (check the staging area removed) but the file of that
+        same name is still present in the working directory, this file cannot be removed from the
+        working directory - continues to be absent - not staged in the merge
+        - any files that were not present at the split point and are present only in the current
+        branch - leave these alone
+        - any filed not present at the split point but only present in the given branch should be
+        checked out and staged
+        - any files present at the split point, unmodified in the current branch, absent in the
+        given branch should be removed and untracked
+        - any files present at the split point but unmodified in the given branch and absent
+        in the current branch should remain absent
+        - any files modified in different ways in the current and given branches are in conflict
+            "modified in different ways" means the contents of both are changed and different
+            from other or the contents of the one are changed and another is deleted, or it was
+            absent at the split point and has diff contents in the given and current branches
+            in this case, replace the contents of the conflicted file with
+
+            <<<<<<< HEAD
+            contents of file in current branch
+            =======
+            contents of file in given branch
+            >>>>>>>
+
+            (replacing contents of with the indicated file's contents and stage the results)
+            use straight concatenation here
+            in case of a file with no new line at the end you might end up with
+
+            <<<<<<< HEAD
+            contents of file in current branch=======
+            contents of file in given branch>>>>>>>
+
+            which is ok
+
+            - once the files have been updated and the split point was not the current/given branch
+            merge automatically commits with the log message "Merged [given branch name] into [current branch name]."
+            - if the merge encountered a conflict, print the message "Encountered a merge conflict" on the
+            terminal (not the log)
+            - merge commits are different from normal commits - they record parents as both the heads
+            of the current branch and the head of the branch given on the command line to be merged in!
+            (hence the arraylist for parents in commit class)
+        - there might be multiple split points (see visualization)
+            - choose the one closest to the head of the current branch (reachable by following
+            the fewest parent pointers along some path)
+            - if multiple candidates are the same closest distance, choose any of them as the split point
+
+
+
+
+
+}
 
 COMMIT CLASS SKELETON CODE
  **commit should implement serializable*

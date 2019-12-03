@@ -152,7 +152,7 @@ class Utils {
     }
 
     /** Write OBJ to FILE. */
-    //serialize
+    //serialize into a file
     static void writeObject(File file, Serializable obj) {
         writeContents(file, serialize(obj));
     }

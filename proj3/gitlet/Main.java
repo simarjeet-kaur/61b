@@ -1,5 +1,8 @@
 package gitlet;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -18,15 +21,14 @@ public class Main {
        // If a user inputs a command that requires being in an initialized Gitlet working directory (i.e., one containing
         // a .gitlet subdirectory), but is not in such a directory, print the message Not in an initialized Gitlet directory.
 
-        /**Repo is theRepo.  Used to represent the whole .gitlet repo.*/
-        Repo theRepo = null;
+        /**Repo is _repo.  Used to represent the whole .gitlet repo.*/
+        Repo _repo = null;
 
         /**List of viable commands.*/
         String[] arrayOfCommands = {"init", "add", "commit", "rm", "log", "global-log", "find", "status", "checkout",
             "branch", "rm-branch", "reset", "merge", "add-remote", "rm-remote", "push", "fetch", "pull"};
 
-        /**Checking if the args is input correctly and calling these arguments on theRepo.*/
-        try {
+        /**Checking if the args is input correctly and calling these arguments on _repo.*/
             if (args.length == 0) {
                 //Utils.message("Please enter a command.");
                 throw new GitletException("Please enter a command.");
@@ -35,20 +37,22 @@ public class Main {
                     //if there is, make an array for the operands.  then check for the init first - it needs to exist before you call anything
                     //so here, set something for the init case
                     //if (repoExists()) {
-                    //    theRepo = getTheRepo();
+                    //    _repo = getTheRepo();
                     //}
-                    //now call whatever the arg is onto theRepo
-                    if (args[0] == "init") {
+                    //now call whatever the arg is onto _repo
+                    if (args[0].equals("init")) {
                         if (repoExists()) {
+                            //System.out.print("test");
                             throw new GitletException("A Gitlet version-control system already exists in the current directory.");
                         } else {
-                            theRepo = new Repo();
+                            _repo = new Repo();
+                            _repo.init();
                         }
                     } else if (repoExists()) {
                         switch (args[0]) {
                             case "add":
                                 try {
-                                    theRepo.add(args[1]);
+                                    _repo.add(args[1]);
                                     //FIXME - says to add this assert statement that is always false?
                                 } catch (Exception e) {
                                     throw new GitletException("Please enter a file name.");
@@ -57,58 +61,60 @@ public class Main {
                                 break;
                             case "commit":
                                 try {
-                                    theRepo.commit(args[1]);
+                                    _repo.commit(args[1]);
                                 } catch (Exception e) {
                                     throw new GitletException("Please enter a commit message.");
                                 }
                                 break;
                             case "rm":
-                                theRepo.rm(args[1]);
+                                _repo.rm(args[1]);
                                 break;
                             case "log":
-                                theRepo.log();
+                                _repo.log();
                                 break;
                             case "global-log":
-                                theRepo.globalLog();
+                                _repo.globalLog();
                                 break;
                             case "find":
-                                theRepo.find();
+                                _repo.find();
                                 break;
                             case "status":
-                                theRepo.status();
+                                _repo.status();
                                 break;
                             case "checkout":
-                                theRepo.checkout();
+                                _repo.checkout();
                                 break;
                             case "branch":
-                                theRepo.branch();
+                                _repo.branch();
                                 break;
                             case "rm-branch":
-                                theRepo.rmBranch();
+                                _repo.rmBranch();
                                 break;
                             case "reset":
-                                theRepo.reset();
+                                _repo.reset();
                                 break;
                             case "merge":
-                                theRepo.merge();
+                                _repo.merge();
                                 break;
                         }
-                    } else {
-                        throw new GitletException("A repo does not exist yet");
-                        //FIXME - do we need this?
                     }
+//                    } else {
+//                        throw new GitletException("A repo does not exist yet");
+//                        //FIXME - do we need this? - no just do nothing
+//                    }
                 } else {
                     throw new GitletException("No command with that name exists.");
                 }
             }
-        } catch (Exception e) {
-            throw new GitletException("Incorrect argument format.");
-            //FIXME - is this also right??
-        }
+//        } catch (Exception e) {
+//            throw new GitletException("Incorrect argument format.");
+//            //FIXME - is this also right??
+//        }
     }
     /**Checking if the repo has already been initialized.*/
     private static boolean repoExists() {
-        return true;
+        File checking = new File(".gitlet");
+        return checking.isDirectory();
     }
 }
 
