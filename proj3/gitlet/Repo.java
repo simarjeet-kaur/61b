@@ -20,6 +20,7 @@ class Repo implements Serializable {
     ArrayList<String> _trackedFiles;
     HashMap<String, String> _branches;
     File gitlet;
+    File gitletRepo;
     File commits;
     File blobs;
     File staging_area;
@@ -33,6 +34,8 @@ class Repo implements Serializable {
         //making the new .gitlet directory
         gitlet = new File(".gitlet");
         gitlet.mkdir();
+        gitletRepo = new File(".gitlet/gitletRepo");
+        gitletRepo.mkdir();
         //knowing you want the .gitlet directory to have subdirectories of commits, staging area, and head, make subdirectories for these
         commits = new File(".gitlet/commits");
         commits.mkdir();
@@ -89,7 +92,7 @@ class Repo implements Serializable {
 
     void add(String fileName) {
         //check if the file exists
-        File checking = new File(fileName);
+        File checking = new File("gitlet/" + fileName);
         if (!checking.exists()) {
             throw new GitletException("File does not exist.");
         } else {
@@ -107,6 +110,7 @@ class Repo implements Serializable {
     }
 
     void commit(String arg) {
+        System.out.print("this is test");
     }
 
     void rm(String arg) {
@@ -119,24 +123,24 @@ class Repo implements Serializable {
     void globalLog() {
     }
 
-    void find() {
+    void find(String commitID) {
     }
 
     void status() {
     }
 
-    void checkout() {
+    void checkout(String[] arguments) {
     }
 
-    void branch() {
+    void branch(String branchName) {
     }
 
-    void rmBranch() {
+    void rmBranch(String branchName) {
     }
 
-    void reset() {
+    void reset(String commitID) {
     }
 
-    void merge() {
+    void merge(String branchName) {
     }
 }
