@@ -294,6 +294,19 @@ void log() {
         Date: Wed Dec 31 16:00:00 1969 -0800
         initial commit
 
+    - merge commits
+
+    ===
+     commit 3e8bf1d794ca2e9ef8a4007275acf3751c7170ff
+     Merge: 4975af1 2c1ead1
+     Date: Sat Nov 11 12:30:00 2017 -0800
+     Merged development into master.
+
+     - where the two hexadecimal numerals following "Merge:" consist of the first
+     seven digits of the first and second parents' commit ids, in that order. The
+     first parent is the branch you were on when you did the merge; the second is
+     that of the merged-in branch. This is as in regular Git.
+
 }
 /**global-log method.*/
 void global-log() {
@@ -304,7 +317,8 @@ void global-log() {
 /**find method.*/
 void find(String message) {
     - find all the commits with this message
-    - do this by looking through all the commits, deserialize, grab it's message, see if it matches, if it does, print out the id
+    - do this by looking through all the commits, deserialize, grab it's message,
+     see if it matches, if it does, print out the id
     - if no such commit exists, print out the error message "Found no commit with that message."
 }
 /**status method.*/
@@ -344,11 +358,12 @@ void status() {
 /**branch method.*/
 void branch(String branchName) {
     - creates a new branch with the name branchName
-    - edit the Repo's _branches hashMap by adding a new key and value - the branch name the new commit
-    being the current head commit
-    - doesn't need to automatically switch to working on this branch (should there be a current branch instance variable in repo?)
-    -
+    - edit the Repo's _branches hashMap by adding a new key and value - the branch
+    name the new commit being the current head commit
+    - doesn't need to automatically switch to working on this branch
+    (should there be a current branch instance variable in repo?)
 }
+
 /**rm-branch method.*/
 void rm-branch(String branchName) {
     - deletes the branch with this name
@@ -364,7 +379,8 @@ void reset(String commitID) {
             if a working file is untracked and would be overwritten, print
             "There is an untracked file in the way; delete it or add it first."
     - checks out all the files tracked by the current commit (use checkout)
-    - removes racked files that are not present in this commit
+    - removes tracked files that are not present in this commit
+        - tracked is those in the updated staging area of the current commit
     - moves current branch's head to that commit node (move it back to a previous commit)
     - staging area is cleared
     (basically a checkout of an arbitrary commit that also changes the current branch head)
