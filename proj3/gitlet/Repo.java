@@ -96,7 +96,7 @@ class Repo implements Serializable {
         //check if the file exists
             //what should be here?for file path name
 
-        File checking = new File("gitlet/" + fileName);
+        File checking = new File(fileName);
         if (!checking.exists()) {
             System.out.println("File does not exist.");
             //throw new GitletException("File does not exist.");
@@ -301,7 +301,7 @@ class Repo implements Serializable {
                     //deserialize the blob for this file and update the file according to this
                     File blobPath = new File(".gitlet/blobs/" + blobID);
                     String blob = readObject(blobPath, String.class);
-                    File thisFile = new File("gitlet/" + fileName);
+                    File thisFile = new File(fileName);
                         //changed this to /gitlet at the beginning
                     Utils.writeContents(thisFile, blob);
                 }

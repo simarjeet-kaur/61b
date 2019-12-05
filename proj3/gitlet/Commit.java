@@ -1,6 +1,7 @@
 package gitlet;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -66,10 +67,13 @@ public class Commit implements Serializable {
 
     /**Returns the date of this commit as a string.*/
     String returnDate() {
-        String _condensedDate = _date.toString().substring(0, 20);
-        String _year = _date.toString().substring(24);
-        int _timeZone = _date.getTimezoneOffset();
-        return _condensedDate + _year + " -0800";
+//        String _condensedDate = _date.toString().substring(0, 20);
+//        String _year = _date.toString().substring(24);
+//        int _timeZone = _date.getTimezoneOffset();
+        SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM HH:mm:ss yyyy");
+        return formatter.format(_date) + " -0800";
+        //System.out.println(formatter.format(_date));
+        //return _condensedDate + _year + " -0800";
         //+ _timeZone;
     }
 
