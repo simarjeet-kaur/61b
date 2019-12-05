@@ -71,7 +71,7 @@ class Repo implements Serializable {
 
         //FIXME - make the initial commit
             //this needs to start automatically with an initial commit - use commit class
-        Date initialDate = new Date(1969, Calendar.DECEMBER, 31, 16, 0, 0);
+        Date initialDate = new Date(69, Calendar.DECEMBER, 31, 16, 0, 0);
 
         firstCommit = new Commit("initial commit", initialDate, new HashMap<String, String>(),
                 "None", true);
@@ -98,7 +98,8 @@ class Repo implements Serializable {
 
         File checking = new File("gitlet/" + fileName);
         if (!checking.exists()) {
-            throw new GitletException("File does not exist.");
+            System.out.println("File does not exist.");
+            //throw new GitletException("File does not exist.");
         } else {
             //making a blob of this file, where blob is the fileContents
 
@@ -121,11 +122,11 @@ class Repo implements Serializable {
                 String currentBlob = stagingArea.get(fileName);
                 if (!currentBlob.equals(blobID)) {
                     _stagingArea.put(fileName, blobID);
-                    Utils.writeObject(Utils.join(added, fileName), blob);
+                   // Utils.writeObject(Utils.join(added, fileName), blob);
                 }
             } else {
                 _stagingArea.put(fileName, blobID);
-                Utils.writeObject(Utils.join(added, fileName), blob);
+               // Utils.writeObject(Utils.join(added, fileName), blob);
             }
         }
     }
@@ -135,7 +136,8 @@ class Repo implements Serializable {
 
         if (_stagingArea.isEmpty()) {
             //if staging area is empty
-            throw new GitletException("No changes added to the commit.");
+            System.out.println("No changes added to the commit.");
+            //throw new GitletException("No changes added to the commit.");
         }
 
         //get the parent's staging area to combine the two
@@ -194,7 +196,8 @@ class Repo implements Serializable {
         Commit headCommit = readObject(headFile, Commit.class);
         HashMap<String, String> headStagingArea = headCommit.returnStagingArea();
         if (!headStagingArea.containsKey(fileName)) {
-            throw new GitletException("No reason to remove the file.");
+            System.out.println("No reason to remove the file.");
+            //throw new GitletException("No reason to remove the file.");
         }
         _stagingArea.remove(fileName);
         _removedFiles.add(fileName);
@@ -209,6 +212,7 @@ class Repo implements Serializable {
             System.out.println("commit " + initialCommit.returnSHA_id());
             System.out.println("Date: " + initialCommit.returnDate());
             System.out.println(initialCommit.returnMessage());
+            System.out.println();
             File newFilePath = new File(".gitlet/commits/" + initialCommit.returnParent());
             initialCommit = readObject(newFilePath, Commit.class);
         }
@@ -216,6 +220,7 @@ class Repo implements Serializable {
         System.out.println("commit " + initialCommit.returnSHA_id());
         System.out.println("Date: " + initialCommit.returnDate());
         System.out.println(initialCommit.returnMessage());
+        System.out.println();
     }
 
     void globalLog() {
@@ -261,11 +266,12 @@ class Repo implements Serializable {
 
     void checkout(String[] arguments) {
         if (arguments.length == 2 && arguments[0].equals("--")) {
-
+                //to test: System.out.println("worked");
             String fileName = arguments[1];
             //get the head commit
             File headPath = new File(".gitlet/commits/" + _head);
             Commit headCommit = readObject(headPath, Commit.class);
+                //to test: System.out.println(headCommit.returnMessage());
 
             //get it's staging area and the blob with this file
             HashMap<String, String> tempSA = headCommit.returnStagingArea();
@@ -278,6 +284,7 @@ class Repo implements Serializable {
             Utils.writeContents(thisFile, blob);
 
         } else if (arguments.length == 3 && arguments[1].equals("--")) {
+                //to test: System.out.println("did not work2");
             String commitID = arguments[0];
             String fileName = arguments[2];
             List<String> commits = plainFilenamesIn(".gitlet/commits");
@@ -294,14 +301,19 @@ class Repo implements Serializable {
                     //deserialize the blob for this file and update the file according to this
                     File blobPath = new File(".gitlet/blobs/" + blobID);
                     String blob = readObject(blobPath, String.class);
-                    File thisFile = new File(fileName);
+                    File thisFile = new File("gitlet/" + fileName);
+                        //changed this to /gitlet at the beginning
                     Utils.writeContents(thisFile, blob);
                 }
             }
         } else if (arguments.length == 1) {
             //FIXME - finish this
             String branchName = arguments[0];
+                //to test: System.out.println("did not work3");
         }
+//        else {
+//                //to test: System.out.println("did not work4");
+//        }
     }
 
     void branch(String branchName) {

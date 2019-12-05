@@ -23,16 +23,18 @@ public class Main {
         File gitletFile = new File(".gitlet/gitletRepo");
 
         /**Checking if the args is input correctly and calling these arguments on _repo.*/
-        // try {
+//        try {
             if (args.length == 0) {
-                throw new GitletException("Please enter a command.");
+               // throw new GitletException("Please enter a command.");
+                System.out.println("Please enter a command.");
             } else {
                 String command = args[0];
                 String[] rest_of_args = Arrays.copyOfRange(args, 1, args.length);
                 if (Arrays.asList(arrayOfCommands).contains(command)) {
                     if (command.equals("init")) {
                         if (repoExists()) {
-                            throw new GitletException("A Gitlet version-control system already exists in the current directory.");
+                            System.out.println("A Gitlet version-control system already exists in the current directory.");
+                            // throw new GitletException("A Gitlet version-control system already exists in the current directory.");
                         } else {
                             Repo _repo = new Repo();
                             _repo.init();
@@ -56,7 +58,8 @@ public class Main {
                                 // Utils.writeObject(Utils.join(gitletFile, "repo"), _repo);
                     }
                 } else {
-                    throw new GitletException("No command with that name exists.");
+                    System.out.println("No command with that name exists.");
+                    //throw new GitletException("No command with that name exists.");
                 }
             }
 //        } catch (GitletException e) {
@@ -76,7 +79,8 @@ public class Main {
                     if (arguments.length == 1) {
                         repo.commit(arguments[0]);
                     } else if (arguments.length == 0) {
-                        throw new GitletException("Please enter a commit message.");
+                        System.out.println("Please enter a commit message.");
+                       // throw new GitletException("Please enter a commit message.");
                     }
                     break;
                 case "rm":
@@ -105,9 +109,12 @@ public class Main {
                     }
                     break;
                 case "checkout":
-                    if (arguments.length == 3 || arguments.length == 1) {
+                    if (arguments.length < 4) {
                         repo.checkout(arguments);
                     }
+//                    } else {
+//                        System.out.print("dropped");
+//                    }
                     break;
                 case "branch":
                     if (arguments.length == 1) {

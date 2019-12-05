@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Formatter;
+//import java.util.text.SimpleDateFormat;
 
 public class Commit implements Serializable {
 
@@ -64,7 +66,11 @@ public class Commit implements Serializable {
 
     /**Returns the date of this commit as a string.*/
     String returnDate() {
-        return _date.toString();
+        String _condensedDate = _date.toString().substring(0, 20);
+        String _year = _date.toString().substring(24);
+        int _timeZone = _date.getTimezoneOffset();
+        return _condensedDate + _year + " -0800";
+        //+ _timeZone;
     }
 
     /**Returns all of the blobs this commit takes care of.*/
