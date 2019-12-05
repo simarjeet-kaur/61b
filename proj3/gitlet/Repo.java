@@ -102,7 +102,7 @@ class Repo implements Serializable {
         } else {
             //making a blob of this file, where blob is the fileContents
 
-            byte[] blob = Utils.readContents(checking); //fileContents
+            String blob = Utils.readContentsAsString(checking); //fileContents
             //used to be a string ^^
             byte[] serializedBlob = Utils.serialize(checking);
             String blobID = Utils.sha1((Object) blob);
@@ -260,7 +260,8 @@ class Repo implements Serializable {
     }
 
     void checkout(String[] arguments) {
-        if (arguments.length == 2) {
+        if (arguments.length == 2 && arguments[0].equals("--")) {
+
             String fileName = arguments[1];
             //get the head commit
             File headPath = new File(".gitlet/commits/" + _head);
@@ -270,15 +271,36 @@ class Repo implements Serializable {
             HashMap<String, String> tempSA = headCommit.returnStagingArea();
             String blobID = tempSA.get(fileName);
 
-            //read this blob and update the file
+            //deserialize this blob and update the file
             File blobPath = new File(".gitlet/blobs/" + blobID);
-            //FIXME writeContents
+            String blob = readObject(blobPath, String.class);
+            File thisFile = new File(fileName);
+            Utils.writeContents(thisFile, blob);
 
+        } else if (arguments.length == 3 && arguments[1].equals("--")) {
+            String commitID = arguments[0];
+            String fileName = arguments[2];
+            List<String> commits = plainFilenamesIn(".gitlet/commits");
+            for (String commit : commits) {
+                if (commit.equals(commitID)) {
+                    //getting the commit with this ID
+                    File filePath = new File(".gitlet/commits/" + commit);
+                    Commit thisCommit = readObject(filePath, Commit.class);
 
-        } else if (arguments.length == 3) {
+                    //grab it's staging area
+                    HashMap<String, String> tempSA = thisCommit.returnStagingArea();
+                    String blobID = tempSA.get(fileName);
 
+                    //deserialize the blob for this file and update the file according to this
+                    File blobPath = new File(".gitlet/blobs/" + blobID);
+                    String blob = readObject(blobPath, String.class);
+                    File thisFile = new File(fileName);
+                    Utils.writeContents(thisFile, blob);
+                }
+            }
         } else if (arguments.length == 1) {
-
+            //FIXME - finish this
+            String branchName = arguments[0];
         }
     }
 
