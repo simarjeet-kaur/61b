@@ -71,7 +71,7 @@ class Repo implements Serializable {
 
         //FIXME - make the initial commit
             //this needs to start automatically with an initial commit - use commit class
-        Date initialDate = new Date(1970, Calendar.JANUARY, 1, 0, 0, 0);
+        Date initialDate = new Date(1969, Calendar.DECEMBER, 31, 16, 0, 0);
 
         firstCommit = new Commit("initial commit", initialDate, new HashMap<String, String>(),
                 "None", true);

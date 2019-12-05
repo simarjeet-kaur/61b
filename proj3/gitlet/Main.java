@@ -27,8 +27,10 @@ public class Main {
             if (args.length == 0) {
                 throw new GitletException("Please enter a command.");
             } else {
-                if (Arrays.asList(arrayOfCommands).contains(args[0])) {
-                    if (args[0].equals("init")) {
+                String command = args[0];
+                String[] rest_of_args = Arrays.copyOfRange(args, 1, args.length);
+                if (Arrays.asList(arrayOfCommands).contains(command)) {
+                    if (command.equals("init")) {
                         if (repoExists()) {
                             throw new GitletException("A Gitlet version-control system already exists in the current directory.");
                         } else {
@@ -41,19 +43,14 @@ public class Main {
                         }
                     } else if (repoExists()) {
                         //de-serialize the repo
-
                         Repo _repo = Utils.readObject(gitletFile, Repo.class);
                         //get the rest of the args
-                        String [] rest_of_args;
+                        //String[] rest_of_args;
                        // System.out.print(args);
                         //FIXME rest_of_args = args.split(" ");
-                        if (args.length > 1) {
-                            rest_of_args = Arrays.copyOfRange(args, 1, args.length);
-                        } else {
-                            rest_of_args = new String[0];
-                        }
+                        //rest_of_args = Arrays.copyOfRange(args, 1, args.length);
                         //call the command
-                        callingCommand(args[0], rest_of_args, _repo);
+                        callingCommand(command, rest_of_args, _repo);
                         //re-serialize the repo
                         Utils.writeObject(gitletFile, _repo);
                                 // Utils.writeObject(Utils.join(gitletFile, "repo"), _repo);
