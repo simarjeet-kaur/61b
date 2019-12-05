@@ -136,7 +136,8 @@ class Repo implements Serializable {
     void commit(String message) {
         //getting initialization out of the way
 
-        if (_stagingArea.isEmpty()) {
+        if (_stagingArea.isEmpty() && _removedFiles.isEmpty()) {
+            //FIXME - added the removed files part
             //if staging area is empty
             System.out.println("No changes added to the commit.");
             //throw new GitletException("No changes added to the commit.");
@@ -252,10 +253,21 @@ class Repo implements Serializable {
         for (String commit : commits) {
             File filePath = new File(".gitlet/commits/" + commit);
             Commit physical_commit = readObject(filePath, Commit.class);
-            System.out.println("===");
-            System.out.println("commit " + physical_commit.returnSHA_id());
-            System.out.println("Date: " + physical_commit.returnDate());
-            System.out.println(physical_commit.returnMessage());
+            if (physical_commit.returnParent().equals(physical_commit.returnSecondParent())) {
+                System.out.println("===");
+                System.out.println("commit " + physical_commit.returnSHA_id());
+                System.out.println("Date: " + physical_commit.returnDate());
+                System.out.println(physical_commit.returnMessage());
+                System.out.println();
+            } else {
+                System.out.println("===");
+                System.out.println("commit " + physical_commit.returnSHA_id());
+                System.out.println("Merge:" + physical_commit.returnParent().substring(0, 6) +
+                        " " + physical_commit.returnSecondParent().substring(0, 6));
+                System.out.println("Date: " + physical_commit.returnDate());
+                System.out.println("Merged development into master.");
+                System.out.println();
+            }
         }
     }
 
