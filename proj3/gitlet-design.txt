@@ -255,13 +255,20 @@ void rm(String fileName) {
     it unless it's tracked in the current commit
     - failure cases: if the file is neither staged nor tracked by the HEAD commit - print the error
     message "No reason to remove the file."
+    - tracked files are the ones in the staging area of the previous commit OR the current commit
+        - remove this file from being tracked
+        - keep track of this in your added/removed staging area - make sure the hash
+         map staging areas don't include whatever keys correspond with the removed
+         staging area files and only the ones in the added staging area
+
 }
 /**log method. Starting at the head commit, display information about each commit backwards until you hit
 the initial commit, following the first parent commit links, ignoring any second parents from merge commits.*/
 void log() {
     - access the head commit from the head directory. deserialize this and print out it's info
-    - so this for the parent commit of the head commit
+    - do this for the parent commit of the head commit
     - use a while loop until parent commit == null
+            - ignore the second parent for merge commits
     - look at merge to figure out what to do when there is a merge commit and two parents
     - look at spec for the format of the printing out
         - there is a === before each commit and an empty line after it
@@ -271,6 +278,22 @@ void log() {
     - Java classes java.util.Date and java.util.Formatter will be useful
     - for merge commits (when there are two parents) add a line below the commit that says
         "Merge developed into master."
+
+        ===
+        commit a0da1ea5a15ab613bf9961fd86f010cf74c7ee48
+        Date: Thu Nov 9 20:00:05 2017 -0800
+        A commit message.
+
+        ===
+        commit 3e8bf1d794ca2e9ef8a4007275acf3751c7170ff
+        Date: Thu Nov 9 17:01:33 2017 -0800
+        Another commit message.
+
+        ===
+        commit e881c9575d180a215d1a636545b8fd9abfb1d2bb
+        Date: Wed Dec 31 16:00:00 1969 -0800
+        initial commit
+
 }
 /**global-log method.*/
 void global-log() {

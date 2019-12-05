@@ -20,10 +20,10 @@ public class Main {
                 "branch", "rm-branch", "reset", "merge", "add-remote", "rm-remote", "push", "fetch", "pull"};
 
         /**Gitlet file path to the repo.*/
-        File gitletFile = new File(".gitlet/gitletRepo/repo");
+        File gitletFile = new File(".gitlet/gitletRepo");
 
         /**Checking if the args is input correctly and calling these arguments on _repo.*/
-         try {
+        // try {
             if (args.length == 0) {
                 throw new GitletException("Please enter a command.");
             } else {
@@ -41,11 +41,12 @@ public class Main {
                         }
                     } else if (repoExists()) {
                         //de-serialize the repo
-                        //File gitletFile = new File(".gitlet/gitletRepo");
+
                         Repo _repo = Utils.readObject(gitletFile, Repo.class);
                         //get the rest of the args
                         String [] rest_of_args;
                        // System.out.print(args);
+                        //FIXME rest_of_args = args.split(" ");
                         if (args.length > 1) {
                             rest_of_args = Arrays.copyOfRange(args, 1, args.length);
                         } else {
@@ -54,17 +55,17 @@ public class Main {
                         //call the command
                         callingCommand(args[0], rest_of_args, _repo);
                         //re-serialize the repo
-                       // Utils.writeObject(Utils.join(gitletFile, "repo"), _repo);
                         Utils.writeObject(gitletFile, _repo);
+                                // Utils.writeObject(Utils.join(gitletFile, "repo"), _repo);
                     }
                 } else {
                     throw new GitletException("No command with that name exists.");
                 }
             }
-        } catch (GitletException e) {
-             throw new GitletException();
-            //System.exit(0); //FIXME - is this right?
-        }
+//        } catch (GitletException e) {
+//             throw new GitletException();
+//            //System.exit(0); //FIXME - is this right?
+//        }
     }
 
         private static void callingCommand(String command, String[] arguments, Repo repo) {
@@ -77,6 +78,8 @@ public class Main {
                 case "commit":
                     if (arguments.length == 1) {
                         repo.commit(arguments[0]);
+                    } else if (arguments.length == 0) {
+                        throw new GitletException("Please enter a commit message.");
                     }
                     break;
                 case "rm":
@@ -131,6 +134,7 @@ public class Main {
                     break;
             }
         }
+
     /**Checking if the repo has already been initialized.*/
     private static boolean repoExists() {
         File checking = new File(".gitlet");
