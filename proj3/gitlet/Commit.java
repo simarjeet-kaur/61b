@@ -57,7 +57,6 @@ public class Commit implements Serializable {
             //need this because when you save the blobs, you name them by the sha-id
 
 
-
     }
 
     /**Returns the message of the commit.*/
@@ -70,14 +69,14 @@ public class Commit implements Serializable {
 //        String _condensedDate = _date.toString().substring(0, 20);
 //        String _year = _date.toString().substring(24);
 //        int _timeZone = _date.getTimezoneOffset();
-        SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy");
-        return formatter.format(_date) + " -0800";
+        SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy ZZZZ");
+        return formatter.format(_date);
         //System.out.println(formatter.format(_date));
         //return _condensedDate + _year + " -0800";
         //+ _timeZone;
     }
 
-    /**Returns all of the blobs this commit takes care of.*/
+    /**Returns a hashMap of all the blobs and file names this commit takes care of.*/
     HashMap<String, String> returnStagingArea() {
         return _stagingArea;
     }
@@ -102,6 +101,7 @@ public class Commit implements Serializable {
         return _secondaryParent;
     }
 
-
-
+    public void changeMessage(String s) {
+        _message = s;
+    }
 }

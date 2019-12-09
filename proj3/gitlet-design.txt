@@ -464,11 +464,6 @@ void merge(String branchName) {
             - choose the one closest to the head of the current branch (reachable by following
             the fewest parent pointers along some path)
             - if multiple candidates are the same closest distance, choose any of them as the split point
-
-
-
-
-
 }
 
 COMMIT CLASS SKELETON CODE
