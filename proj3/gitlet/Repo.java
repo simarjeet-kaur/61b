@@ -273,14 +273,13 @@ class Repo implements Serializable {
                 System.out.println("Date: " + physical_commit.returnDate());
                 System.out.println(physical_commit.returnMessage());
                 System.out.println();
-                //FIXME - fix this according to the merge commit thing
             } else {
                 System.out.println("===");
                 System.out.println("commit " + physical_commit.returnSHA_id());
                 System.out.println("Merge:" + physical_commit.returnParent().substring(0, 6) +
                         " " + physical_commit.returnSecondParent().substring(0, 6));
                 System.out.println("Date: " + physical_commit.returnDate());
-                System.out.println("Merged development into master.");
+                System.out.println(physical_commit.returnMessage());
                 System.out.println();
             }
         }
@@ -572,7 +571,7 @@ class Repo implements Serializable {
                     } else {
 
                         for (String fileName : thisCommit.returnStagingArea().keySet()) {
-                            String[] args = new String[2];
+                            String[] args = new String[3];
                             args[0] = commitID;
                             args[1] = "--";
                             args[2] = fileName;
@@ -590,7 +589,7 @@ class Repo implements Serializable {
                     }
                 }
             }
-            //FIXME - check for untracked files in failure cases
+
             if (!checkForCommit) {
                 System.out.println("No commit with that id exists.");
             }
