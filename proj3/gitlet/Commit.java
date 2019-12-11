@@ -104,4 +104,8 @@ public class Commit implements Serializable {
     public void changeMessage(String s) {
         _message = s;
     }
+
+    public void changeSecondParent(String s) {
+        _secondaryParent = s;
+    }
 }
