@@ -6,57 +6,42 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Formatter;
-//import java.util.text.SimpleDateFormat;
 
+/**Commit class that represent the history of the
+ * edits at that point in the project.
+ * @author Simarjeet Kaur*/
 public class Commit implements Serializable {
 
-    public gitlet.Utils Utils;
+    /**Commit message.*/
     private String _message;
+    /**Commit date.*/
     private Date _date;
-    //private ArrayList<byte[]> _blobs;
+    /**If the commit is the first or not.*/
     private boolean _isFirst;
-    private String SHA_id;
+    /**Commit SHA-id.*/
+    private String shaID;
+    /**Commit first parent.*/
     private String _primaryParent;
+    /**Commit second parent (merges).*/
     private String _secondaryParent;
+    /**Commit staging area.*/
     private HashMap<String, String> _stagingArea;
 
-    Commit(String message, Date date, HashMap<String, String> stagingArea, String parent, boolean isFirst) {
-
-        //blob is the name of the file and the readContents of that file
-        //sha-id of this is how you save the blob
-
-        //hash map file name to its contents in commit
-        //staging area hash map - file name to the SHA-id
-
-        //extracting what's given from the commit
+    /**Commit class.*/
+    Commit(String message, Date date, HashMap<String, String> stagingArea,
+           String parent, boolean isFirst) {
         _message = message;
         _date = date;
         _isFirst = isFirst;
-        _primaryParent = parent; //(should be some sort of sha-id of the commit before it)
+        _primaryParent = parent;
         _secondaryParent = parent;
-            //secondary parent is the same until you need to change it when you merge
-        //SHA-id list of blobs or something, them serialized - need them to be serialized into
-        // byte arrays so you can use them in the init
-        //_blobs = blobs;
-
-        //files mapped to their blobs
         _stagingArea = stagingArea;
-        //remember to serialize the blob before you put it in to the commits
-        //Each commit is identified by its SHA-1 id, which must include the file (blob)
-            // references of its files, parent reference, log message, and commit time.
-        List<Object> _shaList = new ArrayList<Object>(_stagingArea.values());
-        _shaList.add(_primaryParent);
-        _shaList.add(_secondaryParent);
-        _shaList.add(_message);
-        _shaList.add(_date.toString());
-        //making the SHA-id
-        SHA_id = gitlet.Utils.sha1(_shaList);
-
-        //hash map of the file name to the sha-id of the contents of the file
-            //need this because when you save the blobs, you name them by the sha-id
-
-
+        List<Object> shaList = new ArrayList<Object>(_stagingArea.values());
+        shaList.add(_primaryParent);
+        shaList.add(_secondaryParent);
+        shaList.add(_message);
+        shaList.add(_date.toString());
+        shaID = gitlet.Utils.sha1(shaList);
     }
 
     /**Returns the message of the commit.*/
@@ -66,17 +51,13 @@ public class Commit implements Serializable {
 
     /**Returns the date of this commit as a string.*/
     String returnDate() {
-//        String _condensedDate = _date.toString().substring(0, 20);
-//        String _year = _date.toString().substring(24);
-//        int _timeZone = _date.getTimezoneOffset();
-        SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy ZZZZ");
+        SimpleDateFormat formatter =
+                new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy ZZZZ");
         return formatter.format(_date);
-        //System.out.println(formatter.format(_date));
-        //return _condensedDate + _year + " -0800";
-        //+ _timeZone;
     }
 
-    /**Returns a hashMap of all the blobs and file names this commit takes care of.*/
+    /**Returns a hashMap of all the blobs and file
+     * names this commit takes care of.*/
     HashMap<String, String> returnStagingArea() {
         return _stagingArea;
     }
@@ -87,8 +68,8 @@ public class Commit implements Serializable {
     }
 
     /**Returns the SHA-id of the commit.*/
-    String returnSHA_id() {
-        return SHA_id;
+    String returnSHAId() {
+        return shaID;
     }
 
     /**Returns SHA-id of the primary parent commit.*/
@@ -101,10 +82,14 @@ public class Commit implements Serializable {
         return _secondaryParent;
     }
 
+    /**Changes the message of the commit.
+     * @param s is the new message*/
     public void changeMessage(String s) {
         _message = s;
     }
 
+    /**Changes the second parent of the commit.
+     * @param s is the second parent*/
     public void changeSecondParent(String s) {
         _secondaryParent = s;
     }

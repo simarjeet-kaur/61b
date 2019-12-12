@@ -78,7 +78,7 @@ public class Main {
                 case "commit":
                     if (arguments.length == 1) {
                         repo.commit(arguments[0]);
-                    } else if (arguments.length == 0) {
+                    } else if (arguments.length == 0 || arguments[0].equals("\"\"")) {
                         System.out.println("Please enter a commit message.");
                        // throw new GitletException("Please enter a commit message.");
                     }

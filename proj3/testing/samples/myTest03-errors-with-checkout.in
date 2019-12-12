@@ -1,0 +1,26 @@
+# testing the checkout errors
+> init
+<<<
++ wug.txt wug.txt
+> add wug.txt
+<<<
+> commit "added wug"
+<<<
++ wug.txt notwug.txt
+> add wug.txt
+<<<
+> commit "new wug"
+<<<
+= wug.txt notwug.txt
+> checkout master
+No need to checkout the current branch.
+<<<
+> checkout thisCommit -- wug.txt
+No commit with that id exists.
+<<<
+> checkout // wug.txt
+Incorrect operands.
+<<<
+> checkout newBranch
+No such branch exists.
+<<<

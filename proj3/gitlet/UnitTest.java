@@ -30,17 +30,17 @@ public class UnitTest {
         //return repoExists();
     }
 
+    private static boolean repoExists() {
+        File checking = new File(".gitlet");
+        boolean check = checking.exists();
+        return check;
+    }
+
     @Test
     public void testingAdd() {
         Repo theRepo = new Repo();
         theRepo.init();
         theRepo.add("test.txt");
-    }
-
-    private static boolean repoExists() {
-            File checking = new File(".gitlet");
-            boolean check = checking.exists();
-            return check;
     }
 
 }

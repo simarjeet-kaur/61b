@@ -12,14 +12,15 @@ class Repo implements Serializable {
     HashMap<String, String> _stagingArea;
     String _head; //should be a serialized commit SHA id
     ArrayList<String> _removedFiles;
+    ArrayList<String> _committedRemovedFiles;
+    //untracked files are those NOT in the staging area and
+    //those that have been removed without having been added to begin with i.e. not in committed
+    //removed files and not in the staging area
     HashMap<String, String> _branches;
     File gitlet;
     File gitletRepo;
     File commits;
     File blobs;
-    File staging_area;
-    File added;
-    File removed;
     File head;
     String firstCommitID;
     String currentBranch;
@@ -38,14 +39,6 @@ class Repo implements Serializable {
         //new directory for blobs to add the serialized version of them
         blobs = new File(".gitlet/blobs");
         blobs.mkdir();
-        //new directory for staging area
-        staging_area = new File(".gitlet/staging_area");
-        staging_area.mkdir();
-        //separate directories for the ones to add and remove
-        added = new File (".gitlet/staging_area/added");
-        added.mkdir();
-        removed = new File (".gitlet/staging_area/removed");
-        removed.mkdir();
         //new directory for head - keep head as an instance variable
         //head = new File(".gitlet/head");
         //head.mkdir();
@@ -62,6 +55,8 @@ class Repo implements Serializable {
 
         //files that are to be removed, don't include in your next commit, take out of the hashMap
         _removedFiles = new ArrayList<String>();
+        _committedRemovedFiles = new ArrayList<String>();
+
 
         //as a backup, instance variables for the staging area and head
         _stagingArea = new HashMap<String, String>();
@@ -80,7 +75,7 @@ class Repo implements Serializable {
 
         //put the serialized version of this commit in the commit directory, with the name of the
         // file being it's sha-id
-        firstCommitID = firstCommit.returnSHA_id();
+        firstCommitID = firstCommit.returnSHAId();
         Utils.writeObject(Utils.join(commits, firstCommitID), firstCommit);
         //make the branches just the master
         _branches.put("master", firstCommitID);
@@ -130,6 +125,12 @@ class Repo implements Serializable {
                 _stagingArea.put(fileName, blobID);
                // Utils.writeObject(Utils.join(added, fileName), blob);
             }
+            if (_committedRemovedFiles.contains(fileName)) {
+                _committedRemovedFiles.remove(fileName);
+            }
+            if (_removedFiles.contains(fileName)) {
+                _removedFiles.remove(fileName);
+            }
         }
     }
 
@@ -141,6 +142,8 @@ class Repo implements Serializable {
             //if staging area is empty
             System.out.println("No changes added to the commit.");
             //throw new GitletException("No changes added to the commit.");
+        } else if (message.equals("") || message.equals("\"\"")) {
+            System.out.println("Please enter a commit message.");
         } else {
 
             //get the parent's staging area to combine the two
@@ -152,6 +155,7 @@ class Repo implements Serializable {
             if (!_removedFiles.isEmpty()) {
                 for (String removed : _removedFiles) {
                     parentStagingArea.remove(removed);
+                    _committedRemovedFiles.add(removed);
                 }
                 _removedFiles.clear();
             }
@@ -177,7 +181,7 @@ class Repo implements Serializable {
             //in the staging area anymore - it's cleared
 
             //update the head for the most recent commit of the repo
-            _head = newCommit.returnSHA_id();
+            _head = newCommit.returnSHAId();
 
             //delete the previous head from the head directory - just look at the _head
             //a head directory isnt needed? and instead you look
@@ -215,15 +219,35 @@ class Repo implements Serializable {
             //remove the file from the working directory if the user has not already
             //done so
             File filePath = new File(fileName);
-            if (filePath.exists()) {
-                restrictedDelete(filePath);
-            }
             //Unstage the file if it is currently staged.
-            _stagingArea.remove(fileName);
-            // If the file is tracked in the current commit, mark it
-            // to indicate that it is not to be included in the next commit
-            _removedFiles.add(fileName);
+            if (_stagingArea.containsKey(fileName)) {
+                _stagingArea.remove(fileName);
+            }
+
+            if (headStagingArea.containsKey(fileName)) {
+                // If the file is tracked in the current commit, mark it
+                // to indicate that it is not to be included in the next commit
+                _committedRemovedFiles.add(fileName);
+                _removedFiles.add(fileName);
+            }
             //will be removed when you make the next commit, marked to be untracked then
+
+            if (filePath.exists() && (headCommit.returnStagingArea().containsKey(fileName)
+                    || _stagingArea.containsKey(fileName))) {
+                filePath.delete();
+
+                //The final category ("Untracked Files") is for files present
+                // in the working directory but neither staged for addition nor
+                // tracked. This includes files that have been staged for
+                // removal, but then re-added without Gitlet's knowledge.
+                // Ignore any subdirectories that may have been introduced,
+                // since Gitlet does not deal with them.
+
+                //not in the temp staging area nor in the head commit's staging area
+
+                //FIXME - fix this delete or restricted delete
+                //restrictedDelete(filePath);
+            }
         }
     }
 
@@ -236,7 +260,7 @@ class Repo implements Serializable {
         while (!initialCommit.returnIsFirst()) {
             if (initialCommit.returnParent().equals(initialCommit.returnSecondParent())) {
                 System.out.println("===");
-                System.out.println("commit " + initialCommit.returnSHA_id());
+                System.out.println("commit " + initialCommit.returnSHAId());
                 System.out.println("Date: " + initialCommit.returnDate());
                 System.out.println(initialCommit.returnMessage());
                 System.out.println();
@@ -245,9 +269,9 @@ class Repo implements Serializable {
             } else {
                 //FIXME - fix this according to the merge commit thing
                 System.out.println("===");
-                System.out.println("commit " + initialCommit.returnSHA_id());
-                System.out.println("Merge:" + initialCommit.returnParent().substring(0, 6) +
-                        " " + initialCommit.returnSecondParent().substring(0, 6));
+                System.out.println("commit " + initialCommit.returnSHAId());
+                System.out.println("Merge:" + initialCommit.returnParent().substring(0, 7) +
+                        " " + initialCommit.returnSecondParent().substring(0, 7));
                 System.out.println("Date: " + initialCommit.returnDate());
                 System.out.println(initialCommit.returnMessage());
                 System.out.println();
@@ -256,7 +280,7 @@ class Repo implements Serializable {
             }
         }
         System.out.println("===");
-        System.out.println("commit " + initialCommit.returnSHA_id());
+        System.out.println("commit " + initialCommit.returnSHAId());
         System.out.println("Date: " + initialCommit.returnDate());
         System.out.println(initialCommit.returnMessage());
         System.out.println();
@@ -269,15 +293,16 @@ class Repo implements Serializable {
             Commit physical_commit = readObject(filePath, Commit.class);
             if (physical_commit.returnParent().equals(physical_commit.returnSecondParent())) {
                 System.out.println("===");
-                System.out.println("commit " + physical_commit.returnSHA_id());
+                System.out.println("commit " + physical_commit.returnSHAId());
                 System.out.println("Date: " + physical_commit.returnDate());
                 System.out.println(physical_commit.returnMessage());
                 System.out.println();
             } else {
                 System.out.println("===");
-                System.out.println("commit " + physical_commit.returnSHA_id());
-                System.out.println("Merge:" + physical_commit.returnParent().substring(0, 6) +
-                        " " + physical_commit.returnSecondParent().substring(0, 6));
+                System.out.println("commit " + physical_commit.returnSHAId());
+                System.out.println("Merge:" + physical_commit.returnParent().substring(0, 7) +
+                        " " + physical_commit.returnSecondParent().substring(0, 7));
+                //FIXME - changed this from 0 to 7 instead of 0 to 6
                 System.out.println("Date: " + physical_commit.returnDate());
                 System.out.println(physical_commit.returnMessage());
                 System.out.println();
@@ -296,7 +321,7 @@ class Repo implements Serializable {
             // out on separate lines.
             if (physical_commit.returnMessage().equals(message)) {
                 check = true;
-                System.out.println(physical_commit.returnSHA_id());
+                System.out.println(physical_commit.returnSHAId());
             }
         }
         if (!check) {
@@ -336,87 +361,100 @@ class Repo implements Serializable {
         //printing out the removed files
         System.out.println("=== Removed Files ===");
         ArrayList<String> removedFiles = _removedFiles;
+        //FIXME - changed between removed and commit removed
         Collections.sort(removedFiles);
         for (String removedFile : removedFiles) {
             System.out.println(removedFile);
         }
         System.out.println();
 
+        System.out.println("=== Modifications Not Staged For Commit ===");
+        System.out.println();
+        System.out.println("=== Untracked Files ===");
+        System.out.println();
+
     }
 
     void checkout(String[] arguments) {
         //java gitlet.Main checkout -- [file name]
-        if (arguments.length == 2 && arguments[0].equals("--")) {
+        if (arguments.length == 2) {
+            if (!arguments[0].equals("--")) {
+                System.out.println("Incorrect operands.");
+            } else {
+                // Takes the version of the file as it exists in the head commit,
+                // the front of the current branch, and puts it in the working directory,
+                // overwriting the version of the file that's already there if there is one.
+                // The new version of the file is not staged.
 
-            // Takes the version of the file as it exists in the head commit,
-            // the front of the current branch, and puts it in the working directory,
-            // overwriting the version of the file that's already there if there is one.
-            // The new version of the file is not staged.
-
-            //If the file does not exist in the previous commit, aborts,
-            // printing the error message File does not exist in that commit.
+                //If the file does not exist in the previous commit, aborts,
+                // printing the error message File does not exist in that commit.
 
 
-            String fileName = arguments[1];
-            //get the head commit
-            File headPath = new File(".gitlet/commits/" + _head);
-            Commit headCommit = readObject(headPath, Commit.class);
+                String fileName = arguments[1];
+                //get the head commit
+                File headPath = new File(".gitlet/commits/" + _head);
+                Commit headCommit = readObject(headPath, Commit.class);
                 //to test: System.out.println(headCommit.returnMessage());
 
-            //get it's staging area and the blob with this file
-            HashMap<String, String> headSA = headCommit.returnStagingArea();
+                //get it's staging area and the blob with this file
+                HashMap<String, String> headSA = headCommit.returnStagingArea();
 
-            if (!headSA.containsKey(fileName)) {
-                System.out.println("File does not exist in that commit.");
-            } else {
-                String blobID = headSA.get(fileName);
+                if (!headSA.containsKey(fileName)) {
+                    System.out.println("File does not exist in that commit.");
+                } else {
+                    String blobID = headSA.get(fileName);
 
-                //deserialize this blob and update the file
-                File blobPath = new File(".gitlet/blobs/" + blobID);
-                String blob = readObject(blobPath, String.class);
-                File thisFile = new File(fileName);
-                Utils.writeContents(thisFile, blob);
+                    //deserialize this blob and update the file
+                    File blobPath = new File(".gitlet/blobs/" + blobID);
+                    String blob = readObject(blobPath, String.class);
+                    File thisFile = new File(fileName);
+                    Utils.writeContents(thisFile, blob);
+                }
             }
 
          //java gitlet.Main checkout [commit id] -- [file name]
-        } else if (arguments.length == 3 && arguments[1].equals("--")) {
+        } else if (arguments.length == 3) {
+            if (!arguments[1].equals("--")) {
+                System.out.println("Incorrect operands.");
+            } else {
 
-            //Takes the version of the file as it exists in the commit with the given
-            // id, and puts it in the working directory, overwriting the version of
-            // the file that's already there if there is one. The new version of the
-            // file is not staged.
+                //Takes the version of the file as it exists in the commit with the given
+                // id, and puts it in the working directory, overwriting the version of
+                // the file that's already there if there is one. The new version of the
+                // file is not staged.
 
-            //(same as above but gets the commit by the commit id)
+                //(same as above but gets the commit by the commit id)
 
-            String commitID = arguments[0];
-            String fileName = arguments[2];
-            List<String> commits = plainFilenamesIn(".gitlet/commits");
-            boolean checkForCommit = false;
-            for (String commit : commits) {
-                if (commit.equals(commitID) || commit.substring(0, 6).equals(commitID)) {
-                    checkForCommit = true;
-                    //getting the commit with this ID
-                    File filePath = new File(".gitlet/commits/" + commit);
-                    Commit thisCommit = readObject(filePath, Commit.class);
+                String commitID = arguments[0];
+                String fileName = arguments[2];
+                List<String> commits = plainFilenamesIn(".gitlet/commits");
+                boolean checkForCommit = false;
+                for (String commit : commits) {
+                    if (commit.equals(commitID) || commit.contains(commitID)) {
+                        checkForCommit = true;
+                        //getting the commit with this ID
+                        File filePath = new File(".gitlet/commits/" + commit);
+                        Commit thisCommit = readObject(filePath, Commit.class);
 
-                    //grab it's staging area
-                    HashMap<String, String> headSA = thisCommit.returnStagingArea();
+                        //grab it's staging area
+                        HashMap<String, String> headSA = thisCommit.returnStagingArea();
 
-                    if (!headSA.containsKey(fileName)) {
-                        System.out.println("File does not exist in that commit.");
-                    } else {
-                        String blobID = headSA.get(fileName);
+                        if (!headSA.containsKey(fileName)) {
+                            System.out.println("File does not exist in that commit.");
+                        } else {
+                            String blobID = headSA.get(fileName);
 
-                        //deserialize this blob and update the file
-                        File blobPath = new File(".gitlet/blobs/" + blobID);
-                        String blob = readObject(blobPath, String.class);
-                        File thisFile = new File(fileName);
-                        Utils.writeContents(thisFile, blob);
+                            //deserialize this blob and update the file
+                            File blobPath = new File(".gitlet/blobs/" + blobID);
+                            String blob = readObject(blobPath, String.class);
+                            File thisFile = new File(fileName);
+                            Utils.writeContents(thisFile, blob);
+                        }
                     }
                 }
-            }
-            if (!checkForCommit) {
-                System.out.println("No commit with that id exists.");
+                if (!checkForCommit) {
+                    System.out.println("No commit with that id exists.");
+                }
             }
 
         //java gitlet.Main checkout [branch name]
@@ -445,31 +483,35 @@ class Repo implements Serializable {
             //current branch and would be overwritten by the checkout, print There
             //is an untracked file in the way; delete it or add it first.
 
-            String branchHeadSHA = _branches.get(branchName);
-
-            File givenCommitPath = new File(".gitlet/commits/" + branchHeadSHA);
-            Commit givenCommit = readObject(givenCommitPath, Commit.class);
-
-            File currentHeadPath = new File(".gitlet/commits/" + _head);
-            Commit currentHead = readObject(currentHeadPath, Commit.class);
-
             //if the file in the branchName is going to get overwritten but isn't tracked in the
             //currentBranch, throw an error
-            boolean check = false;
-            for (String file : givenCommit.returnStagingArea().keySet()) {
-                if (!currentHead.returnStagingArea().containsKey(file)) {
-                    check = true;
-                }
-            }
+            //FIXME - this error
+//            boolean check = false;
+//            for (String file : givenCommit.returnStagingArea().keySet()) {
+//                if (!currentHead.returnStagingArea().containsKey(file)) {
+//                    check = true;
+//                }
+//            }
 
             if (!_branches.containsKey(branchName)) {
-                System.out.println("A branch with that name does not exist.");
+                System.out.println("No such branch exists.");
             } else if (branchName.equals(currentBranch)) {
                 System.out.println("No need to checkout the current branch..");
-            } else if (check) {
-                System.out.println("There is an untracked file in the way; " +
-                        "delete it or add it first.");
+//            } else if (check) {
+//                System.out.println("There is an untracked file in the way; " +
+//                        "delete it or add it first.");
+                //FIXME - this error
+
             } else {
+
+                String branchHeadSHA = _branches.get(branchName);
+
+                File givenCommitPath = new File(".gitlet/commits/" + branchHeadSHA);
+                Commit givenCommit = readObject(givenCommitPath, Commit.class);
+
+                File currentHeadPath = new File(".gitlet/commits/" + _head);
+                Commit currentHead = readObject(currentHeadPath, Commit.class);
+
 
                 //getting the staging area for thisCommit
                 HashMap<String, String> commitSA = givenCommit.returnStagingArea();
@@ -477,6 +519,8 @@ class Repo implements Serializable {
                 //updating all the files in this SA
                 for (String fileName : commitSA.keySet()) {
                     String blobID = commitSA.get(fileName);
+                    //check if it needs to get overwritten
+                    //FIXME - check here ???
                     //deserialize this blob and update the file
                     File blobPath = new File(".gitlet/blobs/" + blobID);
                     String blob = readObject(blobPath, String.class);
@@ -528,71 +572,149 @@ class Repo implements Serializable {
     }
 
     void reset(String commitID) {
-        //current commit things
-        File currentCommit = new File(".gitlet/commits/" + _head);
-        Commit current = readObject(currentCommit, Commit.class);
-        HashMap<String, String> tracked = current.returnStagingArea();
+
+        //Description: Checks out all the files tracked by the given commit.
+
+        String givenCommitName = "none";
 
         List<String> commits = plainFilenamesIn(".gitlet/commits");
-//
-//        File givenCommitPath = new File(".gitlet/commits/" + branchHeadSHA);
-//        Commit givenCommit = readObject(givenCommitPath, Commit.class);
-//
-//        boolean check = false;
-//        for (String file : givenCommit.returnStagingArea().keySet()) {
-//            if (!currentHead.returnStagingArea().containsKey(file)) {
-//                check = true;
+        for (String commit : commits) {
+            if (commit.equals(commitID)|| commit.startsWith(commitID)) {
+                givenCommitName = commit;
+            }
+        }
+
+        if (givenCommitName.equals("none")) {
+            System.out.println("No commit with that id exists.");
+        } else {
+
+            File givenCommitPath = new File(".gitlet/commits/" + givenCommitName);
+            Commit givenCommit = readObject(givenCommitPath, Commit.class);
+
+            File currentCommit = new File(".gitlet/commits/" + _head);
+            Commit current = readObject(currentCommit, Commit.class);
+
+            boolean untrackedCheck = false;
+
+//            for (String file : givenCommit.returnStagingArea().keySet()) {
+//                if (!current.returnStagingArea().containsKey(file)
+//                        && !_stagingArea.containsKey(file)) {
+//                    untrackedCheck = true;
+//                }
 //            }
-//        }
-//
-//        if (check) {
-//            System.out.println("There is an untracked file in the way; " +
-//                    "delete it or add it first.");
+            //FIXME - got rid of this ^^
 
-            boolean checkUntracked = false;
-            boolean checkForCommit = false;
-            for (String commit : commits) {
-                if (commit.equals(commitID) || commit.substring(0, 6).equals(commitID)) {
-                    checkForCommit = true;
-                    File filePath = new File(".gitlet/commits/" + commit);
-                    Commit thisCommit = readObject(filePath, Commit.class);
+            if (untrackedCheck) {
+                System.out.println("There is an untracked file in the way;" +
+                        " delete it or add it first.");
 
-                    for (String file : thisCommit.returnStagingArea().keySet()) {
-                        if (!current.returnStagingArea().containsKey(file)) {
-                            checkUntracked = true;
-                        }
-                    }
-                    if (checkUntracked) {
-                        System.out.println("There is an untracked file in the way; " +
-                                "delete it or add it first.");
+                //Checks out all the files tracked by the given commit.
 
-                        //FIXME - might need to check removed files too?
+            } else {
+                for (String file : givenCommit.returnStagingArea().keySet()) {
+                    String[] checkoutArgs = new String[3];
+                    checkoutArgs[0] = givenCommit.returnSHAId();
+                    checkoutArgs[1] = "--";
+                    checkoutArgs[2] = file;
+                    checkout(checkoutArgs);
+                }
 
-                    } else {
+                //Removes tracked files that are not present in that commit.
 
-                        for (String fileName : thisCommit.returnStagingArea().keySet()) {
-                            String[] args = new String[3];
-                            args[0] = commitID;
-                            args[1] = "--";
-                            args[2] = fileName;
-                            checkout(args); //FIXME - don't just call checkout
-                        }
-
-                        for (String trackedFile : tracked.keySet()) {
-                            if (!thisCommit.returnStagingArea().containsKey(trackedFile)) {
-                                File delete = new File(trackedFile);
-                                restrictedDelete(delete);
-                            }
-                        }
-                        _branches.put(currentBranch, thisCommit.returnSHA_id());
-                        _stagingArea.clear();
+                for (String file : current.returnStagingArea().keySet()) {
+                    if (!givenCommit.returnStagingArea().containsKey(file)) {
+                        rm(file);
                     }
                 }
+
+                for (String file : _stagingArea.keySet()) {
+                    if (!givenCommit.returnStagingArea().containsKey(file)) {
+                        rm(file);
+                    }
+                }
+
+                //Also moves the current branch's head to that commit node.
+                _branches.put(currentBranch, givenCommit.returnSHAId());
+
+                //The staging area is cleared.
+                _stagingArea.clear();
+
             }
 
-            if (!checkForCommit) {
-                System.out.println("No commit with that id exists.");
-            }
+        }
+//
+//        File currentCommit = new File(".gitlet/commits/" + _head);
+//        Commit current = readObject(currentCommit, Commit.class);
+
+//        for (String file : current.returnStagingArea().keySet()) {
+//            String arguments =
+//            checkout(file);
+//        }
+
+        // Removes tracked files that are not present in that commit. Also
+        // moves the current branch's head to that commit node. See the
+        // intro for an example of what happens to the head pointer after
+        // using reset. The [commit id] may be abbreviated as for checkout.
+        // The staging area is cleared. The command is essentially checkout
+        // of an arbitrary commit that also changes the current branch head.
+
+
+//
+//
+//
+//        //current commit things
+//        File currentCommit = new File(".gitlet/commits/" + _head);
+//        Commit current = readObject(currentCommit, Commit.class);
+//        HashMap<String, String> tracked = current.returnStagingArea();
+//        tracked.putAll(_stagingArea);
+//
+//        List<String> commits = plainFilenamesIn(".gitlet/commits");
+//
+//            boolean checkUntracked = false;
+//            boolean checkForCommit = false;
+//            for (String commit : commits) {
+//                if (commit.equals(commitID) || commit.contains(commitID)) {
+//                    checkForCommit = true;
+//                    File filePath = new File(".gitlet/commits/" + commit);
+//                    Commit thisCommit = readObject(filePath, Commit.class);
+//
+//                    for (String file : thisCommit.returnStagingArea().keySet()) {
+//                        if (!current.returnStagingArea().containsKey(file)) {
+//                            checkUntracked = true;
+//                        }
+//                    }
+//
+//                    if (checkUntracked) {
+//                        System.out.println("There is an untracked file in the way; " +
+//                                "delete it or add it first.");
+//
+//                        //FIXME - might need to check removed files too?
+//
+//                    } else {
+//
+//                        for (String fileName : thisCommit.returnStagingArea().keySet()) {
+//                            String[] args = new String[3];
+//                            args[0] = commitID;
+//                            args[1] = "--";
+//                            args[2] = fileName;
+//                            checkout(args); //FIXME - don't just call checkout
+//                        }
+//
+//                        for (String trackedFile : tracked.keySet()) {
+//                            if (!thisCommit.returnStagingArea().containsKey(trackedFile)) {
+//                                File delete = new File(trackedFile);
+//                                restrictedDelete(delete);
+//                            }
+//                        }
+//                        _branches.put(currentBranch, thisCommit.returnSHA_id());
+//                        _stagingArea.clear();
+//                    }
+//                }
+//            }
+
+//            if (!checkForCommit) {
+//                System.out.println("No commit with that id exists.");
+//            }
         }
 
 
@@ -621,7 +743,7 @@ class Repo implements Serializable {
             String commitSHAid = _branches.get(givenBranch);
             File commitPath = new File(".gitlet/commits/" + commitSHAid);
             Commit commit = readObject(commitPath, Commit.class);
-            givenBranchAncestors.add(commit.returnSHA_id());
+            givenBranchAncestors.add(commit.returnSHAId());
             while (!commit.returnIsFirst()) {
                 //FIXME - take care of case where you have two parents need to go to
                 // the second parent - is this right?
@@ -639,7 +761,7 @@ class Repo implements Serializable {
             String commitSHAid2 = _branches.get(currentBranch);
             File commitPath2 = new File(".gitlet/commits/" + commitSHAid2);
             Commit commit2 = readObject(commitPath2, Commit.class);
-            currentBranchAncestors.add(commit2.returnSHA_id());
+            currentBranchAncestors.add(commit2.returnSHAId());
             while (!commit2.returnIsFirst()) {
                 String commitParentSHAid2 = commit.returnParent();
                 if (!commit.returnParent().equals(commit.returnSecondParent())) {
@@ -867,6 +989,6 @@ class Repo implements Serializable {
     }
 
 
-
+//FIXME - untracked means it's never been in the staging area or the removed files list
 
 //look at fixmes
