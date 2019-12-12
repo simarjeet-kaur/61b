@@ -27,7 +27,6 @@ public class UnitTest {
         Repo theRepo;
         theRepo = new Repo();
         assertTrue(repoExists());
-        //return repoExists();
     }
 
     private static boolean repoExists() {

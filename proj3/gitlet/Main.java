@@ -1,13 +1,10 @@
 package gitlet;
 
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /** Driver class for Gitlet, the tiny stupid version-control system.
- *  @author
+ *  @author Simarjeet
  */
 public class Main {
 
@@ -15,184 +12,140 @@ public class Main {
      *  <COMMAND> <OPERAND> .... */
     public static void main(String... args) {
 
-        /**List of viable commands.*/
-        String[] arrayOfCommands = {"init", "add", "commit", "rm", "log", "global-log", "find", "status", "checkout",
-                "branch", "rm-branch", "reset", "merge", "add-remote", "rm-remote", "push", "fetch", "pull"};
+        String[] arrayOfCommands = {"init", "add", "commit", "rm", "log",
+            "global-log", "find", "status", "checkout",
+            "branch", "rm-branch", "reset", "merge", "add-remote",
+            "rm-remote", "push", "fetch", "pull"};
 
-        /**Gitlet file path to the repo.*/
         File gitletFile = new File(".gitlet/gitletRepo");
 
-        /**Checking if the args is input correctly and calling these arguments on _repo.*/
-//        try {
-            if (args.length == 0) {
-               // throw new GitletException("Please enter a command.");
-                System.out.println("Please enter a command.");
-            } else {
-                String command = args[0];
-                String[] rest_of_args = Arrays.copyOfRange(args, 1, args.length);
-                if (Arrays.asList(arrayOfCommands).contains(command)) {
-                    if (command.equals("init")) {
-                        if (repoExists()) {
-                            System.out.println("A Gitlet version-control system already exists in the current directory.");
-                            // throw new GitletException("A Gitlet version-control system already exists in the current directory.");
-                        } else {
-                            Repo _repo = new Repo();
-                            _repo.init();
-                            //serialize the repo to get it later into gitletRepo
-                            //File gitletFile = new File(".gitlet/gitletRepo");
-                            //Utils.writeObject(Utils.join(gitletFile, "repo"), _repo);
-                            Utils.writeObject(gitletFile, _repo);
-                        }
-                    } else if (repoExists()) {
-                        //de-serialize the repo
-                        Repo _repo = Utils.readObject(gitletFile, Repo.class);
-                        //get the rest of the args
-                        //String[] rest_of_args;
-                       // System.out.print(args);
-                        //FIXME rest_of_args = args.split(" ");
-                        //rest_of_args = Arrays.copyOfRange(args, 1, args.length);
-                        //call the command
-                        callingCommand(command, rest_of_args, _repo);
-                        //re-serialize the repo
-                        Utils.writeObject(gitletFile, _repo);
-                                // Utils.writeObject(Utils.join(gitletFile, "repo"), _repo);
+        if (args.length == 0) {
+            System.out.println("Please enter a command.");
+        } else {
+            String command = args[0];
+            String[] restOfArgs = Arrays.copyOfRange(args,
+                    1, args.length);
+            if (Arrays.asList(arrayOfCommands).contains(command)) {
+                if (command.equals("init")) {
+                    if (repoExists()) {
+                        System.out.println("A Gitlet version-control "
+                                + "system already exists in the current"
+                                + " directory.");
+                    } else {
+                        Repo repo = new Repo();
+                        repo.init();
+                        Utils.writeObject(gitletFile, repo);
                     }
-                } else {
-                    System.out.println("No command with that name exists.");
-                    //throw new GitletException("No command with that name exists.");
+                } else if (repoExists()) {
+                    Repo repo = Utils.readObject(gitletFile, Repo.class);
+                    callingCommand(command, restOfArgs, repo);
+                    Utils.writeObject(gitletFile, repo);
                 }
-            }
-//        } catch (GitletException e) {
-//             throw new GitletException();
-//            //System.exit(0); //FIXME - is this right?
-//        }
-    }
-
-        private static void callingCommand(String command, String[] arguments, Repo repo) {
-            switch (command) {
-                case "add":
-                    if (arguments.length == 1) {
-                        repo.add(arguments[0]);
-                    }
-                    break;
-                case "commit":
-                    if (arguments.length == 1) {
-                        repo.commit(arguments[0]);
-                    } else if (arguments.length == 0 || arguments[0].equals("\"\"")) {
-                        System.out.println("Please enter a commit message.");
-                       // throw new GitletException("Please enter a commit message.");
-                    }
-                    break;
-                case "rm":
-                    if (arguments.length == 1) {
-                        repo.rm(arguments[0]);
-                    }
-                    break;
-                case "log":
-                    if (arguments.length == 0) {
-                        repo.log();
-                    }
-                    break;
-                case "global-log":
-                    if (arguments.length == 0) {
-                        repo.globalLog();
-                    }
-                    break;
-                case "find":
-                    if (arguments.length == 1) {
-                        repo.find(arguments[0]);
-                    }
-                    break;
-                case "status":
-                    if (arguments.length == 0) {
-                        repo.status();
-                    }
-                    break;
-                case "checkout":
-                    if (arguments.length < 4) {
-                        repo.checkout(arguments);
-                    }
-//                    } else {
-//                        System.out.print("dropped");
-//                    }
-                    break;
-                case "branch":
-                    if (arguments.length == 1) {
-                        repo.branch(arguments[0]);
-                    }
-                    break;
-                case "rm-branch":
-                    if (arguments.length == 1) {
-                        repo.rmBranch(arguments[0]);
-                    }
-                    break;
-                case "reset":
-                    if (arguments.length == 1) {
-                        repo.reset(arguments[0]);
-                    }
-                    break;
-                case "merge":
-                    if (arguments.length == 1) {
-                        repo.merge(arguments[0]);
-                    }
-                    break;
+            } else {
+                System.out.println("No command with that name exists.");
             }
         }
+    }
 
-    /**Checking if the repo has already been initialized.*/
+    /**Calling command calls the command on the repo.
+     * @param arguments string array
+     * @param command string of the command
+     * @param repo the repo you're editing*/
+    private static void callingCommand(String command,
+                                       String[] arguments, Repo repo) {
+        switch (command) {
+        case "add":
+            addHelper(arguments, repo);
+            break;
+        case "commit":
+            commitHelper(arguments, repo);
+            break;
+        case "rm":
+            if (arguments.length == 1) {
+                repo.rm(arguments[0]);
+            }
+            break;
+        case "log":
+            if (arguments.length == 0) {
+                repo.log();
+            }
+            break;
+        case "global-log":
+            if (arguments.length == 0) {
+                repo.globalLog();
+            }
+            break;
+        case "find":
+            if (arguments.length == 1) {
+                repo.find(arguments[0]);
+            }
+            break;
+        case "status":
+            if (arguments.length == 0) {
+                repo.status();
+            }
+            break;
+        case "checkout":
+            if (arguments.length < 4) {
+                repo.checkout(arguments);
+            }
+            break;
+        case "branch":
+            if (arguments.length == 1) {
+                repo.branch(arguments[0]);
+            }
+            break;
+        case "rm-branch":
+            if (arguments.length == 1) {
+                repo.rmBranch(arguments[0]);
+            }
+            break;
+        case "reset":
+            if (arguments.length == 1) {
+                repo.reset(arguments[0]);
+            }
+            break;
+        case "merge":
+            mergeHelper(arguments, repo);
+            break;
+        default:
+        }
+    }
+
+    /**Checking if the repo has already been initialized.
+     * @return a boolean*/
     private static boolean repoExists() {
         File checking = new File(".gitlet");
         return checking.isDirectory();
     }
 
-    /**Repo is _repo.  Used to represent the whole .gitlet repo.*/
-    //Repo _repo = null;
+    /**Calls commit on the repo with given arguments.
+     * @param arguments string array
+     * @param repo Repo*/
+    private static void commitHelper(String[] arguments, Repo repo) {
+        if (arguments.length == 1) {
+            repo.commit(arguments[0]);
+        } else if (arguments.length == 0 || arguments[0].equals("\"\"")) {
+            System.out.println("Please enter a commit message.");
+        }
+    }
+
+    /**Calls add on the repo with given arguments.
+     * @param arguments string array
+     * @param repo Repo*/
+    private static void addHelper(String[] arguments, Repo repo) {
+        if (arguments.length == 1) {
+            repo.add(arguments[0]);
+        }
+    }
+
+    /**Calls merge on the repo with given arguments.
+     * @param arguments string array
+     * @param repo Repo*/
+    private static void mergeHelper(String[] arguments, Repo repo) {
+        if (arguments.length == 1) {
+            repo.merge(arguments[0]);
+        }
+    }
 
 }
-
-
-//look at the args main takes in and use this to determine which call to make
-//methods can go here or somewhere else\\t
-
-//staging area, commit, repo
-
-//staging area  - where you put stuff before you commit
-//you can't commit something you haven't added
-//how do you get what you put in your init as instance variables
-
-//branch is a pointer to a commit - a single branch only refers to a single commit
-//(it's a chain)
-
-//use hash codes to check if they've changed or not
-
-//commit
-//should have certain things
-//commit should have
-//time, date, message, SHA-id, blobs, parent commit - using SHA-ID of the parent
-//get the name of it , sha-id of it, to compare - use this to get checkout
-
-//init makes an initial commit
-
-//not a detached head as long as its at the front of the branch
-
-//serialization
-//turns an object into a file
-//deserialization: turning the file back into the object
-//needed because you keep running gitlet every time - the information needs to last
-//serialize in files so when you run some command, you can look around to see if you
-//have the right files
-
-//make a commit object
-//it'd contain location, time, message, blob (could be multiple adds)
-//every commit parent - this would be saved as a sha-id - so when you deserialize it
-//doesn't affect
-
-//head is the reference to most current commit
-
-//every time you add
-//you should make a blob - assuming it's valid
-
-//what does a blob contain
-//need an object so you can serialize it
-//file name
-//file contents

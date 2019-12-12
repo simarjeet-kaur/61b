@@ -55,7 +55,6 @@ class Utils {
 
     /** Returns the SHA-1 hash of the concatenation of the strings in
      *  VALS. */
-    //sha-id
     static String sha1(List<Object> vals) {
         return sha1(vals.toArray(new Object[vals.size()]));
     }
@@ -90,7 +89,6 @@ class Utils {
     /** Return the entire contents of FILE as a byte array.  FILE must
      *  be a normal file.  Throws IllegalArgumentException
      *  in case of problems. */
-    //save this in commit
     static byte[] readContents(File file) {
         if (!file.isFile()) {
             throw new IllegalArgumentException("must be a normal file");
@@ -136,7 +134,6 @@ class Utils {
 
     /** Return an object of type T read from FILE, casting it to EXPECTEDCLASS.
      *  Throws IllegalArgumentException in case of problems. */
-    //deserialize
     static <T extends Serializable> T readObject(File file,
                                                  Class<T> expectedClass) {
         try {
@@ -152,7 +149,6 @@ class Utils {
     }
 
     /** Write OBJ to FILE. */
-    //serialize into a file
     static void writeObject(File file, Serializable obj) {
         writeContents(file, serialize(obj));
     }

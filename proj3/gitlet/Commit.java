@@ -27,7 +27,12 @@ public class Commit implements Serializable {
     /**Commit staging area.*/
     private HashMap<String, String> _stagingArea;
 
-    /**Commit class.*/
+    /**Commit class.
+     * @param message string message
+     * @param date date and time of the commit
+     * @param isFirst boolean if it is the first commit
+     * @param parent parent SHA id of the commit
+     * @param stagingArea hash map history of the rest of the project */
     Commit(String message, Date date, HashMap<String, String> stagingArea,
            String parent, boolean isFirst) {
         _message = message;
