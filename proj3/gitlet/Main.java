@@ -4,8 +4,7 @@ import java.io.File;
 import java.util.Arrays;
 
 /** Driver class for Gitlet, the tiny stupid version-control system.
- *  @author Simarjeet Kaur
- *  @collaborators Nirmol Kaur
+ *  @author Simarjeet Kaur (Collaborators: Nirmol Kaur)
  */
 public class Main {
 
