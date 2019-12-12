@@ -6,26 +6,6 @@
 <<<
 > commit "added wug"
 <<<
-> + wug.txt notwug.txt
+> find "changed"
+Found no commit with that message.
 <<<
-> commit "changed wug to not wug"
-<<<
-D HEADER "commit [a-f0-9]+"
-D DATE "Date: \w\w\w \w\w\w \d+ \d\d:\d\d:\d\d \d\d\d\d [-+]\d\d\d\d"
-> log
-===
-${HEADER}
-${DATE}
-changed wug to not wug
-
-===
-${HEADER}
-${DATE}
-added wug
-
-===
-${HEADER}
-${DATE}
-initial commit
-
-<<<*

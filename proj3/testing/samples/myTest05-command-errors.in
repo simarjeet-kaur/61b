@@ -1,7 +1,9 @@
 # testing to see if errors are caught in main/repo commands
-> fakecommand
+> init
 <<<
+> fakecommand
 No command with that name exists.
+<<<
 > commit
-Please enter a message.
+Please enter a commit message.
 <<<
